@@ -16,11 +16,13 @@ div.header > a {
 }
 
 div.header > a:link, div.header > a:visited, div.header > a:active {
-    color: #808080
+    color: #808080;
+    text-decoration: none;
+    position: relative;
+    float: right
 }
 
 div.header > a:hover {
-    color: blue;
     text-decoration: underline;
 }
 
@@ -34,4 +36,8 @@ h2, form > legend {
 
 form > legend {
     font-weight: bold;
+}
+
+hr {
+    color: "#808080"
 }

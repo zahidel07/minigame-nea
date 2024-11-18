@@ -1,0 +1,27 @@
+form > label > p {
+    font-size: medium;
+    font-weight: 300;
+}
+
+form > legend {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+form label {
+    font-size: 15px
+}
+
+input:default {
+    width: 300px;
+    height: 20px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    outline: none;
+    border-bottom: 1px solid #808080;
+}
+
+input:focus {
+    border-bottom: 2px solid blue
+}

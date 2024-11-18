@@ -4,29 +4,33 @@
         <meta charset="utf-8">
         <title>Sign Up</title>
         <link href="main.css" rel="stylesheet" />
-        <link href="main.css" rel="stylesheet" />
+        <link href="sign-up.css" rel="stylesheet" />
     </head>
     <body>
         <div class="header">
             <h1>MyMiniGames</h1>
-            <a href="page.html">Return to Home</a>
+            <a href="homepage.html">Return to Home</a>
         </div>
-        <br>
+        <hr>
         <form>
             <legend>Sign Up</legend>
-            <label>
+            <label for="username">
                 <p>Username</p>
-                <input type="text" maxlength="20" />
+                <input type="text" minlength="3" maxlength="20" placeholder = "Enter a username (3-20 characters)" required />
             </label>
-            <label>
+            <label for="nickname">
+                <p>Nickname</p>
+                <input type="text" minlength="5" maxlength="20" placeholder="Enter a nickname (optional)" />
+            </label>
+            <label for="password">
                 <p>Password</p>
-                <input type="password" maxlength="20" />
+                <input type="password" minlength="5" maxlength="20" placeholder="Enter a password (5-20 characters)" required />
             </label>
-            <label>
+            <label for="retype-password">
                 <p>Retype Password</p>
-                <input type="password" maxlength="20" />
+                <input type="password" maxlength="20" placeholder="Retype your password" required />
             </label>
-            <button><a href="blank.html">Create Account</a></button>
+            <button type="submit">Create Account</button>
         </form>
         <a href="sign-in.html">Sign In</a>
     </body>
