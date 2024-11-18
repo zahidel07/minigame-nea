@@ -15,7 +15,7 @@ div.header > a {
     float: right
 }
 
-div.header > a:link, div.header > a:visited, div.header > a:active {
+div.header > a {
     color: #808080;
     text-decoration: none;
     position: relative;

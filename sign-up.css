@@ -12,14 +12,12 @@ form label {
     font-size: 15px
 }
 
-input:default {
+input {
     width: 300px;
     height: 20px;
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border: 0px solid;
     border-bottom: 1px solid #808080;
-    margin: none;
+    outline: none;
 }
 
 input:focus {
