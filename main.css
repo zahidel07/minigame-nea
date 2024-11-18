@@ -11,12 +11,13 @@ div.header > h1 {
     font-family: "Ubuntu"
 }
 
-div.header > a, div.header > a:visited {
-    color: "#808080"
+div.header > a:link, div.header > a:visited, div.header > a:active {
+    color: #808080
 }
 
 div.header > a:hover {
-    color: blue
+    color: blue;
+    text-decoration: underline;
 }
 
 div > button#gamebutton {
