@@ -1,5 +1,39 @@
+@font-face {
+    font-family: "Ubuntu";
+    src: url(fonts/Ubuntu-Regular.ttf);
+}
+
 * {
-    font-family: "Ubuntu", sans-serif;
-    font-weight: 300;
-    font-style: normal;
+    font-family: "Ubuntu";
+}
+
+div.header > h1 {
+    font-family: "Ubuntu"
+}
+
+div.header > a, div.header > a:visited {
+    color: "#808080"
+}
+
+div.header > a:hover {
+    color: blue
+}
+
+div > button#gamebutton {
+    width: 200;
+    height: 200;
+    background-color: red;
+    border-radius: 1cm;
+}
+
+div > button#gamebutton > a {
+    color: white,
+}
+
+h2, form > legend {
+    font-size: medium;
+}
+
+form > legend {
+    font-weight: bold;
 }
