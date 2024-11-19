@@ -9,7 +9,9 @@ form > legend {
 }
 
 form label {
-    font-size: 15px
+    font-size: 15px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 input {
@@ -20,8 +22,20 @@ input {
     outline: none;
 }
 
-input:focus {
-    border-bottom: 2px solid blue
+input:focus:blank {
+    border-bottom: 2px solid #0000ff
+}
+
+input:focus:valid {
+    border-bottom: 2px solid #00ff00
+}
+
+input:focus:invalid {
+    border-bottom: 2px solid #ff0000
+}
+
+input:not(:focus) {
+    border-bottom: 1px solid #808080
 }
 
 a {

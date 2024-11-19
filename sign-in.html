@@ -14,16 +14,17 @@
         <hr>
         <form>
             <legend>Sign in</legend>
-            <label for="username">
-                <p>Username</p>
-                <input type="text" minlength="3" maxlength="20" placeholder="Enter a username (3-20 characters)" required />
+            <label for="username">Username
+                <input id="username" type="text" pattern="^[a-z0-9\._]{3,20}$" placeholder="Enter your username (3-20 characters)" required />
             </label>
-            <label>
-                <p>Password</p>
-                <input type="password" minlength="5" maxlength="20" placeholder="Enter a password (5-20 characters)" required />
-            </label for="password">
+            <br>
+            <label for="password">Password
+                <input id="password" type="password" pattern="^[a-zA-Z0-9\s_]{5,20}$" placeholder="Enter your password (5-20 characters)" required />
+            </label>
+            <br />
             <button type="submit">Log In</button>
         </form>
+        <br />
         <a href="sign-up.html">Sign Up</a>
     </body>
 </html>

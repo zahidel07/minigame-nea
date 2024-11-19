@@ -8,18 +8,15 @@
 }
 
 div.header > h1 {
-    font-family: "Ubuntu"
-}
-
-div.header > a {
-    float: right
+    font-family: "Ubuntu";
+    display: inline-block
 }
 
 div.header > a {
     color: #808080;
     text-decoration: none;
     position: relative;
-    float: right
+    float: inline-end
 }
 
 div.header > a:hover {
