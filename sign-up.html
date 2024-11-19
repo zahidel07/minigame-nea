@@ -16,26 +16,24 @@
             <legend>Sign Up</legend>
             <label for="username">Username
                 <input name="username" type="text" pattern="^[a-z0-9\._]{3,20}$" placeholder = "Enter a username (3-20 characters)" required />
+                <p class="username">Username can only contain letters a-z, numbers 0-9, dots and underscores</p>
             </label>
-            <p class="username">Username can only contain letters a-z, numbers 0-9, dots and underscores</p>
             <br>
             <label for="nickname">Nickname
-                <input name="nickname" type="text" pattern="^[a-zA-Z0-9\._\s]{3,20}" placeholder="Enter a nickname (optional) (3-20 characters)" />
+                <input name="nickname" type="text" pattern="^\b[a-zA-Z0-9\._\s]{3,20}\b$" placeholder="Enter a nickname (optional) (3-20 characters)" />
+                <p class="nickname">Nickname can only contain letters a-z, A-Z, numbers 0-9, dots, underscores and whitespaces. Nicknames cannot start or end in a whitespace</p>
+                <p>If no nickname is set, this will default to your username</p>
             </label>
-            <p class="nickname">Nickname can only contain letters</p>
-            <p>If no nickname is set, this will default to your username</p>
             <br>
             <label for="password">Password
                 <input name="password" type="password" pattern="^[a-zA-Z0-9\s_]{5,20}$" placeholder="Enter a password (5-20 characters)" required />
+                <p class="password">Password can only contain letters a-z, A-Z, numbers 0-9, whitespaces and underscores. Passwords cannot start or end in a whitespace</p>
             </label>
-            <p class="password">Password can only contain letters a-z, A-Z, numbers 0-9, whitespaces and underscores
-                Passwords cannot start or end in a whitespace
-            </p>
             <br>
             <label for="retype-password">Retype Password
                 <input name="retype-password" type="password" pattern="^[a-zA-Z0-9\s\._]{5,20}$" placeholder="Retype your password" required />
+                <p class="retype-password">Passwords must match</p>
             </label>
-            <p class="retype-password">Passwords must match</p>
             <br>
             <button type="submit">Create Account</button>
         </form>

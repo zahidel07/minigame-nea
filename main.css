@@ -15,8 +15,11 @@ div.header > h1 {
 div.header > a {
     color: #808080;
     text-decoration: none;
-    position: relative;
-    float: inline-end
+    float: inline-end;
+}
+
+div.header {
+    margin: auto
 }
 
 div.header > a:hover {
@@ -24,7 +27,11 @@ div.header > a:hover {
 }
 
 div > button#gamebutton > a {
-    color: white,
+    color: white
+}
+
+div > button#gamebutton {
+    margin: 2px
 }
 
 h2, form > legend {
