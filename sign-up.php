@@ -12,7 +12,7 @@
             <a href="homepage.html">Return to Home</a>
         </div>
         <hr>
-        <form>
+        <form action="sign-up.php" method="GET">
             <legend>Sign Up</legend>
             <label for="username">Username
                 <input name="username" id="username" type="text" pattern="^[a-z0-9\._]{3,20}$" placeholder = "Enter a username (3-20 characters)" required />
@@ -39,5 +39,19 @@
         </form>
         <br />
         <a href="sign-in.html">Sign In</a>
+
+        <?php
+
+        $username = $_GET['username'];
+        $nickname = $_GET['nickname'];
+        $password = $_GET['nickname'];
+        $retype_password = $_GET['nickname'];
+
+        echo $username;
+        echo $nickname;
+        echo $password;
+        echo $retype_password;
+
+        ?>
     </body>
 </html>
