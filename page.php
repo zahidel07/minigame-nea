@@ -1,9 +1,9 @@
 <?php
 
-$username = $_GET['username'];
-$nickname = $_GET['nickname'];
-$password = $_GET['nickname'];
-$retype_password = $_GET['nickname'];
+$username = $_REQUEST['username'];
+$nickname = $_REQUEST['nickname'];
+$password = $_REQUEST['nickname'];
+$retype_password = $_REQUEST['nickname'];
 
 echo $username;
 echo $nickname;
