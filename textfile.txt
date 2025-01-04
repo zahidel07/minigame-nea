@@ -11,7 +11,7 @@ subject to change.
 Tasks to be completed:
 [X] 1. Set up the main webpages
 [X] 2. Add styling (to main webpages only)
-[ ] 3. Add functionality
+[X] 3. Add functionality
 [X] 4. Set up databases
 [ ] 5. Program to check against databases
 [ ] 6. Program each game separately repeating steps 1-3
