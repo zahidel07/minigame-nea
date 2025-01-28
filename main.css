@@ -16,7 +16,8 @@ div.header > a {
     color: #808080;
     text-decoration: none;
     float: inline-end;
-    margin: auto;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 div.header {

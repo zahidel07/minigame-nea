@@ -3,7 +3,65 @@
         <meta charset="utf-8">
         <title>Tic-Tac-Toe • Multiplayer</title>
         <link href="../../main.css" rel="stylesheet" />
-        <script src="tictactoe.ts"></script>
+        <script>
+            let current = "X"
+
+            const winningCombos = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ]
+
+            let grid = [
+                null, null, null, null, null, null, null, null, null
+            ]
+
+            function updateSquare(square) {
+                grid[square] = current
+                updateGrid(grid)
+            }
+
+            function updateGrid(newGrid) {
+                for (let i = 0; i < 9; i++) {
+                    const button = document.getElementById(`sq${i}`)
+                    button.innerText = newGrid[i] || '-'
+                    if (button.innerText != "-") button.setAttribute("disabled", "true")
+                }
+
+                if (!winner()) {
+                    if (current === "X") current = "O"
+                    else current = "X"
+                    const currentPlayer = document.getElementById("current")
+                    currentPlayer.innerText = `Next player: ${current}`
+                }
+            }
+
+            function winner() {
+                for (let n = 0; n < winningCombos.length; n++) {
+                    const isConsecutive = winningCombos[n]
+                    .map((index) => grid[index])
+                    .every((val, _ind, arr) => arr[0] && val === arr[0])
+
+                    if (isConsecutive) {
+                        [...document.getElementsByClassName("game-square")].forEach((elem) => elem.setAttribute('disabled', ''))
+                        document.getElementById('current').innerText = `The winner is: ${current}`
+                        return true
+                    } 
+                }
+
+                if (grid.every((val) => val)) {
+                    document.getElementById('current').innerText = "Draw!"
+                    return true
+                }
+                
+                return false
+            }
+        </script>
     </head>
     <body>
         <div class="header">
@@ -13,15 +71,21 @@
         <hr>
         <p id="current">Current player: X</p>
         <div id="gamebox">
-            <button class="game-square" id="sq1"></button>
-            <button class="game-square" id="sq2"></button>
-            <button class="game-square" id="sq3"></button>
-            <button class="game-square" id="sq4"></button>
-            <button class="game-square" id="sq5"></button>
-            <button class="game-square" id="sq6"></button>  
-            <button class="game-square" id="sq7"></button>
-            <button class="game-square" id="sq8"></button>
-            <button class="game-square" id="sq9"></button>
+            <div class="row">
+                <button class="game-square" id="sq0" onclick="updateSquare(0)">-</button>
+                <button class="game-square" id="sq1" onclick="updateSquare(1)">-</button>
+                <button class="game-square" id="sq2" onclick="updateSquare(2)">-</button>
+            </div>       
+            <div class="row">
+                <button class="game-square" id="sq3" onclick="updateSquare(3)">-</button>
+                <button class="game-square" id="sq4" onclick="updateSquare(4)">-</button>
+                <button class="game-square" id="sq5" onclick="updateSquare(5)">-</button>  
+            </div>       
+            <div class="row">
+                <button class="game-square" id="sq6" onclick="updateSquare(6)">-</button>
+                <button class="game-square" id="sq7" onclick="updateSquare(7)">-</button>
+                <button class="game-square" id="sq8" onclick="updateSquare(8)">-</button>
+            </div>
         </div>
     </body>
 </html>
