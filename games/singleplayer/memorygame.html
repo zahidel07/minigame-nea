@@ -39,8 +39,31 @@
                     console.log("User chose an element " + String(userSelected))
                     chosenElements[chosenElements.indexOf(-1)] = userSelected
                     document.getElementById(`sq${userSelected}`).innerText = presetGrid[userSelected]
+                    if (!chosenElements.includes(-1)) equalSquares()
                 } else {
                     console.log("User chose 2 elements\nUser cannot select anymore")
+                }
+            }
+
+            function equalSquares() {
+                if (presetGrid[chosenElements[0]] == presetGrid[chosenElements[1]]) {
+                    console.log("Matched!")
+                    chosenElements.forEach((elem) => {
+                        document.getElementById(`sq${elem}`).disabled = true
+                    })
+                    chosenElements = [-1, -1]
+                } else {
+                    console.log("Didn't match...")
+                    chosenElements.forEach((elem) => {
+                        document.getElementById(`sq${elem}`).disabled = true
+                    })
+                    setTimeout(() => {
+                        chosenElements.forEach((elem) => {
+                            document.getElementById(`sq${elem}`).disabled = false
+                            document.getElementById(`sq${elem}`).innerText = '-'
+                        })
+                        chosenElements = [-1, -1]
+                    }, 1500)
                 }
             }
         </script>
