@@ -4,6 +4,10 @@ div[class="game-square"] {
     padding: 1px
 }
 
+div#gamebox {
+    display: list-item
+}
+
 div.row {
     display: inline-block;
     padding: 5px

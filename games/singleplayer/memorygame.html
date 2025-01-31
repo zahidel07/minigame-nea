@@ -4,6 +4,46 @@
         <title>Memory Game • Singleplayer</title>
         <link href="../../main.css" rel="stylesheet" />
         <link href="memorygame.css" rel="stylesheet" />
+        <script>
+            let presetGrid = [
+                null, null, null, null, null,
+                null, null, null, null, null,
+                null, null, null, null, null,
+                null, null, null, null, null
+            ]
+
+            let userGrid = [
+                null, null, null, null, null,
+                null, null, null, null, null,
+                null, null, null, null, null,
+                null, null, null, null, null
+            ]
+
+            let chosenElements = [-1, -1]
+
+            for (let ind = 1; ind <= presetGrid.length + 1; ind++) {
+                let randomPos = Math.floor(Math.random() * 20)
+                while (!!presetGrid[randomPos]) {
+                    randomPos = Math.floor(Math.random() * 20)
+                }
+                presetGrid[randomPos] = Math.floor(ind / 2)
+            }
+
+            function updateSquare(square) {
+                if (chosenElements.includes(square)) return console.log("Cannot choose the same element twice")
+                else checkChosen(square)
+            }
+
+            function checkChosen(userSelected) {
+                if (chosenElements.includes(-1)) {
+                    console.log("User chose an element " + String(userSelected))
+                    chosenElements[chosenElements.indexOf(-1)] = userSelected
+                    document.getElementById(`sq${userSelected}`).innerText = presetGrid[userSelected]
+                } else {
+                    console.log("User chose 2 elements\nUser cannot select anymore")
+                }
+            }
+        </script>
     </head>
     <body>
         <div class="header">
@@ -13,32 +53,32 @@
         <hr>
         <div id="gamebox">
             <div class="row">
-                <button class="game-square" id="sq0">-</button>
-                <button class="game-square" id="sq1">-</button>
-                <button class="game-square" id="sq2">-</button>
-                <button class="game-square" id="sq3">-</button>
-                <button class="game-square" id="sq4">-</button>
+                <button class="game-square" id="sq0" onclick="updateSquare(0)">-</button>
+                <button class="game-square" id="sq1" onclick="updateSquare(1)">-</button>
+                <button class="game-square" id="sq2" onclick="updateSquare(2)">-</button>
+                <button class="game-square" id="sq3" onclick="updateSquare(3)">-</button>
+                <button class="game-square" id="sq4" onclick="updateSquare(4)">-</button>
             </div> 
             <div class="row">
-                <button class="game-square" id="sq5">-</button>
-                <button class="game-square" id="sq6">-</button>
-                <button class="game-square" id="sq7">-</button>
-                <button class="game-square" id="sq8">-</button>
-                <button class="game-square" id="sq9">-</button>
+                <button class="game-square" id="sq5" onclick="updateSquare(5)">-</button>
+                <button class="game-square" id="sq6" onclick="updateSquare(6)">-</button>
+                <button class="game-square" id="sq7" onclick="updateSquare(7)">-</button>
+                <button class="game-square" id="sq8" onclick="updateSquare(8)">-</button>
+                <button class="game-square" id="sq9" onclick="updateSquare(9)">-</button>
             </div> 
             <div class="row">
-                <button class="game-square" id="sq10">-</button>
-                <button class="game-square" id="sq11">-</button>
-                <button class="game-square" id="sq12">-</button>
-                <button class="game-square" id="sq13">-</button>
-                <button class="game-square" id="sq14">-</button>
+                <button class="game-square" id="sq10" onclick="updateSquare(10)">-</button>
+                <button class="game-square" id="sq11" onclick="updateSquare(11)">-</button>
+                <button class="game-square" id="sq12" onclick="updateSquare(12)">-</button>
+                <button class="game-square" id="sq13" onclick="updateSquare(13)">-</button>
+                <button class="game-square" id="sq14" onclick="updateSquare(14)">-</button>
             </div> 
             <div class="row">
-                <button class="game-square" id="sq15">-</button>
-                <button class="game-square" id="sq16">-</button>
-                <button class="game-square" id="sq17">-</button>
-                <button class="game-square" id="sq18">-</button>
-                <button class="game-square" id="sq19">-</button>
+                <button class="game-square" id="sq15" onclick="updateSquare(15)">-</button>
+                <button class="game-square" id="sq16" onclick="updateSquare(16)">-</button>
+                <button class="game-square" id="sq17" onclick="updateSquare(17)">-</button>
+                <button class="game-square" id="sq18" onclick="updateSquare(18)">-</button>
+                <button class="game-square" id="sq19" onclick="updateSquare(19)">-</button>
             </div>
         </div>
     </body>
