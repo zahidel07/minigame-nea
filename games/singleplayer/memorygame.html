@@ -33,9 +33,17 @@
                 if (chosenElements.includes(square)) {
                     const textElement = document.getElementById('current')
                     const previousText = textElement.innerText
-                    textElement.innerText = 'You cannot choose the same square twice!'
+                    textElement.innerText = 'You cannot choose the same square twice!';
+                    [...document.getElementsByClassName('game-square')]
+                    .map((sq, ind) => {
+                            sq.setAttribute('disabled', 'true')
+                            !!userGrid[ind] 
+                            ? sq.setAttribute('class', 'game-square valid') 
+                            : (ind === square ? sq.setAttribute('class', 'game-square invalid') : sq.setAttribute('class', 'game-square locked'))
+                    })
                     setTimeout(() => {
                         textElement.innerText = previousText
+                        resetGridStyling()
                         return
                     }, 1500)
                 }
@@ -46,6 +54,7 @@
                 if (chosenElements.includes(-1)) {
                     chosenElements[chosenElements.indexOf(-1)] = userSelected
                     document.getElementById(`sq${userSelected}`).innerText = presetGrid[userSelected]
+                    document.getElementById(`sq${userSelected}`).setAttribute('class', 'game-square selected')
                     if (!chosenElements.includes(-1)) {
                         equalSquares()
                     } else {
@@ -61,23 +70,49 @@
                     textElement.innerText = "Matched!"
                     chosenElements.forEach((elem) => {
                         document.getElementById(`sq${elem}`).disabled = true
+                        document.getElementById(`sq${elem}`).setAttribute('class', 'game-square valid')
                         userGrid[elem] = presetGrid[elem]
                     })
                     setTimeout(() => checkWinner(), 1500)
                 } else {
                     textElement.innerText = "Didn't match..."
                     chosenElements.forEach((elem) => {
+                        document.getElementById(`sq${elem}`).setAttribute('class', 'game-square invalid')
                         document.getElementById(`sq${elem}`).disabled = true
                     })
                     setTimeout(() => {
                         chosenElements.forEach((elem) => {
                             document.getElementById(`sq${elem}`).disabled = false
+                            document.getElementById(`sq${elem}`).setAttribute('class', 'game-square')
                             document.getElementById(`sq${elem}`).innerText = '-'
                         })
                         chosenElements = [-1, -1]
                         textElement.innerText = "Choose 2 squares"
                     }, 1500)
                 }
+            }
+
+            function resetGridStyling() {
+                [...document
+                .getElementsByClassName('game-square')]
+                .forEach((square, ind) => {
+                    const id = square.id
+                    const idNum = parseInt(id[2])    
+
+                    if (!!userGrid[idNum]) {
+                        square
+                        .setAttribute('class', 'game-square valid')
+                        .setAttribute('disabled', 'true')
+                    } else if (chosenElements.includes(idNum)) {
+                        square
+                        .setAttribute('class', 'game-square selected')
+                        .setAttribute('disabled', 'true')
+                    } else {
+                        square
+                        .setAttribute('class', 'game-square')
+                        .setAttribute('disabled', 'false')
+                    }
+                })
             }
 
             function checkWinner() {

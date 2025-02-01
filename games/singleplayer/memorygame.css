@@ -9,11 +9,11 @@ div#gamebox {
 }
 
 div.row {
-    display: inline-block;
+    display: block;
     padding: 5px
 }
 
-div.row > button {
+div.row > button.game-square {
     margin: 0px;   
 }
 
@@ -21,8 +21,26 @@ button {
     height: 25px;
     width: 25px;
     font-size: smaller;
+    color: black;
     background-color: white;
     border: 1px solid black;
     padding: 0%;
     text-align: centre
 }
+
+button.selected {
+    color: #0000ff
+}
+
+button.valid {
+    color: #00ff00
+}
+
+button.invalid {
+    color: #ff0000
+}
+
+button.locked {
+    color: grey
+}
+

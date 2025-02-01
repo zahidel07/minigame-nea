@@ -5,7 +5,7 @@ div[class="game-square"] {
 }
 
 div.row {
-    display: inline-block;
+    display: block;
     padding: 5px
 }
 
