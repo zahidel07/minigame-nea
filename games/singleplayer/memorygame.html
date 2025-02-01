@@ -30,30 +30,42 @@
             }
 
             function updateSquare(square) {
-                if (chosenElements.includes(square)) return console.log("Cannot choose the same element twice")
+                if (chosenElements.includes(square)) {
+                    const textElement = document.getElementById('current')
+                    const previousText = textElement.innerText
+                    textElement.innerText = 'You cannot choose the same square twice!'
+                    setTimeout(() => {
+                        textElement.innerText = previousText
+                        return
+                    }, 1500)
+                }
                 else checkChosen(square)
             }
 
             function checkChosen(userSelected) {
                 if (chosenElements.includes(-1)) {
-                    console.log("User chose an element " + String(userSelected))
                     chosenElements[chosenElements.indexOf(-1)] = userSelected
                     document.getElementById(`sq${userSelected}`).innerText = presetGrid[userSelected]
-                    if (!chosenElements.includes(-1)) equalSquares()
-                } else {
-                    console.log("User chose 2 elements\nUser cannot select anymore")
+                    if (!chosenElements.includes(-1)) {
+                        equalSquares()
+                    } else {
+                        document.getElementById('current').innerText = "Choose 1 more square"
+                    }
                 }
             }
 
             function equalSquares() {
+                const textElement = document.getElementById('current')
+
                 if (presetGrid[chosenElements[0]] == presetGrid[chosenElements[1]]) {
-                    console.log("Matched!")
+                    textElement.innerText = "Matched!"
                     chosenElements.forEach((elem) => {
                         document.getElementById(`sq${elem}`).disabled = true
+                        userGrid[elem] = presetGrid[elem]
                     })
-                    chosenElements = [-1, -1]
+                    setTimeout(() => checkWinner(), 1500)
                 } else {
-                    console.log("Didn't match...")
+                    textElement.innerText = "Didn't match..."
                     chosenElements.forEach((elem) => {
                         document.getElementById(`sq${elem}`).disabled = true
                     })
@@ -63,7 +75,19 @@
                             document.getElementById(`sq${elem}`).innerText = '-'
                         })
                         chosenElements = [-1, -1]
+                        textElement.innerText = "Choose 2 squares"
                     }, 1500)
+                }
+            }
+
+            function checkWinner() {
+                const textElement = document.getElementById('current')
+
+                if (!userGrid.includes(null)) {
+                    textElement.innerText = 'Game over'
+                } else {
+                    chosenElements = [-1, -1]
+                    textElement.innerText = "Choose 2 squares"
                 }
             }
         </script>
@@ -75,6 +99,7 @@
         </div>
         <hr>
         <div id="gamebox">
+            <p id="current">Choose 2 squares</p>
             <div class="row">
                 <button class="game-square" id="sq0" onclick="updateSquare(0)">-</button>
                 <button class="game-square" id="sq1" onclick="updateSquare(1)">-</button>
