@@ -5,19 +5,9 @@
         <link href="../../main.css" rel="stylesheet" />
         <link href="memorygame.css" rel="stylesheet" />
         <script>
-            let presetGrid = [
-                null, null, null, null, null,
-                null, null, null, null, null,
-                null, null, null, null, null,
-                null, null, null, null, null
-            ]
+            let presetGrid = Array(20).fill(null)
 
-            let userGrid = [
-                null, null, null, null, null,
-                null, null, null, null, null,
-                null, null, null, null, null,
-                null, null, null, null, null
-            ]
+            let userGrid = Array(20).fill(null)
 
             let chosenElements = [-1, -1]
 
@@ -36,7 +26,6 @@
                     textElement.innerText = 'You cannot choose the same square twice!';
                     [...document.getElementsByClassName('game-square')]
                     .map((sq, ind) => {
-                            sq.setAttribute('disabled', 'true')
                             !!userGrid[ind] 
                             ? sq.setAttribute('class', 'game-square valid') 
                             : (ind === square ? sq.setAttribute('class', 'game-square invalid') : sq.setAttribute('class', 'game-square locked'))
@@ -44,7 +33,6 @@
                     setTimeout(() => {
                         textElement.innerText = previousText
                         resetGridStyling()
-                        return
                     }, 1500)
                 }
                 else checkChosen(square)
@@ -93,24 +81,23 @@
             }
 
             function resetGridStyling() {
-                [...document
-                .getElementsByClassName('game-square')]
-                .forEach((square, ind) => {
+                [...document.getElementsByClassName('game-square')]
+                .forEach((square) => {
                     const id = square.id
-                    const idNum = parseInt(id[2])    
+                    const idNum = parseInt(id.slice(2))    
 
                     if (!!userGrid[idNum]) {
                         square
                         .setAttribute('class', 'game-square valid')
-                        .setAttribute('disabled', 'true')
+                        .setAttribute('disabled', true)
                     } else if (chosenElements.includes(idNum)) {
                         square
                         .setAttribute('class', 'game-square selected')
-                        .setAttribute('disabled', 'true')
+                        .setAttribute('disabled', true)
                     } else {
                         square
                         .setAttribute('class', 'game-square')
-                        .setAttribute('disabled', 'false')
+                        .setAttribute('disabled', false)
                     }
                 })
             }
