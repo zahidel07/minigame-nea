@@ -8,21 +8,13 @@
             /* **
             * M I N E S W E E P E R
             * Objectives
-            * 1. add a recursive function that starts from some square and can find every single 
-            * other adjacent square that does NOT contain a mine
-            * 2.i. set the code such that mines are harder to capture, for example allowing some
-            * percentage of the mines (50-80%) to be within the outer 2 rows/columns 
-            * 2.ii. distribute the mines so that they are around the entire board in conjunction with
-            * (i) to further increase the difficulty of the game
-            * 3. add flags to the game so that users can flag a square. a button should be added in order
-            * to toggle between flag mode and non flag mode, and the max number of flags is the same as the number of mines.
-            * the user can select ANY square to flag or unflag, however when reverting back to game mode they CANNOT select 
-            * a square that has a flag on it, they must first remove it. this can improve game technique.
-            * 4. add the flexbility for the user to select any size grid they want, however it must be minimum dimensions 4x4 
-            * and maximum dimensions 12x12.
-            * 5. convert the gridding system to 2x2 to make further compatible the code with the flexilibility mentioned in (4)
-            * 6. potentially fix the styling so that squares with a certain text do not cause unnecessary obstructions based on
-            * whether they contain text elements inside of them or not.
+            * 1. recursive function to clear board quicker
+            * 2. [SOLVED] make game harder
+            * 3. [CURRENT] add flags feature
+            * 4. convert to 2D array
+            * 5. allow user to set grid size
+            * 6. fix styling
+            * 7. [SOLVED] find winner 
             */
             let grid = Array(64)
             let randomNum = 0
@@ -54,14 +46,15 @@
                         return
                     } else {
                         userSelectedSquares.push(square)
-                        document.getElementById(`sq${square}`).setAttribute('class', 'game-square selected')
-                        document.getElementById(`sq${square}`).setAttribute('disabled', 'true')
+                        const sqElem = document.getElementById(`sq${square}`)
+                        sqElem.setAttribute('class', 'game-square selected')
+                        sqElem.setAttribute('disabled', 'true')
                         const surroundingSquares = adjacentSquares(square)
                         const surroundingSquaresWithMines = filterAdjacentSquares(surroundingSquares)
                         const numOfMines = surroundingSquares.length - surroundingSquaresWithMines.length
                         if (numOfMines > 0) {
-                            document.getElementById(`sq${square}`).innerText = numOfMines
-                            document.getElementById(`sq${square}`).style.color = [
+                            sqElem.innerText = numOfMines
+                            sqElem.style.color = [
                                 "blue", "green", "orange", "yellow", "red", "black"
                             ][numOfMines > 6 ? 6 : numOfMines - 1]
                         }
@@ -115,6 +108,43 @@
 
             function filterAdjacentSquares(squaresArray) {
                 return squaresArray.filter(square => !mines.includes(square))
+            }
+
+            function checkWinner() {
+                if (mines.length + userSelectedSquares.length === 64) {
+                    [...document.getElementsByClassName('game-square')]
+                    .forEach((elem, ind) => {
+                        elem.setAttribute('disabled', 'true')
+                        if (mines.includes(ind)) {
+                            elem.setAttribute('class', 'game-square mine')
+                            elem.innerText = 'X'
+                        }
+                        else elem.setAttribute('class', 'game-square selected')
+                    })
+                    document.getElementById('current').innerText = 'Congratulations! You won the game without clicking a single mine.'
+                }
+            }
+
+            function resetGridStyle() {
+                grid.forEach((sq) => {
+                    const sqElem = document.getElementById(`sq${sq}`)
+                    if (userSelectedSquares.includes(sq)) {
+                        sqElem.setAttribute('class', 'game-square selected')
+                        sqElem.setAttribute('disabled', 'true')
+                        const surroundingSquares = adjacentSquares(square)
+                        const surroundingSquaresWithMines = filterAdjacentSquares(surroundingSquares)
+                        const numOfMines = surroundingSquares.length - surroundingSquaresWithMines.length
+                        if (numOfMines > 0) {
+                            sqElem.innerText = numOfMines
+                            sqElem.style.color = [
+                                "blue", "green", "orange", "yellow", "red", "black"
+                            ][numOfMines > 6 ? 6 : numOfMines - 1]
+                        }
+                    } else {
+                        if (flags.includes(sq)) sq.setAttribute('class', 'game-square flagged')
+                        else sqElem.setAttribute('class', 'game-square')
+                    }
+                })
             }
         </script>
     </head>

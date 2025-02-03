@@ -17,7 +17,7 @@ div.row > button.game-square {
     margin: 0px;   
 }
 
-button {
+button[class="game-square"] {
     height: 25px;
     width: 25px;
     font-size: smaller;
