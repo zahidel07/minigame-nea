@@ -2,14 +2,240 @@
     <head>
         <meta charset="utf-8">
         <title>Minesweeper</title>
-        <link href="/minigame-nea/main.css" rel="stylesheet" />
+        <link href="../../main.css" rel="stylesheet" />
+        <link href="minesweeper.css" rel="stylesheet" />
+        <script>
+            /* **
+            * M I N E S W E E P E R
+            * Objectives
+            * 1. recursive function to clear board quicker
+            * 2. [SOLVED] make game harder
+            * 3. [CURRENT] add flags feature
+            * 4. convert to 2D array
+            * 5. allow user to set grid size
+            * 6. fix styling
+            * 7. [SOLVED] find winner 
+            */
+            let grid = Array(64)
+            let randomNum = 0
+            while (randomNum < 10 || randomNum > 15) {
+                randomNum = Math.floor(Math.random() * 64)
+            }
+            let mines = Array(randomNum)
+            for (let n = 0; n < mines.length; n++) {
+                while (mines.includes(randomNum)) {
+                    randomNum = Math.floor(Math.random() * 64)
+                }
+                mines[n] = randomNum
+            }
+            let userSelectedSquares = []
+
+            function updateSquare(square) {
+                if (!userSelectedSquares.includes(square)) {
+                    if (mines.includes(square)) {
+                        [...document.getElementsByClassName('game-square')]
+                        .forEach((elem, ind) => {
+                            elem.setAttribute('disabled', 'true')
+                            if (mines.includes(ind)) {
+                                elem.setAttribute('class', 'game-square mine')
+                                elem.innerText = 'X'
+                            }
+                            else elem.setAttribute('class', 'game-square selected')
+                        })
+                        document.getElementById('current').innerText = 'Game over! You lost.'
+                        return
+                    } else {
+                        userSelectedSquares.push(square)
+                        const sqElem = document.getElementById(`sq${square}`)
+                        sqElem.setAttribute('class', 'game-square selected')
+                        sqElem.setAttribute('disabled', 'true')
+                        const surroundingSquares = adjacentSquares(square)
+                        const surroundingSquaresWithMines = filterAdjacentSquares(surroundingSquares)
+                        const numOfMines = surroundingSquares.length - surroundingSquaresWithMines.length
+                        if (numOfMines > 0) {
+                            sqElem.innerText = numOfMines
+                            sqElem.style.color = [
+                                "blue", "green", "orange", "yellow", "red", "black"
+                            ][numOfMines > 6 ? 6 : numOfMines - 1]
+                        }
+                    }
+                }
+            }
+
+            function adjacentSquares(square) {
+                let adjSquares = []
+                const rowNum = Math.floor(square / 8)
+                const colNum = square % 8
+
+                switch (rowNum) {
+                    case 0:
+                        if (colNum === 0) adjSquares = [1, 8, 9]
+                        else if (colNum === 7) adjSquares = [6, 15, 14]
+                        else adjSquares = [
+                            rowNum * 8 + colNum - 1, rowNum * 8 + colNum + 1,
+                            (rowNum + 1) * 8 + colNum, (rowNum + 1) * 8 + colNum - 1, (rowNum + 1) * 8 + colNum + 1
+                        ]
+                        break
+                    case 7:
+                        if (colNum === 0) adjSquares = [57, 48, 49]
+                        else if (colNum === 7) adjSquares = [62, 55, 54]
+                        else adjSquares = [
+                            rowNum * 8 + colNum - 1, rowNum * 8 + colNum + 1, 
+                            (rowNum - 1) * 8 + colNum, (rowNum - 1) * 8 + colNum - 1, (rowNum - 1) * 8 + colNum + 1
+                        ]
+                        break
+                    default:
+                        if (colNum === 0) adjSquares = [
+                            rowNum * 8 + colNum + 1,
+                            (rowNum - 1) * 8 + colNum, (rowNum - 1) * 8 + colNum + 1,
+                            (rowNum + 1) * 8 + colNum, (rowNum + 1) * 8 + colNum + 1
+                        ]
+                        else if (colNum === 7) adjSquares = [
+                            rowNum * 8 + colNum - 1,
+                            (rowNum - 1) * 8 + colNum, (rowNum - 1) * 8 + colNum - 1,
+                            (rowNum + 1) * 8 + colNum, (rowNum + 1) * 8 + colNum - 1
+                        ]
+                        else adjSquares = [
+                            rowNum * 8 + colNum + 1, rowNum * 8 + colNum - 1,
+                            (rowNum - 1) * 8 + colNum - 1, (rowNum - 1) * 8 + colNum, (rowNum - 1) * 8 + colNum + 1,
+                            (rowNum + 1) * 8 + colNum - 1, (rowNum + 1) * 8 + colNum, (rowNum + 1) * 8 + colNum + 1,
+                        ]
+                        break
+                }
+
+                return adjSquares
+            }
+
+            function filterAdjacentSquares(squaresArray) {
+                return squaresArray.filter(square => !mines.includes(square))
+            }
+
+            function checkWinner() {
+                if (mines.length + userSelectedSquares.length === 64) {
+                    [...document.getElementsByClassName('game-square')]
+                    .forEach((elem, ind) => {
+                        elem.setAttribute('disabled', 'true')
+                        if (mines.includes(ind)) {
+                            elem.setAttribute('class', 'game-square mine')
+                            elem.innerText = 'X'
+                        }
+                        else elem.setAttribute('class', 'game-square selected')
+                    })
+                    document.getElementById('current').innerText = 'Congratulations! You won the game without clicking a single mine.'
+                }
+            }
+
+            function resetGridStyle() {
+                grid.forEach((sq) => {
+                    const sqElem = document.getElementById(`sq${sq}`)
+                    if (userSelectedSquares.includes(sq)) {
+                        sqElem.setAttribute('class', 'game-square selected')
+                        sqElem.setAttribute('disabled', 'true')
+                        const surroundingSquares = adjacentSquares(square)
+                        const surroundingSquaresWithMines = filterAdjacentSquares(surroundingSquares)
+                        const numOfMines = surroundingSquares.length - surroundingSquaresWithMines.length
+                        if (numOfMines > 0) {
+                            sqElem.innerText = numOfMines
+                            sqElem.style.color = [
+                                "blue", "green", "orange", "yellow", "red", "black"
+                            ][numOfMines > 6 ? 6 : numOfMines - 1]
+                        }
+                    } else {
+                        if (flags.includes(sq)) sq.setAttribute('class', 'game-square flagged')
+                        else sqElem.setAttribute('class', 'game-square')
+                    }
+                })
+            }
+        </script>
     </head>
     <body>
         <div class="header">
             <h1>Minesweeper</h1>
-            <a href="/minigame-nea/homepage.html">Return to Home</a>
+            <a href="../../homepage.html">Return to Home</a>
         </div>
         <hr>
-        
+        <p id="current">Select a square</p>
+        <div class="gamebox">
+            <div class="row">
+                <button class="game-square" id="sq0" onclick="updateSquare(0)">-</button>
+                <button class="game-square" id="sq1" onclick="updateSquare(1)">-</button>
+                <button class="game-square" id="sq2" onclick="updateSquare(2)">-</button>
+                <button class="game-square" id="sq3" onclick="updateSquare(3)">-</button>
+                <button class="game-square" id="sq4" onclick="updateSquare(4)">-</button>
+                <button class="game-square" id="sq5" onclick="updateSquare(5)">-</button>
+                <button class="game-square" id="sq6" onclick="updateSquare(6)">-</button>
+                <button class="game-square" id="sq7" onclick="updateSquare(7)">-</button>
+            </div> 
+            <div class="row">
+                <button class="game-square" id="sq8" onclick="updateSquare(8)">-</button>
+                <button class="game-square" id="sq9" onclick="updateSquare(9)">-</button>
+                <button class="game-square" id="sq10" onclick="updateSquare(10)">-</button>
+                <button class="game-square" id="sq11" onclick="updateSquare(11)">-</button>
+                <button class="game-square" id="sq12" onclick="updateSquare(12)">-</button>
+                <button class="game-square" id="sq13" onclick="updateSquare(13)">-</button>
+                <button class="game-square" id="sq14" onclick="updateSquare(14)">-</button>
+                <button class="game-square" id="sq15" onclick="updateSquare(15)">-</button>
+            </div> 
+            <div class="row">
+                <button class="game-square" id="sq16" onclick="updateSquare(16)">-</button>
+                <button class="game-square" id="sq17" onclick="updateSquare(17)">-</button>
+                <button class="game-square" id="sq18" onclick="updateSquare(18)">-</button>
+                <button class="game-square" id="sq19" onclick="updateSquare(19)">-</button>
+                <button class="game-square" id="sq20" onclick="updateSquare(20)">-</button>
+                <button class="game-square" id="sq21" onclick="updateSquare(21)">-</button>
+                <button class="game-square" id="sq22" onclick="updateSquare(22)">-</button>
+                <button class="game-square" id="sq23" onclick="updateSquare(23)">-</button>
+            </div> 
+            <div class="row">
+                <button class="game-square" id="sq24" onclick="updateSquare(24)">-</button>
+                <button class="game-square" id="sq25" onclick="updateSquare(25)">-</button>
+                <button class="game-square" id="sq26" onclick="updateSquare(26)">-</button>
+                <button class="game-square" id="sq27" onclick="updateSquare(27)">-</button>
+                <button class="game-square" id="sq28" onclick="updateSquare(28)">-</button>
+                <button class="game-square" id="sq29" onclick="updateSquare(29)">-</button>
+                <button class="game-square" id="sq30" onclick="updateSquare(30)">-</button>
+                <button class="game-square" id="sq31" onclick="updateSquare(31)">-</button>
+            </div>
+            <div class="row">
+                <button class="game-square" id="sq32" onclick="updateSquare(32)">-</button>
+                <button class="game-square" id="sq33" onclick="updateSquare(33)">-</button>
+                <button class="game-square" id="sq34" onclick="updateSquare(34)">-</button>
+                <button class="game-square" id="sq35" onclick="updateSquare(35)">-</button>
+                <button class="game-square" id="sq36" onclick="updateSquare(36)">-</button>
+                <button class="game-square" id="sq37" onclick="updateSquare(37)">-</button>
+                <button class="game-square" id="sq38" onclick="updateSquare(38)">-</button>
+                <button class="game-square" id="sq39" onclick="updateSquare(39)">-</button>
+            </div>
+            <div class="row">
+                <button class="game-square" id="sq40" onclick="updateSquare(40)">-</button>
+                <button class="game-square" id="sq41" onclick="updateSquare(41)">-</button>
+                <button class="game-square" id="sq42" onclick="updateSquare(42)">-</button>
+                <button class="game-square" id="sq43" onclick="updateSquare(43)">-</button>
+                <button class="game-square" id="sq44" onclick="updateSquare(44)">-</button>
+                <button class="game-square" id="sq45" onclick="updateSquare(45)">-</button>
+                <button class="game-square" id="sq46" onclick="updateSquare(46)">-</button>
+                <button class="game-square" id="sq47" onclick="updateSquare(47)">-</button>
+            </div>
+            <div class="row">
+                <button class="game-square" id="sq48" onclick="updateSquare(48)">-</button>
+                <button class="game-square" id="sq49" onclick="updateSquare(49)">-</button>
+                <button class="game-square" id="sq50" onclick="updateSquare(50)">-</button>
+                <button class="game-square" id="sq51" onclick="updateSquare(51)">-</button>
+                <button class="game-square" id="sq52" onclick="updateSquare(52)">-</button>
+                <button class="game-square" id="sq53" onclick="updateSquare(53)">-</button>
+                <button class="game-square" id="sq54" onclick="updateSquare(54)">-</button>
+                <button class="game-square" id="sq55" onclick="updateSquare(55)">-</button>
+            </div>
+            <div class="row">
+                <button class="game-square" id="sq56" onclick="updateSquare(56)">-</button>
+                <button class="game-square" id="sq57" onclick="updateSquare(57)">-</button>
+                <button class="game-square" id="sq58" onclick="updateSquare(58)">-</button>
+                <button class="game-square" id="sq59" onclick="updateSquare(59)">-</button>
+                <button class="game-square" id="sq60" onclick="updateSquare(60)">-</button>
+                <button class="game-square" id="sq61" onclick="updateSquare(61)">-</button>
+                <button class="game-square" id="sq62" onclick="updateSquare(62)">-</button>
+                <button class="game-square" id="sq63" onclick="updateSquare(63)">-</button>
+            </div>
+        </div>
     </body>
 </html>

@@ -1,0 +1,39 @@
+div[class="game-square"] {
+    border: 1px solid black;
+    margin: 0px;
+    padding: 1px
+}
+
+div#gamebox {
+    display: list-item
+}
+
+div.row {
+    display: block;
+    padding: 5px
+}
+
+div.row > button.game-square {
+    margin: 0px;   
+}
+
+button[class="game-square"] {
+    height: 25px;
+    width: 25px;
+    font-size: smaller;
+    color: #00ff00;
+    background-color: #00ff00;
+    border: 1px solid black;
+    padding: 0%;
+    text-align: centre
+}
+
+button[class="game-square selected"] {
+    background-color: white;
+    color: white
+}
+
+button[class="game-square mine"] {
+    background-color: red;
+    color: white
+}

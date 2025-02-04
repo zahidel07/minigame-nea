@@ -6,15 +6,6 @@
         <link href="main.css" rel="stylesheet" />
         <link href="sign-up.css" rel="stylesheet" />
         <script>
-            function validate() {
-                const passwordElement = document.getElementById("password")
-                const passwordRetypeElement = document.getElementById("retype-password")
-
-                if (passwordElement.value != passwordRetypeElement.value) {
-                    alert("Your passwords inputted must be the same")
-                    return
-                }
-            }
         </script>
     </head>
     <body>
@@ -23,7 +14,7 @@
             <a href="homepage.html">Return to Home</a>
         </div>
         <hr>
-        <form action="details.php" method="post">
+        <form method="post">
             <legend>Sign Up</legend>
             <label for="username">Username
                 <input name="username" id="username" type="text" pattern="^[a-z0-9\._]{3,20}$" placeholder = "Enter a username (3-20 characters)" required />
@@ -46,7 +37,7 @@
                 <p class="retype-password">Passwords must match</p>
             </label>
             <br>
-            <button type="submit" onclick="validate()">Create Account</button>
+            <button type="submit" onclick="['username', 'password', 'nickname', 'retype-password'].forEach((elem) => alert(document.getElementById(elem)?.value))">Create Account</button>
         </form>
         <br />
         <a href="sign-in.html">Sign In</a>

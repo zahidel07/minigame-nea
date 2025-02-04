@@ -2,14 +2,154 @@
     <head>
         <meta charset="utf-8">
         <title>Memory Game • Singleplayer</title>
-        <link href="/minigame-nea/main.css" rel="stylesheet" />
+        <link href="../../main.css" rel="stylesheet" />
+        <link href="memorygame.css" rel="stylesheet" />
+        <script>
+            let presetGrid = Array(20).fill(null)
+
+            let userGrid = Array(20).fill(null)
+
+            let chosenElements = [-1, -1]
+
+            for (let ind = 1; ind <= presetGrid.length + 1; ind++) {
+                let randomPos = Math.floor(Math.random() * 20)
+                while (!!presetGrid[randomPos]) {
+                    randomPos = Math.floor(Math.random() * 20)
+                }
+                presetGrid[randomPos] = Math.floor(ind / 2)
+            }
+
+            function updateSquare(square) {
+                if (chosenElements.includes(square)) {
+                    const textElement = document.getElementById('current')
+                    const previousText = textElement.innerText
+                    textElement.innerText = 'You cannot choose the same square twice!';
+                    [...document.getElementsByClassName('game-square')]
+                    .map((sq, ind) => {
+                            !!userGrid[ind] 
+                            ? sq.setAttribute('class', 'game-square valid') 
+                            : (ind === square ? sq.setAttribute('class', 'game-square invalid') : sq.setAttribute('class', 'game-square locked'))
+                    })
+                    setTimeout(() => {
+                        textElement.innerText = previousText
+                        resetGridStyling()
+                    }, 1500)
+                }
+                else checkChosen(square)
+            }
+
+            function checkChosen(userSelected) {
+                if (chosenElements.includes(-1)) {
+                    chosenElements[chosenElements.indexOf(-1)] = userSelected
+                    document.getElementById(`sq${userSelected}`).innerText = presetGrid[userSelected]
+                    document.getElementById(`sq${userSelected}`).setAttribute('class', 'game-square selected')
+                    if (!chosenElements.includes(-1)) {
+                        equalSquares()
+                    } else {
+                        document.getElementById('current').innerText = "Choose 1 more square"
+                    }
+                }
+            }
+
+            function equalSquares() {
+                const textElement = document.getElementById('current')
+
+                if (presetGrid[chosenElements[0]] == presetGrid[chosenElements[1]]) {
+                    textElement.innerText = "Matched!"
+                    chosenElements.forEach((elem) => {
+                        document.getElementById(`sq${elem}`).disabled = true
+                        document.getElementById(`sq${elem}`).setAttribute('class', 'game-square valid')
+                        userGrid[elem] = presetGrid[elem]
+                    })
+                    setTimeout(() => checkWinner(), 1500)
+                } else {
+                    textElement.innerText = "Didn't match..."
+                    chosenElements.forEach((elem) => {
+                        document.getElementById(`sq${elem}`).setAttribute('class', 'game-square invalid')
+                        document.getElementById(`sq${elem}`).disabled = true
+                    })
+                    setTimeout(() => {
+                        chosenElements.forEach((elem) => {
+                            document.getElementById(`sq${elem}`).disabled = false
+                            document.getElementById(`sq${elem}`).setAttribute('class', 'game-square')
+                            document.getElementById(`sq${elem}`).innerText = '-'
+                        })
+                        chosenElements = [-1, -1]
+                        textElement.innerText = "Choose 2 squares"
+                    }, 1500)
+                }
+            }
+
+            function resetGridStyling() {
+                [...document.getElementsByClassName('game-square')]
+                .forEach((square) => {
+                    const id = square.id
+                    const idNum = parseInt(id.slice(2))    
+
+                    if (!!userGrid[idNum]) {
+                        square
+                        .setAttribute('class', 'game-square valid')
+                        .setAttribute('disabled', true)
+                    } else if (chosenElements.includes(idNum)) {
+                        square
+                        .setAttribute('class', 'game-square selected')
+                        .setAttribute('disabled', true)
+                    } else {
+                        square
+                        .setAttribute('class', 'game-square')
+                        .setAttribute('disabled', false)
+                    }
+                })
+            }
+
+            function checkWinner() {
+                const textElement = document.getElementById('current')
+
+                if (!userGrid.includes(null)) {
+                    textElement.innerText = 'Game over'
+                } else {
+                    chosenElements = [-1, -1]
+                    textElement.innerText = "Choose 2 squares"
+                }
+            }
+        </script>
     </head>
     <body>
         <div class="header">
             <h1>Memory Game</h1>
-            <a href="/minigame-nea/homepage.html">Return to Home</a>
+            <a href="../../homepage.html">Return to Home</a>
         </div>
         <hr>
-        
+        <div id="gamebox">
+            <p id="current">Choose 2 squares</p>
+            <div class="row">
+                <button class="game-square" id="sq0" onclick="updateSquare(0)">-</button>
+                <button class="game-square" id="sq1" onclick="updateSquare(1)">-</button>
+                <button class="game-square" id="sq2" onclick="updateSquare(2)">-</button>
+                <button class="game-square" id="sq3" onclick="updateSquare(3)">-</button>
+                <button class="game-square" id="sq4" onclick="updateSquare(4)">-</button>
+            </div> 
+            <div class="row">
+                <button class="game-square" id="sq5" onclick="updateSquare(5)">-</button>
+                <button class="game-square" id="sq6" onclick="updateSquare(6)">-</button>
+                <button class="game-square" id="sq7" onclick="updateSquare(7)">-</button>
+                <button class="game-square" id="sq8" onclick="updateSquare(8)">-</button>
+                <button class="game-square" id="sq9" onclick="updateSquare(9)">-</button>
+            </div> 
+            <div class="row">
+                <button class="game-square" id="sq10" onclick="updateSquare(10)">-</button>
+                <button class="game-square" id="sq11" onclick="updateSquare(11)">-</button>
+                <button class="game-square" id="sq12" onclick="updateSquare(12)">-</button>
+                <button class="game-square" id="sq13" onclick="updateSquare(13)">-</button>
+                <button class="game-square" id="sq14" onclick="updateSquare(14)">-</button>
+            </div> 
+            <div class="row">
+                <button class="game-square" id="sq15" onclick="updateSquare(15)">-</button>
+                <button class="game-square" id="sq16" onclick="updateSquare(16)">-</button>
+                <button class="game-square" id="sq17" onclick="updateSquare(17)">-</button>
+                <button class="game-square" id="sq18" onclick="updateSquare(18)">-</button>
+                <button class="game-square" id="sq19" onclick="updateSquare(19)">-</button>
+            </div>
+        </div>
     </body>
 </html>
