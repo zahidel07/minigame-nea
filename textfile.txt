@@ -14,7 +14,7 @@ Tasks to be completed:
 [X] 3. Add functionality
 [X] 4. Set up databases
 [ ] 5. Program to check against databases
-[ ] 6. Program each game separately repeating steps 1-3
+[X] 6. Program each game separately repeating steps 1-3
 [ ] 7. Iterative Testing
 
 OBJECTIVES FOR TODAY:
@@ -27,7 +27,7 @@ this is useful by looking at the CSS Box Model in Inspect Element
 [] • separate script files
 
 MP Tic-Tac-Toe
-[] • convert to 2D array indexing
+[X] • convert to 2D array indexing
 
 SP memorygame
 [] • convert to 2D array indexing
