@@ -29,7 +29,7 @@
                 for (let i = 0; i < 9; i++) {
                     const button = document.getElementById(`sq${i}`)
                     button.innerText = newGrid[Math.floor(i / 3)][i % 3] || '-'
-                    if (button.innerText != "-") button.setAttribute("disabled", "true")
+                    if (button.innerText !== "-") button.setAttribute("disabled", "true")
                     else button.removeAttribute('disabled')
                 }
 
