@@ -37,3 +37,31 @@ button.mine {
     background-color: red;
     color: white
 }
+
+button.flagged {
+    background-color: #00ff00;
+    color: white;
+}
+
+button#toggle-flag {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid black
+}
+
+button#toggle-flag:disabled {
+    background-color: grey;
+    color: black
+}
+
+button.flag-off {
+    background-color: red;
+    color: white;
+}
+
+button.flag-on {
+    background-color: #0f0;
+    color: white
+}

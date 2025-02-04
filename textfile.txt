@@ -18,17 +18,6 @@ Tasks to be completed:
 [ ] 7. Iterative Testing
 
 OBJECTIVES FOR TODAY:
-SP Minesweeper
-[] • fix styling so buttons are next to one another
-this is useful by looking at the CSS Box Model in Inspect Element
-[] • convert to 2D array indexing
-[] • add flags feature 
-[] • allow flexibility for user to choose between Easy, Medium, Hard, and their own mode
-[] • separate script files
-
-MP Tic-Tac-Toe
-[X] • convert to 2D array indexing
-
 SP memorygame
 [] • convert to 2D array indexing
 [] • allow flexibility for user to select their own difficulty and/or grid size
