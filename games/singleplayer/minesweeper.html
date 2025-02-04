@@ -26,7 +26,7 @@
                 while (mines.includes(randomNum)) {
                     randomNum = Math.floor(Math.random() * 64)
                 }
-                mines[n] = randomNum
+                mines[Math.floor(randomNum / 8)] = mines[Math.floor(randomNum / 8)].map((elem, ind) => randomNum % 8 === ind ? randomNum : elem)
             }
             let userSelectedSquares = []
 
