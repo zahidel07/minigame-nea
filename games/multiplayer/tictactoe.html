@@ -18,7 +18,7 @@
                 [2, 4, 6]
             ]
 
-            let grid = Array(9).fill(null)
+            let grid = Array(3).fill(Array(3))
 
             function updateSquare(square) {
                 grid[square] = current
@@ -28,13 +28,17 @@
             function updateGrid(newGrid) {
                 for (let i = 0; i < 9; i++) {
                     const button = document.getElementById(`sq${i}`)
-                    button.innerText = newGrid[i] || '-'
+                    button.innerText = newGrid[Math.floor(i / 3)][i % 3] || '-'
                     if (button.innerText != "-") button.setAttribute("disabled", "true")
                 }
 
-                if (!winner()) {
-                    if (current === "X") current = "O"
-                    else current = "X"
+                const isThereWinner = winner()
+
+                if (isThereWinner) {
+                    [...document.getElementsByClassName("game-square")].forEach((elem) => elem.setAttribute('disabled', ''))
+                    document.getElementById('current').innerText = `The winner is: ${current}`
+                } else {
+                    current = (current === "X" ? "O" : "X")
                     const currentPlayer = document.getElementById("current")
                     currentPlayer.innerText = `Next player: ${current}`
                 }
@@ -42,15 +46,12 @@
 
             function winner() {
                 for (let n = 0; n < winningCombos.length; n++) {
-                    const isConsecutive = winningCombos[n]
-                    .map((index) => grid[index])
-                    .every((val, _ind, arr) => arr[0] && val === arr[0])
+                    const isConsecutive = winningCombos.some((combo) => {
+                        let mapping = combo.map((ind) => grid[Math.floor(ind / 3)][ind % 3])
+                        return mapping.every((val, _, arr) => arr[0] && val === arr[0])
+                    })
 
-                    if (isConsecutive) {
-                        [...document.getElementsByClassName("game-square")].forEach((elem) => elem.setAttribute('disabled', ''))
-                        document.getElementById('current').innerText = `The winner is: ${current}`
-                        return true
-                    } 
+                    return isConsecutive
                 }
 
                 if (grid.every((val) => val)) {
