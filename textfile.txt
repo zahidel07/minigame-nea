@@ -34,7 +34,7 @@ SP memorygame
 [] • allow flexibility for user to select their own difficulty and/or grid size
 
 SP 2048
-• start on project
+• start on game
 
 general
 [] • fix database (somehow)
