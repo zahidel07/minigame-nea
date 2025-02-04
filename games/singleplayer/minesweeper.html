@@ -28,15 +28,18 @@
                 }
                 mines[Math.floor(randomNum / 8)] = mines[Math.floor(randomNum / 8)].map((elem, ind) => randomNum % 8 === ind ? randomNum : elem)
             }
-            let userSelectedSquares = []
+            let userSquares = []
 
             function updateSquare(square) {
-                if (!userSelectedSquares.includes(square)) {
-                    if (mines.includes(square)) {
+                const row = Math.floor(square / 8)
+                const col = square % 8
+
+                if (!arrayInArray([row, col], userSquares)) {
+                    if (arrayInArray([row, col], mines)) {
                         [...document.getElementsByClassName('game-square')]
                         .forEach((elem, ind) => {
                             elem.setAttribute('disabled', 'true')
-                            if (mines.includes(ind)) {
+                            if (arrayInArray([row, col], mines)) {
                                 elem.setAttribute('class', 'game-square mine')
                                 elem.innerText = 'X'
                             }
@@ -45,13 +48,13 @@
                         document.getElementById('current').innerText = 'Game over! You lost.'
                         return
                     } else {
-                        userSelectedSquares.push(square)
+                        userSquares.push([row, col])
                         const sqElem = document.getElementById(`sq${square}`)
                         sqElem.setAttribute('class', 'game-square selected')
                         sqElem.setAttribute('disabled', 'true')
-                        const surroundingSquares = adjacentSquares(square)
-                        const surroundingSquaresWithMines = filterAdjacentSquares(surroundingSquares)
-                        const numOfMines = surroundingSquares.length - surroundingSquaresWithMines.length
+                        const nearbySquares = adjacentSquares([row, col])
+                        const nearbyMines = filterAdjacentSquares([row, col])
+                        const numOfMines = nearbySquares.length - nearbyMines.length
                         if (numOfMines > 0) {
                             sqElem.innerText = numOfMines
                             sqElem.style.color = [
@@ -64,42 +67,24 @@
 
             function adjacentSquares(square) {
                 let adjSquares = []
-                const rowNum = Math.floor(square / 8)
-                const colNum = square % 8
+                const rowNum = square[0]
+                const colNum = square[1]
 
                 switch (rowNum) {
                     case 0:
-                        if (colNum === 0) adjSquares = [1, 8, 9]
-                        else if (colNum === 7) adjSquares = [6, 15, 14]
-                        else adjSquares = [
-                            rowNum * 8 + colNum - 1, rowNum * 8 + colNum + 1,
-                            (rowNum + 1) * 8 + colNum, (rowNum + 1) * 8 + colNum - 1, (rowNum + 1) * 8 + colNum + 1
-                        ]
+                        if (colNum === 0) adjSquares = [[0, 1], [1, 0], [1, 1]]
+                        else if (colNum === 7) adjSquares = [[0, 6], [1, 6], [1, 7]]
+                        else adjSquares = [[rowNum, colNum - 1], [rowNum, colNum + 1], [rowNum + 1, colNum - 1], [rowNum + 1, colNum], [rowNum + 1, colNum + 1]]
                         break
                     case 7:
-                        if (colNum === 0) adjSquares = [57, 48, 49]
-                        else if (colNum === 7) adjSquares = [62, 55, 54]
-                        else adjSquares = [
-                            rowNum * 8 + colNum - 1, rowNum * 8 + colNum + 1, 
-                            (rowNum - 1) * 8 + colNum, (rowNum - 1) * 8 + colNum - 1, (rowNum - 1) * 8 + colNum + 1
-                        ]
+                        if (colNum === 0) adjSquares = [[7, 1], [6, 1], [6, 2]]
+                        else if (colNum === 7) adjSquares = [[7, 6], [6, 6], [6, 7]]
+                        else adjSquares = [[rowNum, colNum - 1], [rowNum, colNum + 1], [rowNum - 1, colNum - 1], [rowNum - 1, colNum], [rowNum - 1, colNum + 1]]
                         break
                     default:
-                        if (colNum === 0) adjSquares = [
-                            rowNum * 8 + colNum + 1,
-                            (rowNum - 1) * 8 + colNum, (rowNum - 1) * 8 + colNum + 1,
-                            (rowNum + 1) * 8 + colNum, (rowNum + 1) * 8 + colNum + 1
-                        ]
-                        else if (colNum === 7) adjSquares = [
-                            rowNum * 8 + colNum - 1,
-                            (rowNum - 1) * 8 + colNum, (rowNum - 1) * 8 + colNum - 1,
-                            (rowNum + 1) * 8 + colNum, (rowNum + 1) * 8 + colNum - 1
-                        ]
-                        else adjSquares = [
-                            rowNum * 8 + colNum + 1, rowNum * 8 + colNum - 1,
-                            (rowNum - 1) * 8 + colNum - 1, (rowNum - 1) * 8 + colNum, (rowNum - 1) * 8 + colNum + 1,
-                            (rowNum + 1) * 8 + colNum - 1, (rowNum + 1) * 8 + colNum, (rowNum + 1) * 8 + colNum + 1,
-                        ]
+                        adjSquares = [[rowNum - 1, colNum], [rowNum + 1, colNum]]
+                        if (colNum !== 0) adjSquares.push([rowNum, colNum - 1], [rowNum - 1, colNum - 1], [rowNum + 1, colNum - 1])
+                        if (colNum !== 7) adjSquares.push([])
                         break
                 }
 
@@ -111,7 +96,7 @@
             }
 
             function checkWinner() {
-                if (mines.length + userSelectedSquares.length === 64) {
+                if (mines.length + userSquares.length === 64) {
                     [...document.getElementsByClassName('game-square')]
                     .forEach((elem, ind) => {
                         elem.setAttribute('disabled', 'true')
@@ -128,7 +113,7 @@
             function resetGridStyle() {
                 grid.forEach((sq) => {
                     const sqElem = document.getElementById(`sq${sq}`)
-                    if (userSelectedSquares.includes(sq)) {
+                    if (userSquares.includes(sq)) {
                         sqElem.setAttribute('class', 'game-square selected')
                         sqElem.setAttribute('disabled', 'true')
                         const surroundingSquares = adjacentSquares(square)
