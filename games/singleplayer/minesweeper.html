@@ -16,9 +16,9 @@
             * 6. fix styling
             * 7. [SOLVED] find winner 
             */
-            let grid = Array(64)
+            let grid = Array(8).fill(Array(8).fill(null))
             let randomNum = 0
-            while (randomNum < 10 || randomNum > 15) {
+            while (randomNum < 12 || randomNum > 20) {
                 randomNum = Math.floor(Math.random() * 64)
             }
             let mines = Array(randomNum)
@@ -145,6 +145,10 @@
                         else sqElem.setAttribute('class', 'game-square')
                     }
                 })
+            }
+
+            function arrayInArray(searchArray, array) {
+                return array.some((mainArr) => mainArr.length === searchArray.length && mainArray.every((elem, ind) => searchArray[ind] === elem))
             }
         </script>
     </head>
