@@ -17,7 +17,7 @@ div.row > button.game-square {
     margin: 0px;   
 }
 
-button[class="game-square"] {
+button.game-square {
     height: 25px;
     width: 25px;
     font-size: smaller;
@@ -28,12 +28,12 @@ button[class="game-square"] {
     text-align: centre
 }
 
-button[class="game-square selected"] {
+button.selected {
     background-color: white;
     color: white
 }
 
-button[class="game-square mine"] {
+button.mine {
     background-color: red;
     color: white
 }
