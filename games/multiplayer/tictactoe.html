@@ -21,7 +21,7 @@
             let grid = Array(3).fill(Array(3))
 
             function updateSquare(square) {
-                grid[square] = current
+                grid[Math.floor(square / 3)][square % 3] = current
                 updateGrid(grid)
             }
 
