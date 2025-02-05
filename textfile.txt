@@ -18,12 +18,15 @@ Tasks to be completed:
 [ ] 7. Iterative Testing
 
 OBJECTIVES FOR TODAY:
+SP 2048
+[] • fix merge left and right problems
+[] • merge up and down features
+[] • detect for winners
+
+LATER;
 SP memorygame
 [] • convert to 2D array indexing
 [] • allow flexibility for user to select their own difficulty and/or grid size
-
-SP 2048
-• start on game
 
 general
 [] • fix database (somehow)
