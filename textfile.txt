@@ -19,9 +19,9 @@ Tasks to be completed:
 
 OBJECTIVES FOR TODAY:
 SP 2048
-[] • fix merge left and right problems
-[] • merge up and down features
-[] • detect for winners
+[X] • fix merge left and right problems
+[X] • merge up and down features
+[] • detect for losers
 
 LATER;
 SP memorygame

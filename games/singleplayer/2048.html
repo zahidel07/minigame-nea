@@ -23,14 +23,18 @@
             }
             
             function addRandom() {
-                let randomRow = Math.floor(Math.random() * 4)
-                let randomCol = Math.floor(Math.random() * 4)
-                while (grid[randomRow][randomCol]) {
-                    randomRow = Math.floor(Math.random() * 4)
-                    randomCol = Math.floor(Math.random() * 4)
+                const isAvailableSpace = checkAvailableGridSpaces()
+                if (!isAvailableSpace) return
+                else {
+                    let randomRow = Math.floor(Math.random() * 4)
+                    let randomCol = Math.floor(Math.random() * 4)
+                    while (grid[randomRow][randomCol]) {
+                        randomRow = Math.floor(Math.random() * 4)
+                        randomCol = Math.floor(Math.random() * 4)
+                    }
+                    grid[randomRow] = grid[randomRow].map((elem, ind) => ind === randomCol ? 2 : elem)
+                    updateGrid()
                 }
-                grid[randomRow] = grid[randomRow].map((elem, ind) => ind === randomCol ? 2 : elem)
-                updateGrid()
             }
 
             function moveGridLeft() {
@@ -44,11 +48,31 @@
             }
 
             function moveGridDown() {
-                // fix for 06/02/2025
+                for (let col = 0; col < 4; col++) {
+                    let columnArr = []
+                    for (let i = 0; i < 4; i++) {
+                        columnArr.push(grid[i][col])
+                    }
+                    columnArr = sortNumsR(columnArr)
+                    for (let i = 0; i < 4; i++) {
+                        grid[i] = grid[i].map((elem, ind) => ind === col ? columnArr[i] : elem)
+                    }
+                }
+                updateGrid()
             }
 
             function moveGridUp() {
-                // fix for 06/02/2025
+                for (let col = 0; col < 4; col++) {
+                    let columnArr = []
+                    for (let i = 0; i < 4; i++) {
+                        columnArr.push(grid[i][col])
+                    }
+                    columnArr = sortNumsL(columnArr)
+                    for (let i = 0; i < 4; i++) {
+                        grid[i] = grid[i].map((elem, ind) => ind === col ? columnArr[i] : elem)
+                    }
+                }
+                updateGrid()
             }
 
             function sortNumsL(array) {
@@ -73,7 +97,7 @@
 
             function mergeNumsL(array) {
                 for (let ind = 1; ind < array.length; ind++) {
-                    if (array[ind] === null || array[ind - 1] === null) return
+                    if (array[ind] === null || array[ind - 1] === null) continue
                     else if (array[ind] === array[ind - 1]) {
                         array[ind - 1] = array[ind] * 2
                         array[ind] = null
@@ -84,7 +108,7 @@
 
             function mergeNumsR(array) {
                 for (let ind = 1; ind < array.length; ind++) {
-                    if (array[ind] === null || array[ind - 1] === null) return
+                    if (array[ind] === null || array[ind - 1] === null) continue
                     else if (array[ind] === array[ind - 1]) {
                         array[ind] = array[ind - 1] * 2
                         array[ind - 1] = null
@@ -96,6 +120,46 @@
             function checkAvailableGridSpaces() {
                 return grid.flat().some(elem => elem === null)
             }
+
+            function adjacentSquares(square) {
+                let adjSquares = []
+                const rowNum = square[0]
+                const colNum = square[1]
+
+                switch (rowNum) {
+                    case 0:
+                        if (colNum === 0) adjSquares = [[0, 1], [1, 0], [1, 1]]
+                        else if (colNum === 3) adjSquares = [[0, 2], [1, 2], [1, 3]]
+                        else adjSquares = [
+                            [rowNum, colNum - 1], [rowNum, colNum + 1], [rowNum + 1, colNum]
+                        ]
+                        break
+                    case 7:
+                        if (colNum === 0) adjSquares = [[3, 1], [2, 1], [2, 2]]
+                        else if (colNum === 3) adjSquares = [[3, 2], [2, 2], [2, 3]]
+                        else adjSquares = [
+                            [rowNum, colNum - 1], [rowNum, colNum + 1], [rowNum - 1, colNum]
+                        ]
+                        break
+                    default:
+                        adjSquares = [[rowNum - 1, colNum], [rowNum + 1, colNum]]
+                        if (colNum !== 0) adjSquares.push([rowNum, colNum - 1])
+                        if (colNum !== 3) adjSquares.push([rowNum, colNum + 1])
+                        break
+                }
+
+                return adjSquares
+            }
+
+            function checkWinner() {
+                if (1 > 3) {
+                    // work on tomorrow
+                } else if (grid.flat().some(num => num >= 2048)) {
+                    document.getElementById('current').innerText = "Congratulations! You made 2048."
+                    document.body.removeEventListener("keydown")
+                    return true
+                } else return false
+            }
         </script>
     </head>
     <body>
@@ -106,25 +170,22 @@
                     case "ArrowLeft":
                     case "KeyA":
                         moveGridLeft()
-                        break
                     case "ArrowRight":
                     case "KeyD":
                         moveGridRight()
-                        break
                     case "ArrowDown":
                     case "KeyS":
                         moveGridDown()
-                        break
                     case "ArrowUp":
                     case "KeyW":
                         moveGridUp()
-                        break
                     default: 
                         addRandom()
                         break
                 }
             })
         </script>
+        <p id="current">Use the arrow keys or WASD to move the numbers. Try to make 2048.</p>
         <div class="header">
             <h1>2048</h1>
             <a href="../../homepage.html">Return to Home</a>
