@@ -19,15 +19,13 @@ Tasks to be completed:
 
 OBJECTIVES FOR TODAY:
 SP 2048
-[X] • fix merge left and right problems
-[X] • merge up and down features
 [] • detect for losers
 
-LATER;
+LATER:
 SP memorygame
 [] • convert to 2D array indexing
 [] • allow flexibility for user to select their own difficulty and/or grid size
 
 general
-[] • fix database (somehow)
+[] • set up database (somehow)
 [] • fix input system, by removing href to homepage and performing action before it

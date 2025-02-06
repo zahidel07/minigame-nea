@@ -47,3 +47,18 @@ form > button[type="submit"] {
     width: fit-content;
     height: fit-content
 }
+
+form > label > p {
+    font-size: small;
+    color: #808080;
+    padding: 0px;
+    margin: 0px
+}
+
+input:is(:focus):is(:valid) + p {
+    color: #00ff00
+}
+
+input:is(:focus):is(:invalid) + p {
+    color: #ff0000
+}

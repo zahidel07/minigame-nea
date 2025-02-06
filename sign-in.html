@@ -6,6 +6,18 @@
         <link href="main.css" rel="stylesheet" />
         <link href="sign-in.css" rel="stylesheet" />
         <script>  
+            function validate() {
+                const username = document.getElementById('username')
+                const password = document.getElementById('password')
+                console.log(username.value, password.value)
+                if (username.value === "abc") {
+                    alert("Your username is abc, now validated")
+                    return true
+                } else {
+                    alert("Your username is not abc, not validated")
+                    return false
+                }
+            }
         </script>
     </head>
     <body>
@@ -14,14 +26,16 @@
             <a href="homepage.html">Return to Home</a>
         </div>
         <hr>
-        <form method="post">
+        <form method="post" action="homepage.html" onsubmit="return validate()">
             <legend>Sign in</legend>
             <label for="username">Username
-                <input id="username" id="username" type="text" pattern="^[a-z0-9\._]{3,20}$" placeholder="Enter your username (3-20 characters)" required />
+                <input name="username" id="username" type="text" pattern="^[a-z0-9\._]{3,20}$" placeholder="Enter your username (3-20 characters)" required />
+                <p class="username">Username can only contain letters a-z, numbers 0-9, dots and underscores</p>
             </label>
             <br>
             <label for="password">Password
-                <input id="password" id="password" type="password" pattern="^[a-zA-Z0-9\s_]{5,20}$" placeholder="Enter your password (5-20 characters)" required />
+                <input name="password" id="password" type="password" pattern="^[a-zA-Z0-9\s_]{5,20}$" placeholder="Enter your password (5-20 characters)" required />
+                <p class="password">Password can only contain letters a-z, A-Z, numbers 0-9, whitespaces and underscores. Passwords cannot start or end in a whitespace</p>
             </label>
             <br />
             <button type="submit">Log In</button>
