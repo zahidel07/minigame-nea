@@ -26,6 +26,11 @@ SP memorygame
 [] • convert to 2D array indexing
 [] • allow flexibility for user to select their own difficulty and/or grid size
 
+MP checkers
+[] • make a start?
+
 general
 [] • set up database (somehow)
 [] • fix input system, by removing href to homepage and performing action before it
+[] • create and connect to MySQL database
+[] • fix validation forms

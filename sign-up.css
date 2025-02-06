@@ -21,11 +21,12 @@ input {
 input:focus:blank {
     border-bottom: 2px solid #0000ff
 }
-input:focus:valid {
+
+input:focus:valid:not(#retype-password), input.valid:focus {
     border-bottom: 2px solid #00ff00
 }
 
-input:focus:invalid {
+input:focus:invalid, input.invalid:focus {
     border-bottom: 2px solid #ff0000
 }
 
@@ -54,10 +55,14 @@ form > label > p {
     margin: 0px
 }
 
-input:is(:focus):is(:valid) + p {
+input:is(:focus):is(:valid):not(#retype-password) + p {
     color: #00ff00
 }
 
-input:is(:focus):is(:invalid) + p {
+input:is(:focus):is(:invalid):not(#retype-password) + p, input.invalid:is(:focus) + p {
     color: #ff0000
+}
+
+input.valid:is(:focus) + p {
+    color: #00ff00
 }

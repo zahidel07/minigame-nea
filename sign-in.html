@@ -7,16 +7,9 @@
         <link href="sign-in.css" rel="stylesheet" />
         <script>  
             function validate() {
-                const username = document.getElementById('username')
-                const password = document.getElementById('password')
-                console.log(username.value, password.value)
-                if (username.value === "abc") {
-                    alert("Your username is abc, now validated")
-                    return true
-                } else {
-                    alert("Your username is not abc, not validated")
-                    return false
-                }
+                // this function will, for now, just return either boolean
+                // when the database is created and connected to, proper validation will be used
+                return false
             }
         </script>
     </head>

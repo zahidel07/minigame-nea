@@ -7,15 +7,24 @@
         <link href="sign-up.css" rel="stylesheet" />
         <script>
             function validate() {
-                const username = document.getElementById('username')
+                const arePasswordsEqual = passwordsEqual()
+    
+                if (!arePasswordsEqual) {
+                    alert('Passwords do not match')
+                    return false
+                } else return true
+            }
+
+            function passwordsEqual() {
                 const password = document.getElementById('password')
                 const retypePassword = document.getElementById('retype-password')
-                if (username.value === "abc") {
-                    alert("Your username is abc, now validated")
-                    return true
-                } else {
-                    alert("Your username is not abc, not validated")
+
+                if (password.value !== retypePassword.value || password.value === '' || retypePassword.value === '') {
+                    retypePassword.setAttribute('class', 'invalid')
                     return false
+                } else {
+                    retypePassword.setAttribute('class', 'valid')
+                    return true
                 }
             }
         </script>
@@ -45,7 +54,7 @@
             </label>
             <br>
             <label for="retype-password">Retype Password
-                <input name="retype-password" id="retype-password" type="password" pattern="^[a-zA-Z0-9\s\._]{5,20}$" placeholder="Retype your password" required />
+                <input name="retype-password" class="invalid" id="retype-password" type="password" pattern="^[a-zA-Z0-9\s\._]{5,20}$" placeholder="Retype your password" oninput="passwordsEqual()" required />
                 <p class="retype-password">Passwords must match</p>
             </label>
             <br>
