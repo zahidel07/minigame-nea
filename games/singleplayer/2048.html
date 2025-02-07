@@ -28,7 +28,7 @@
                 else {
                     let randomRow = Math.floor(Math.random() * 4)
                     let randomCol = Math.floor(Math.random() * 4)
-                    while (grid[randomRow][randomCol]) {
+                    while (!!grid[randomRow][randomCol]) {
                         randomRow = Math.floor(Math.random() * 4)
                         randomCol = Math.floor(Math.random() * 4)
                     }
