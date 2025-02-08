@@ -1,0 +1,48 @@
+div[class="letter-box"] {
+    border: 1px solid black;
+    margin: 0px;
+    padding: 1px
+}
+
+div#gamebox {
+    display: list-item
+}
+
+div.row {
+    display: block;
+    padding: 5px
+}
+
+div.row > button.letter-box {
+    margin: 0px;   
+}
+
+button.letter-box {
+    height: 25px;
+    width: 25px;
+    font-size: small;
+    color: black;
+    background-color: white;
+    border: 1px solid black;
+    padding: 0%;
+    text-align: centre
+}
+
+button.letter-box.green {
+    color: white;
+    background-color: green;
+}
+
+button.letter-box.orange {
+    color: white;
+    background-color: orange;
+}
+
+button.letter-box.grey {
+    color: white;
+    background-color: grey;
+}
+
+p#help {
+    font-size: small
+}

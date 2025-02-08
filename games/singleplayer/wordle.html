@@ -3,13 +3,204 @@
         <meta charset="utf-8">
         <title>Wordle</title>
         <link href="../../main.css" rel="stylesheet" />
+        <link href="wordle.css" rel="stylesheet" />
+        <script>
+            let attemptsLeft = 6
+            let correctWord = "WORLD"
+            let currentWord = ""
+            let lettersGrid = Array(6).fill(Array(5).fill(null))
+            let markersGrid = Array(6).fill(Array(5).fill(-2))
+
+            const keyEventListener = (key) => { 
+                const code = key.code
+                if (code === "Enter") {
+                    enterLetter()
+                } else if (code === "Backspace") {
+                    removeLetter()
+                } else {
+                    if (code.startsWith("Key")) {
+                        const letter = code[3] || null
+                        if (!letter) return
+                        addLetter(letter)
+                    }
+                }
+            }
+
+            function addLetter(letter) {
+                if (currentWord.length >= 5) return
+                else {
+                    currentWord = currentWord + letter
+                    currentWordArr = correctArr(currentWord.split(''))
+                    lettersGrid[6 - attemptsLeft] = currentWordArr
+                    updateGrid()
+                }
+            }
+
+            function removeLetter() {
+                if (currentWord.length === 0) return
+                else {
+                    currentWord = currentWord.slice(0, currentWord.length - 1)
+                    currentWordArr = correctArr(currentWord.split(''))
+                    lettersGrid[6 - attemptsLeft] = currentWordArr
+                    updateGrid()
+                }
+            }
+
+            function enterLetter() {
+                if (currentWord.length === 5) checkWord()
+                else {
+                    const textElem = document.getElementById('current')
+                    textElem.innerText = 'Please enter a 5 letter word!'
+                    document.body.removeEventListener('keydown', keyEventListener)
+                    setTimeout(() => {
+                        textElem.innerText = 'Try to guess the 5-letter word using letters A-Z on your keyboard. Press enter after each word.'
+                        document.body.addEventListener('keydown', keyEventListener)
+                    }, 1000)
+                }
+            }
+
+            function checkWord() {
+                const comparison = compareWords(currentWord, correctWord)
+                if (comparison.every(elem => elem === -2)) return
+                else {
+                    markersGrid[6 - attemptsLeft] = comparison
+                    updateGrid()
+                    if (comparison.every(elem => elem === 1)) {
+                        document.getElementById('current').innerText = 'Congraulations! You guessed the word correctly.'
+                    } else {
+                        attemptsLeft -= 1
+                        currentWord = ""
+                        if (attemptsLeft === 0) {
+                            document.body.removeEventListener('keydown')
+                            document.getElementById('current').innerText = 'Game over! You didn\'t guess the word correctly.'
+                        }
+                    }
+                }
+            }
+
+            function updateGrid() {
+                lettersGrid.forEach((row, rowInd) => {
+                    row.forEach((col, colInd) => {
+                        const sq = document.getElementById(`lb${rowInd * 5 + colInd}`)
+                        const sqStyle = markersGrid[rowInd][colInd]
+                        if (!!col) sq.innerText = lettersGrid[rowInd][colInd]
+                        else sq.innerText = ''
+                        switch (sqStyle) {
+                            case -2:
+                                sq.setAttribute('class', 'letter-box')
+                                break
+                            case -1:
+                                sq.setAttribute('class', 'letter-box grey')
+                                break
+                            case 0:
+                                sq.setAttribute('class', 'letter-box orange')
+                                break
+                            case 1:
+                                sq.setAttribute('class', 'letter-box green')
+                                break
+                            default:
+                                sq.setAttribute('class', 'letter-box')
+                                break
+                        }
+                    })
+                })
+            }
+
+            function correctArr(arr) {
+                while (arr.length < 5) {
+                    arr.push(null)
+                }
+                return arr
+            }
+
+            function compareWords(testWord, correctWord) {
+                if (testWord.length !== correctWord.length) return Array(testWord.length).fill(-2)
+                let finalArray = Array(testWord.length).fill(-2)
+                let testWordArr = testWord.split('')
+                let correctWordArr = correctWord.split('')
+                for (let n = 0; n < testWordArr.length; n++) {
+                    if (testWordArr[n] === correctWordArr[n]) {
+                        finalArray[n] = 1
+                        testWordArr[n] = null
+                        correctWordArr[n] = null
+                    }
+                    else continue
+                }
+                for (let n = 0; n < testWordArr.length; n++) {
+                    if (finalArray[n] === -2) {
+
+                        if (correctWordArr.includes(testWordArr[n])) {
+                            finalArray[n] = 0
+                            testWordArr[n] = null
+                            correctWordArr[correctWordArr.indexOf(testWordArr[n])]
+                        } else {
+                            finalArray[n] = -1
+                            testWordArr[n] = null
+                        }
+                    } else continue
+                }
+                return finalArray
+            }
+        </script>
     </head>
     <body>
+        <script>
+        document.body.addEventListener("keydown", keyEventListener)
+        </script>
         <div class="header">
             <h1>Wordle</h1>
             <a href="../../homepage.html">Return to Home</a>
         </div>
         <hr>
-        
+        <p id="current">Try to guess the 5-letter word, using letters A-Z on your keyboard. Press enter after each word.</p>
+        <p id="help">
+            <span style="color: grey;">Grey:</span> letter not in word at all<br>
+            <span style="color: orange">Orange:</span> letter is in word but not in correct position<br>
+            <span style="color: green">Green:</span> letter is in word and in correct position
+        </p>
+        <div class="gamebox">
+            <div class="row">
+                <button class="letter-box" id="lb0" disabled></button>
+                <button class="letter-box" id="lb1" disabled></button>
+                <button class="letter-box" id="lb2" disabled></button>
+                <button class="letter-box" id="lb3" disabled></button>
+                <button class="letter-box" id="lb4" disabled></button>
+            </div>
+            <div class="row">
+                <button class="letter-box" id="lb5" disabled></button>
+                <button class="letter-box" id="lb6" disabled></button>
+                <button class="letter-box" id="lb7" disabled></button>
+                <button class="letter-box" id="lb8" disabled></button>
+                <button class="letter-box" id="lb9" disabled></button>
+            </div>
+            <div class="row">
+                <button class="letter-box" id="lb10" disabled></button>
+                <button class="letter-box" id="lb11" disabled></button>
+                <button class="letter-box" id="lb12" disabled></button>
+                <button class="letter-box" id="lb13" disabled></button>
+                <button class="letter-box" id="lb14" disabled></button>
+            </div>
+            <div class="row">
+                <button class="letter-box" id="lb15" disabled></button>
+                <button class="letter-box" id="lb16" disabled></button>
+                <button class="letter-box" id="lb17" disabled></button>
+                <button class="letter-box" id="lb18" disabled></button>
+                <button class="letter-box" id="lb19" disabled></button>
+            </div>
+            <div class="row">
+                <button class="letter-box" id="lb20" disabled></button>
+                <button class="letter-box" id="lb21" disabled></button>
+                <button class="letter-box" id="lb22" disabled></button>
+                <button class="letter-box" id="lb23" disabled></button>
+                <button class="letter-box" id="lb24" disabled></button>
+            </div>
+            <div class="row">
+                <button class="letter-box" id="lb25" disabled></button>
+                <button class="letter-box" id="lb26" disabled></button>
+                <button class="letter-box" id="lb27" disabled></button>
+                <button class="letter-box" id="lb28" disabled></button>
+                <button class="letter-box" id="lb29" disabled></button>
+            </div>
+        </div>
     </body>
 </html>
