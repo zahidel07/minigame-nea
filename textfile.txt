@@ -20,11 +20,10 @@ Tasks to be completed:
 OBJECTIVES FOR TODAY:
 SP 2048
 [] • detect for losers
-
-LATER:
-SP memorygame
-[X] • finish converting to 2D array indexing
 [] • allow flexibility for user to select their own difficulty and/or grid size
+
+SP Wordle
+[] • arsenal of words to add
 
 MP checkers
 [] • make a start?
