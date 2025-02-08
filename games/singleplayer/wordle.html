@@ -6,7 +6,8 @@
         <link href="wordle.css" rel="stylesheet" />
         <script>
             let attemptsLeft = 6
-            let correctWord = "WORLD"
+            const randomWords = []
+            let correctWord = randomWords[Math.floor(Math.random() * randomWords.length)]
             let currentWord = ""
             let lettersGrid = Array(6).fill(Array(5).fill(null))
             let markersGrid = Array(6).fill(Array(5).fill(-2))
@@ -71,7 +72,7 @@
                         attemptsLeft -= 1
                         currentWord = ""
                         if (attemptsLeft === 0) {
-                            document.body.removeEventListener('keydown')
+                            document.body.removeEventListener('keydown', keyEventListener)
                             document.getElementById('current').innerText = 'Game over! You didn\'t guess the word correctly.'
                         }
                     }
