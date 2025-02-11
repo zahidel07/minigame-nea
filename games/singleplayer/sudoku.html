@@ -7,15 +7,58 @@
         <script>
             let currentSelected = [-1, -1]
             let grid = Array(9).fill(Array(9).fill(null))
-            let prefillIndexes = Array(9).fill(null)
-            let prefillNumbers = Array(9).fill(null)
+            let prefillIndexes = []
+            let prefillNumbers = []
+            let listening = false
+
+            const numberPress = (key) => {
+                if (currentSelected[0] === -1 && currentSelected[1] === -1) return toggleListener()
+                else if (prefillIndexes.some(ind => ind[0] === currentSelected[0] && ind[1] === currentSelected[1])) return
+                const { code } = key
+                if (code.startsWith("Digit") || code.startsWith("Numpad")) {
+                    const digit = code.startsWith("Digit") ? Number(code[5]) : Number(code[6])
+                    if (digit === 0) return
+                    else if (digit === grid[currentSelected[0]][currentSelected[1]]) {
+                        grid[currentSelected[0]] = grid[currentSelected[0]].map((elem, ind) => ind === currentSelected[1] ? null : elem)
+                    } else {
+                        grid[currentSelected[0]] = grid[currentSelected[0]].map((elem, ind) => ind === currentSelected[1] ? digit : elem)
+                    }
+                    updateGrid()
+                } else if (code === 'Backspace') {
+                    if (!!grid[currentSelected[0]][currentSelected[1]]) {
+                        grid[currentSelected[0]] = grid[currentSelected[0]].map((elem, ind) => ind === currentSelected[1] ? null : elem)
+                        updateGrid()
+                    } else return
+                } else return
+            }
+
+            function fillRandom() {
+                let randRow = Math.floor(Math.random() * 9)
+                let randCol = Math.floor(Math.random() * 9)
+                let randNum = Math.ceil(Math.random() * 9)
+                for (let i = 0; i < 15; i++) {
+                    while (
+                        !!grid[randRow][randCol] || prefillIndexes
+                        .filter(i => !!i)
+                        .some((ind, i) => isInSameRowColOrBox(ind, [randRow, randCol]) && grid[ind[0]][ind[1]] === randNum)
+                    ) {
+                        randRow = Math.floor(Math.random() * 9)
+                        randCol = Math.floor(Math.random() * 9)
+                        randNum = Math.ceil(Math.random() * 9)
+                    }
+                    grid[randRow] = grid[randRow].map((elem, i) => i === randCol ? randNum : elem)
+                    prefillIndexes.push([randRow, randCol])
+                    prefillNumbers.push(randNum)
+                }
+                updateGrid()
+            }
 
             function updateGrid() {
                 [...document.getElementsByClassName('game-square')]
                 .forEach((elem, elemInd) => {
                     const rowInd = Math.floor(elemInd / 9)
                     const colInd = elemInd % 9
-                    elem.innerText = grid[rowInd][colInd]
+                    elem.innerHTML = grid[rowInd][colInd]
                     if (currentSelected[0] === -1 && currentSelected[1] === -1) {
                         elem.setAttribute('class', 'game-square')
                     } else {
@@ -34,8 +77,15 @@
                 } else {
                     currentSelected = [sqRow, sqCol]
                 }
+                toggleListener()
                 updateGrid()
             } 
+
+            function toggleListener() {
+                listening = !(currentSelected[0] === -1 && currentSelected[1] === -1)
+                if (listening) document.body.addEventListener('keydown', numberPress)
+                else document.body.removeEventListener('keydown', numberPress)
+            }
 
             function isInSameRowColOrBox(square1, square2) {
                 return square1[0] === square2[0]
@@ -50,6 +100,8 @@
                 return (!!grid[square1[0]][square1[1]] || !!grid[square2[0]][square2[1]]) 
                 && grid[square1[0]][square1[1]] === grid[square2[0]][square2[1]]
             }
+
+            fillRandom()
         </script>
     </head>
     <body>
