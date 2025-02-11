@@ -1,0 +1,45 @@
+div[class="game-square"] {
+    border: 1px solid black;
+    margin: 0px;
+    padding: 1px
+}
+
+div#gamebox {
+    display: grid
+}
+
+div.row {
+    display: block;
+    padding: 1px
+}
+
+div.row > button.game-square {
+    margin: 0px;   
+}
+
+button.game-square {
+    height: 25px;
+    width: 25px;
+    font-size: smaller;
+    color: white;
+    background-color: white;
+    border: 1px solid black;
+    padding: 0%;
+    text-align: centre
+}
+
+div.row:nth-child(3n + 1) > button {
+    border-top: 2px solid black
+}
+
+div.row:nth-child(3n) > button {
+    border-bottom: 2px solid black;
+}
+
+div.row > button:nth-child(3n + 1) {
+    border-left: 2px solid black
+}
+
+div.row > button:nth-child(3n) {
+    border-right: 2px solid black;
+}
