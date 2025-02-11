@@ -28,6 +28,14 @@ button.game-square {
     text-align: centre
 }
 
+button.game-square.selected {
+    background-color: #2a1fff
+}
+
+button.game-square.pseudoselected {
+    background-color: #4287f5
+}
+
 div.row:nth-child(3n + 1) > button {
     border-top: 2px solid black
 }

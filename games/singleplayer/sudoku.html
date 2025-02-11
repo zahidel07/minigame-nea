@@ -4,6 +4,25 @@
         <title>Wordle</title>
         <link href="../../main.css" rel="stylesheet" />
         <link href="sudoku.css" rel="stylesheet" />
+        <script>
+            let currentSelected = [-1, -1]
+
+            function updateSquare(square) {
+                const sqRow = Math.floor(square / 9)
+                const sqCol = square % 9
+                currentSelected = [sqRow, sqCol];
+                console.log(currentSelected);
+
+                [...document.getElementsByClassName('game-square')]
+                .forEach((elem, elemInd) => {
+                    const rowInd = Math.floor(elemInd / 9)
+                    const colInd = elemInd % 9
+                    if (rowInd === sqRow && colInd === sqCol) elem.setAttribute('class', 'game-square selected')
+                    else if (rowInd === sqRow || colInd === sqCol) elem.setAttribute('class', 'game-square pseudoselected')
+                    else elem.setAttribute('class', 'game-square')
+                })
+            }
+        </script>
     </head>
     <body>
         <div class="header">
@@ -14,103 +33,103 @@
         <p id="current">Fill in each box with numbers 1 to 9. A number in a square cannot appear again anywhere in any square in the same row, same column or same 3x3 box.</p>
         <div class="gamebox">
             <div class="row">
-                <button class="game-square" id="sq0" disabled></button>
-                <button class="game-square" id="sq1" disabled></button>
-                <button class="game-square" id="sq2" disabled></button>
-                <button class="game-square" id="sq3" disabled></button>
-                <button class="game-square" id="sq4" disabled></button>
-                <button class="game-square" id="sq5" disabled></button>
-                <button class="game-square" id="sq6" disabled></button>
-                <button class="game-square" id="sq7" disabled></button>
-                <button class="game-square" id="sq8" disabled></button>
+                <button class="game-square" id="sq0" onclick="updateSquare(0)"></button>
+                <button class="game-square" id="sq1" onclick="updateSquare(1)"></button>
+                <button class="game-square" id="sq2" onclick="updateSquare(2)"></button>
+                <button class="game-square" id="sq3" onclick="updateSquare(3)"></button>
+                <button class="game-square" id="sq4" onclick="updateSquare(4)"></button>
+                <button class="game-square" id="sq5" onclick="updateSquare(5)"></button>
+                <button class="game-square" id="sq6" onclick="updateSquare(6)"></button>
+                <button class="game-square" id="sq7" onclick="updateSquare(7)"></button>
+                <button class="game-square" id="sq8" onclick="updateSquare(8)"></button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq9" disabled></button>
-                <button class="game-square" id="sq10" disabled></button>
-                <button class="game-square" id="sq11" disabled></button>
-                <button class="game-square" id="sq12" disabled></button>
-                <button class="game-square" id="sq13" disabled></button>
-                <button class="game-square" id="sq14" disabled></button>
-                <button class="game-square" id="sq15" disabled></button>
-                <button class="game-square" id="sq16" disabled></button>
-                <button class="game-square" id="sq17" disabled></button>
+                <button class="game-square" id="sq9" onclick="updateSquare(9)"></button>
+                <button class="game-square" id="sq10" onclick="updateSquare(10)"></button>
+                <button class="game-square" id="sq11" onclick="updateSquare(11)"></button>
+                <button class="game-square" id="sq12" onclick="updateSquare(12)"></button>
+                <button class="game-square" id="sq13" onclick="updateSquare(13)"></button>
+                <button class="game-square" id="sq14" onclick="updateSquare(14)"></button>
+                <button class="game-square" id="sq15" onclick="updateSquare(15)"></button>
+                <button class="game-square" id="sq16" onclick="updateSquare(16)"></button>
+                <button class="game-square" id="sq17" onclick="updateSquare(17)"></button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq18" disabled></button>
-                <button class="game-square" id="sq19" disabled></button>
-                <button class="game-square" id="sq20" disabled></button>
-                <button class="game-square" id="sq21" disabled></button>
-                <button class="game-square" id="sq22" disabled></button>
-                <button class="game-square" id="sq23" disabled></button>
-                <button class="game-square" id="sq24" disabled></button>
-                <button class="game-square" id="sq25" disabled></button>
-                <button class="game-square" id="sq26" disabled></button>
+                <button class="game-square" id="sq18" onclick="updateSquare(18)"></button>
+                <button class="game-square" id="sq19" onclick="updateSquare(19)"></button>
+                <button class="game-square" id="sq20" onclick="updateSquare(20)"></button>
+                <button class="game-square" id="sq21" onclick="updateSquare(21)"></button>
+                <button class="game-square" id="sq22" onclick="updateSquare(22)"></button>
+                <button class="game-square" id="sq23" onclick="updateSquare(23)"></button>
+                <button class="game-square" id="sq24" onclick="updateSquare(24)"></button>
+                <button class="game-square" id="sq25" onclick="updateSquare(25)"></button>
+                <button class="game-square" id="sq26" onclick="updateSquare(26)"></button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq27" disabled></button>
-                <button class="game-square" id="sq28" disabled></button>
-                <button class="game-square" id="sq29" disabled></button>
-                <button class="game-square" id="sq30" disabled></button>
-                <button class="game-square" id="sq31" disabled></button>
-                <button class="game-square" id="sq32" disabled></button>
-                <button class="game-square" id="sq33" disabled></button>
-                <button class="game-square" id="sq34" disabled></button>
-                <button class="game-square" id="sq35" disabled></button>
+                <button class="game-square" id="sq27" onclick="updateSquare(27)"></button>
+                <button class="game-square" id="sq28" onclick="updateSquare(28)"></button>
+                <button class="game-square" id="sq29" onclick="updateSquare(29)"></button>
+                <button class="game-square" id="sq30" onclick="updateSquare(30)"></button>
+                <button class="game-square" id="sq31" onclick="updateSquare(31)"></button>
+                <button class="game-square" id="sq32" onclick="updateSquare(32)"></button>
+                <button class="game-square" id="sq33" onclick="updateSquare(33)"></button>
+                <button class="game-square" id="sq34" onclick="updateSquare(34)"></button>
+                <button class="game-square" id="sq35" onclick="updateSquare(35)"></button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq36" disabled></button>
-                <button class="game-square" id="sq37" disabled></button>
-                <button class="game-square" id="sq38" disabled></button>
-                <button class="game-square" id="sq39" disabled></button>
-                <button class="game-square" id="sq40" disabled></button>
-                <button class="game-square" id="sq41" disabled></button>
-                <button class="game-square" id="sq42" disabled></button>
-                <button class="game-square" id="sq43" disabled></button>
-                <button class="game-square" id="sq44" disabled></button>
+                <button class="game-square" id="sq36" onclick="updateSquare(36)"></button>
+                <button class="game-square" id="sq37" onclick="updateSquare(37)"></button>
+                <button class="game-square" id="sq38" onclick="updateSquare(38)"></button>
+                <button class="game-square" id="sq39" onclick="updateSquare(39)"></button>
+                <button class="game-square" id="sq40" onclick="updateSquare(40)"></button>
+                <button class="game-square" id="sq41" onclick="updateSquare(41)"></button>
+                <button class="game-square" id="sq42" onclick="updateSquare(42)"></button>
+                <button class="game-square" id="sq43" onclick="updateSquare(43)"></button>
+                <button class="game-square" id="sq44" onclick="updateSquare(44)"></button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq45" disabled></button>
-                <button class="game-square" id="sq46" disabled></button>
-                <button class="game-square" id="sq47" disabled></button>
-                <button class="game-square" id="sq48" disabled></button>
-                <button class="game-square" id="sq49" disabled></button>
-                <button class="game-square" id="sq50" disabled></button>
-                <button class="game-square" id="sq51" disabled></button>
-                <button class="game-square" id="sq52" disabled></button>
-                <button class="game-square" id="sq53" disabled></button>
+                <button class="game-square" id="sq45" onclick="updateSquare(45)"></button>
+                <button class="game-square" id="sq46" onclick="updateSquare(46)"></button>
+                <button class="game-square" id="sq47" onclick="updateSquare(47)"></button>
+                <button class="game-square" id="sq48" onclick="updateSquare(48)"></button>
+                <button class="game-square" id="sq49" onclick="updateSquare(49)"></button>
+                <button class="game-square" id="sq50" onclick="updateSquare(50)"></button>
+                <button class="game-square" id="sq51" onclick="updateSquare(51)"></button>
+                <button class="game-square" id="sq52" onclick="updateSquare(52)"></button>
+                <button class="game-square" id="sq53" onclick="updateSquare(53)"></button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq54" disabled></button>
-                <button class="game-square" id="sq55" disabled></button>
-                <button class="game-square" id="sq56" disabled></button>
-                <button class="game-square" id="sq57" disabled></button>
-                <button class="game-square" id="sq58" disabled></button>
-                <button class="game-square" id="sq59" disabled></button>
-                <button class="game-square" id="sq60" disabled></button>
-                <button class="game-square" id="sq61" disabled></button>
-                <button class="game-square" id="sq62" disabled></button>
+                <button class="game-square" id="sq54" onclick="updateSquare(54)"></button>
+                <button class="game-square" id="sq55" onclick="updateSquare(55)"></button>
+                <button class="game-square" id="sq56" onclick="updateSquare(56)"></button>
+                <button class="game-square" id="sq57" onclick="updateSquare(57)"></button>
+                <button class="game-square" id="sq58" onclick="updateSquare(58)"></button>
+                <button class="game-square" id="sq59" onclick="updateSquare(59)"></button>
+                <button class="game-square" id="sq60" onclick="updateSquare(60)"></button>
+                <button class="game-square" id="sq61" onclick="updateSquare(61)"></button>
+                <button class="game-square" id="sq62" onclick="updateSquare(62)"></button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq63" disabled></button>
-                <button class="game-square" id="sq64" disabled></button>
-                <button class="game-square" id="sq65" disabled></button>
-                <button class="game-square" id="sq66" disabled></button>
-                <button class="game-square" id="sq67" disabled></button>
-                <button class="game-square" id="sq68" disabled></button>
-                <button class="game-square" id="sq69" disabled></button>
-                <button class="game-square" id="sq70" disabled></button>
-                <button class="game-square" id="sq71" disabled></button>
+                <button class="game-square" id="sq63" onclick="updateSquare(63)"></button>
+                <button class="game-square" id="sq64" onclick="updateSquare(64)"></button>
+                <button class="game-square" id="sq65" onclick="updateSquare(65)"></button>
+                <button class="game-square" id="sq66" onclick="updateSquare(66)"></button>
+                <button class="game-square" id="sq67" onclick="updateSquare(67)"></button>
+                <button class="game-square" id="sq68" onclick="updateSquare(68)"></button>
+                <button class="game-square" id="sq69" onclick="updateSquare(69)"></button>
+                <button class="game-square" id="sq70" onclick="updateSquare(70)"></button>
+                <button class="game-square" id="sq71" onclick="updateSquare(71)"></button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq72" disabled></button>
-                <button class="game-square" id="sq73" disabled></button>
-                <button class="game-square" id="sq74" disabled></button>
-                <button class="game-square" id="sq75" disabled></button>
-                <button class="game-square" id="sq76" disabled></button>
-                <button class="game-square" id="sq77" disabled></button>
-                <button class="game-square" id="sq78" disabled></button>
-                <button class="game-square" id="sq79" disabled></button>
-                <button class="game-square" id="sq80" disabled></button>
+                <button class="game-square" id="sq72" onclick="updateSquare(72)"></button>
+                <button class="game-square" id="sq73" onclick="updateSquare(73)"></button>
+                <button class="game-square" id="sq74" onclick="updateSquare(74)"></button>
+                <button class="game-square" id="sq75" onclick="updateSquare(75)"></button>
+                <button class="game-square" id="sq76" onclick="updateSquare(76)"></button>
+                <button class="game-square" id="sq77" onclick="updateSquare(77)"></button>
+                <button class="game-square" id="sq78" onclick="updateSquare(78)"></button>
+                <button class="game-square" id="sq79" onclick="updateSquare(79)"></button>
+                <button class="game-square" id="sq80" onclick="updateSquare(80)"></button>
             </div>
         </div>
     </body>
