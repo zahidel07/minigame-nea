@@ -20,13 +20,17 @@ Tasks to be completed:
 OBJECTIVES FOR TODAY:
 SP 2048
 [] • detect for losers
-[] • allow flexibility for user to select their own difficulty and/or grid size
-
 SP Wordle
 [] • arsenal of words to add
-
+SP Sudoku
+[] • timer
+[] • detect winner
 MP checkers
-[] • make a start?
+[] • begin
+SP Memorygame, SP Minesweeper
+[] • add timers
+SP TicTacToe, MP TicTacToe, SP Sudoku, SP Memorygame
+[] • customisable difficulty
 
 general
 [] • set up database on mySQL and connect to it
