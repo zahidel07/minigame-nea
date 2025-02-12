@@ -20,15 +20,11 @@ Tasks to be completed:
 OBJECTIVES FOR TODAY:
 SP 2048
 [] • fix bugs
-[X] • detect for losers
-SP Wordle
-[X] • arsenal of words to add
 SP Sudoku
-[] • timer
 [] • detect winner
 MP Checkers
 [] • begin
-SP Memorygame, SP Minesweeper
+SP Memorygame, SP Minesweeper, SP Sudoku
 [] • add timers
 SP TicTacToe, MP TicTacToe, SP Sudoku, SP Memorygame
 [] • customisable difficulty
