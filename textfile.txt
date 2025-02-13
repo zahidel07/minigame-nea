@@ -35,3 +35,6 @@ general
 [] • create and connect to MySQL database
 [] • fix validation forms
 [] • file handling
+
+For SSH certificate problem:
+git config --global http.sslBackend schannel
