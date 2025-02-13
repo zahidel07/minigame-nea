@@ -4,13 +4,13 @@
         <title>Wordle</title>
         <link href="../../main.css" rel="stylesheet" />
         <link href="wordle.css" rel="stylesheet" />
+        <script src="wordle-words.js"></script>
         <script>
-            let attemptsLeft = 6
-            const randomWords = []
-            let correctWord = randomWords[Math.floor(Math.random() * randomWords.length)]
+            let attemptsLeft = 7
+            let correctWord = words[Math.floor(Math.random() * words.length)].toUpperCase()
             let currentWord = ""
-            let lettersGrid = Array(6).fill(Array(5).fill(null))
-            let markersGrid = Array(6).fill(Array(5).fill(-2))
+            let lettersGrid = Array(7).fill(Array(5).fill(null))
+            let markersGrid = Array(7).fill(Array(5).fill(-2))
 
             const keyEventListener = (key) => { 
                 const code = key.code
@@ -32,7 +32,7 @@
                 else {
                     currentWord = currentWord + letter
                     currentWordArr = correctArr(currentWord.split(''))
-                    lettersGrid[6 - attemptsLeft] = currentWordArr
+                    lettersGrid[7 - attemptsLeft] = currentWordArr
                     updateGrid()
                 }
             }
@@ -42,7 +42,7 @@
                 else {
                     currentWord = currentWord.slice(0, currentWord.length - 1)
                     currentWordArr = correctArr(currentWord.split(''))
-                    lettersGrid[6 - attemptsLeft] = currentWordArr
+                    lettersGrid[7 - attemptsLeft] = currentWordArr
                     updateGrid()
                 }
             }
@@ -64,7 +64,7 @@
                 const comparison = compareWords(currentWord, correctWord)
                 if (comparison.every(elem => elem === -2)) return
                 else {
-                    markersGrid[6 - attemptsLeft] = comparison
+                    markersGrid[7 - attemptsLeft] = comparison
                     updateGrid()
                     if (comparison.every(elem => elem === 1)) {
                         document.getElementById('current').innerText = 'Congraulations! You guessed the word correctly.'
@@ -129,7 +129,6 @@
                 }
                 for (let n = 0; n < testWordArr.length; n++) {
                     if (finalArray[n] === -2) {
-
                         if (correctWordArr.includes(testWordArr[n])) {
                             finalArray[n] = 0
                             testWordArr[n] = null
@@ -201,6 +200,13 @@
                 <button class="letter-box" id="lb27" disabled></button>
                 <button class="letter-box" id="lb28" disabled></button>
                 <button class="letter-box" id="lb29" disabled></button>
+            </div>
+            <div class="row">
+                <button class="letter-box" id="lb30" disabled></button>
+                <button class="letter-box" id="lb31" disabled></button>
+                <button class="letter-box" id="lb32" disabled></button>
+                <button class="letter-box" id="lb33" disabled></button>
+                <button class="letter-box" id="lb34" disabled></button>
             </div>
         </div>
     </body>

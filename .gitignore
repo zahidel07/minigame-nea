@@ -1,4 +1,4 @@
 *.txt
 db
 *.env
-wordle-words.txt
+games/singleplayer/wordle-words.js
