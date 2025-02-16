@@ -5,6 +5,18 @@
         <title>MyMiniGames</title>
         <link href="main.css" rel="stylesheet" />
         <link href="homepage.css" rel="stylesheet" />
+        <script>
+            fetch('user.json')
+            .then(data => data.json())
+            .then(data => {
+                console.log(data)
+                if (data.userLoggedOn) {
+                    for (entry in data) {
+                        console.log(`${entry}: ${data[entry]}`)
+                    }
+                }
+            })
+        </script>
     </head>
     <body>
         <div class="header">

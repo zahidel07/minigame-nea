@@ -10,9 +10,26 @@
                 const arePasswordsEqual = passwordsEqual()
     
                 if (!arePasswordsEqual) {
-                    alert('Passwords do not match')
+                    document.getElementById('retype-password').focus()
                     return false
-                } else return true
+                } else {
+                    const usernameBox = document.getElementById('username')
+                    const nicknameBox = document.getElementById('nickname')
+
+                    const json = {
+                        userLoggedOn: true,
+                        user: {
+                            username: usernameBox.value,
+                            nickname: nicknameBox.value || null
+                        }
+                    }
+
+                    const file = new File([json], 'user.json', {
+                        type: 'text/json'
+                    })
+
+                    return true
+                }
             }
 
             function passwordsEqual() {
