@@ -17,7 +17,7 @@ div.row > button.game-square {
     margin: 0px;   
 }
 
-button {
+button.game-square {
     height: 25px;
     width: 25px;
     font-size: smaller;
@@ -26,6 +26,14 @@ button {
     border: 1px solid black;
     padding: 0%;
     text-align: centre
+}
+
+button.difficulty {
+    height: fit-content;
+    width: fit-content;
+    font-size: large;
+    border: 2px solid black;
+    text-align: center
 }
 
 button.selected {

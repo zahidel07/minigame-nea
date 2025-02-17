@@ -5,24 +5,15 @@
         <title>Login or Sign Up</title>
         <link href="main.css" rel="stylesheet" />
         <link href="sign-in.css" rel="stylesheet" />
+        <script src="util.js"></script>
         <script>
             function validate() {
                 const usernameBox = document.getElementById('username')
-                const nicknameBox = document.getElementById('nickname')
+                const passwordBox = document.getElementById('password')
 
-                const json = {
-                    userLoggedOn: true,
-                    user: {
-                        username: usernameBox.value,
-                        nickname: nicknameBox.value || null
-                    }
-                }
+                alert(`Your encrypted password is: ${encrypt(passwordBox.value, 'marblesdisconcerning')}`)
 
-                const file = new File([json], 'user.json', {
-                    type: 'text/json'
-                })
-
-                return true
+                return false
             }
         </script>
     </head>

@@ -26,7 +26,7 @@ MP Checkers
 [] • begin
 SP Memorygame, SP Minesweeper, SP Sudoku
 [] • add timers
-SP TicTacToe, MP TicTacToe, SP Sudoku, SP Memorygame
+SP Memorygame
 [] • customisable difficulty
 
 general
