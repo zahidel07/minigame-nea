@@ -21,13 +21,13 @@ OBJECTIVES FOR TODAY:
 SP 2048
 [] • fix bugs
 SP Sudoku
-[] • detect winner
+[] • fix random board generation
 MP Checkers
-[] • begin
+[] • begin?
 SP Memorygame, SP Minesweeper, SP Sudoku
 [] • add timers
 SP Memorygame
-[] • customisable difficulty
+[] • continue to fix customisable difficulty & test
 
 general
 [] • set up database on mySQL and connect to it
