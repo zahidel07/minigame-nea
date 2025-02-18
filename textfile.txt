@@ -19,7 +19,7 @@ Tasks to be completed:
 
 OBJECTIVES FOR TODAY:
 SP 2048
-[] • fix bugs
+[...] • fix bugs
 SP Sudoku
 [] • fix random board generation
 MP Checkers
