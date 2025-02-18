@@ -10,21 +10,21 @@
             const keyListener = (keyEvent) => {
                 const keyPressed = keyEvent.code
                 switch (keyPressed) {
-                    case "ArrowLeft":
-                    case "KeyA":
-                        moveGrid(grid, "L")
-                        break
-                    case "ArrowRight":
-                    case "KeyD":
-                        moveGrid(grid, "R")
-                        break
                     case "ArrowDown":
                     case "KeyS":
-                        moveGrid(grid, "D")
+                        grid = moveGrid(grid, "D")
                         break
                     case "ArrowUp":
                     case "KeyW":
-                        moveGrid(grid, "U")
+                        grid = moveGrid(grid, "U")
+                        break
+                    case "ArrowLeft":
+                    case "KeyA":
+                        grid = moveGrid(grid, "L")
+                        break
+                    case "ArrowRight":
+                    case "KeyD":
+                        grid = moveGrid(grid, "R")
                         break
                     default:
                         break
@@ -32,19 +32,21 @@
             }
 
             function updateGrid() {
-                grid.forEach((row, rowInd) => {
-                    row.forEach((col, colInd) => {
-                        const gridElem = document.getElementById(`sq${rowInd * 4 + colInd}`)
-                        if (col !== null) {
-                            gridElem.setAttribute('class', 'game-square occupied') 
-                            gridElem.innerText = col
-                        } else {
-                            gridElem.setAttribute('class', 'game-square')
-                            gridElem.innerText = '-'
-                        }
+                setTimeout(() => {
+                    grid.forEach((row, rowInd) => {
+                        row.forEach((col, colInd) => {
+                            const gridElem = document.getElementById(`sq${rowInd * 4 + colInd}`)
+                            if (col !== null) {
+                                gridElem.setAttribute('class', 'game-square occupied') 
+                                gridElem.innerText = col
+                            } else {
+                                gridElem.setAttribute('class', 'game-square')
+                                gridElem.innerText = '-'
+                            }
+                        })
                     })
-                })
-                checkWinner()
+                }, 100)
+                checkComplete()
             }
             
             function addRandom() {
@@ -69,18 +71,24 @@
             }
 
             function mergeNums(arr, dir = "L") {
+                let temp = arr
                 for (let i = 0; i < arr.length - 1; i++) {
                     const first = arr[i]
                     const second = arr[i + 1]
                     if (!first || !second) continue
                     if (first === second) {
-                        let sum = first + second
-                        arr[dir === "L" ? i : i + 1] = sum
-                        arr[dir === "L" ? i + 1 : i] = null
+                        const sum = first + second
+                        if (dir === "L") {
+                            arr[i] = sum
+                            arr[i + 1] = null
+                        } else {
+                            arr[i + 1] = sum
+                            arr[i] = null
+                        }
                         i += 1
                     }
                 }    
-                return arr
+                return temp
             }
 
             function transpose(arr) {
@@ -94,12 +102,12 @@
                 switch (dir) {
                     case "L":
                     case "R":
-                        tempGrid.map(row => sortNums(row, dir))
+                        tempGrid.map((row, ind) => tempGrid[ind] = sortNums(row, dir))
                         break
                     case "U":
                     case "D":
                         tempGrid = transpose(tempGrid)
-                        tempGrid.map(row => sortNums(row, dir === "U" ? "L" : "R"))
+                        tempGrid.map((row, ind) => tempGrid[ind] = sortNums(row, dir === "U" ? "L" : "R"))
                         tempGrid = transpose(tempGrid)
                         break
                     default:
@@ -120,9 +128,7 @@
                 const col = square[1]
 
                 adjSquares = [
-                    [row - 1, col - 1], [row - 1, col], [row - 1, col + 1],
-                    [row, col - 1], [row, col + 1],
-                    [row + 1, col - 1], [row + 1, col], [row + 1, col + 1]
+                    [row - 1, col], [row, col - 1], [row, col + 1], [row + 1, col]
                 ]
 
                 adjSquares = adjSquares.filter((sq) => {
@@ -134,23 +140,29 @@
                 return adjSquares
             }
 
-            function checkWinner() {
-                const isLoser = grid
-                .map((row, rowInd) => {
-                    return row.map((col, colInd) => {
-                        return adjacentSquares([rowInd, colInd])
-                        .map(sq => grid[sq[0]][sq[1]])
-                        .some(el => el === col)
-                    })
-                })
+            function checkComplete() {
+                let isLoser = false
+                let tempGrid = Array(4).fill(Array(4).fill(true))
+                for (let row = 0; row < tempGrid.length; row++) {
+                    let rowArr = []
+                    for (let col = 0; col < grid[0].length; col++) {
+                        let adjSqs = adjacentSquares([row, col])
+                        adjSqs = adjSqs.map(n => grid[n[0]][n[1]])
+                        adjSqs = adjSqs.some(x => x === grid[row][col])
+                        rowArr[col] = adjSqs
+                    } 
+                    tempGrid[row] = rowArr
+                }
+                isLoser = tempGrid
                 .flat()
-                .reduce((a, b) => !a && a === b)
+                .every(x => !x)
 
-                if (isLoser) {
-                    document.getElementById('current').innerText = "Game over! You didn\'t make 2048."
-                    document.body.removeEventListener("keydown", keyListener)
-                } else if (grid.flat().some(num => num >= 2048)) {
+                if (grid.flat().some(num => num >= 2048)) {
                     document.getElementById('current').innerText = "Congratulations! You made 2048."
+                    document.body.removeEventListener("keydown", keyListener)
+                    return true
+                } else if (isLoser) {
+                    document.getElementById('current').innerText = "Game over! You didn\'t make 2048."
                     document.body.removeEventListener("keydown", keyListener)
                     return true
                 } else return false
