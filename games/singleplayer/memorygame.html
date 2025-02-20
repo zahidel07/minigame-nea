@@ -18,7 +18,7 @@
             <button class="difficulty" onclick="chooseDifficulty(1)">Medium</button>
             <button class="difficulty" onclick="chooseDifficulty(2)">Large</button>
         </div>
-        <div id="gamebox" hidden>
+        <div id="gamebox">
             <p id="current">Choose 2 squares</p>
             <div class="row">
                 <button class="game-square" id="sq0" onclick="updateSquare(0)">-</button>
@@ -48,6 +48,7 @@
                 <button class="game-square" id="sq18" onclick="updateSquare(18)">-</button>
                 <button class="game-square" id="sq19" onclick="updateSquare(19)">-</button>
             </div>
+            <p>Time elapsed: <span id="timer">00:00</span></p>
         </div>
     </body>
 </html>

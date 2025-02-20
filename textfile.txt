@@ -24,8 +24,6 @@ SP Sudoku
 [] • fix random board generation
 MP Checkers
 [] • begin?
-SP Memorygame, SP Minesweeper, SP Sudoku
-[] • add timers
 SP Memorygame
 [] • continue to fix customisable difficulty & test
 
@@ -33,7 +31,6 @@ general
 [] • set up database on mySQL and connect to it
 [] • fix input system, by removing href to homepage and performing action before it
 [] • create and connect to MySQL database
-[] • fix validation forms
 [] • file handling
 
 For SSH certificate problem:

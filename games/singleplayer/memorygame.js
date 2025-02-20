@@ -2,9 +2,19 @@ let presetGrid = []
 let userGrid = []
 let maxRows = 0
 let maxCols = 0
+let time = 0
+let mins = 0
+let sec = 0
+
+const timer = () => {
+    mins = Math.floor(time / 60)
+    sec = time % 60
+    document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+    time += 1
+}
 
 function gridHTML(rows, cols) {
-    let gridStr = ''
+    let gridStr = '<p id="current">Choose 2 squares</p>\n'
     for (let r = 0; r < rows; r++) {
         gridStr += '<div class="row">\n'
         for (let c = 0; c < cols; c++) {
@@ -12,6 +22,7 @@ function gridHTML(rows, cols) {
         }
         gridStr += '</div>\n'
     }
+    gridStr += '<p>Time elapsed: <span id="timer">00:00</span></p>'
     return gridStr
 }
 
@@ -34,10 +45,11 @@ function chooseDifficulty(difficulty) {
     presetGrid = Array(maxRows).fill(Array(maxCols).fill(null))
     userGrid = Array(maxRows).fill(Array(maxCols).fill(null))
 
+    setInterval(timer, 1000)
     fillRandom()
 }
 
-let chosenElements = [-1, -1]
+let chosenElements = [[-1, -1], [-1, -1]]
 
 function fillRandom() {
     for (let ind = 1; ind <= presetGrid.flat().length + 1; ind++) {
@@ -54,6 +66,7 @@ function fillRandom() {
 function updateSquare(square) {
     const row = Math.floor(square / maxRows)
     const col = square % maxCols
+    console.log("Works")
 
     if (arrayInArray([row, col], chosenElements)) {
         const textElement = document.getElementById('current')
@@ -154,7 +167,8 @@ function checkWinner() {
     const textElement = document.getElementById('current')
 
     if (!userGrid.flat().includes(null)) {
-        textElement.innerText = 'Game over. You matched all the squares'
+        textElement.innerText = 'Congratulations! You matched all the squares'
+        clearInterval(timer)
     } else {
         chosenElements = [-1, -1]
         textElement.innerText = "Choose 2 squares"
