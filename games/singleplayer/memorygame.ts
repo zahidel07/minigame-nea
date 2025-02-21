@@ -1,19 +1,21 @@
-let presetGrid = []
-let userGrid = []
-let maxRows = 0
-let maxCols = 0
-let time = 0
-let mins = 0
-let sec = 0
+let presetGrid: Array<Array<null | number>> = []
+let userGrid: Array<Array<null | number>> = []
+// @ts-ignore
+let [maxRows, maxCols, time, mins, sec]: number[] = [0, 0, 0, 0, 0]
 
-const timer = () => {
+// @ts-ignore
+const interval = () => {
     mins = Math.floor(time / 60)
     sec = time % 60
-    document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+    const intervalElement = document.getElementById('interval')
+    if (intervalElement) intervalElement.innerText = `${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
     time += 1
 }
 
-function gridHTML(rows, cols) {
+// @ts-ignore
+let intervalSet: any = null 
+
+function gridHTML(rows: number, cols: number) {
     let gridStr = '<p id="current">Choose 2 squares</p>\n'
     for (let r = 0; r < rows; r++) {
         gridStr += '<div class="row">\n'
@@ -22,11 +24,12 @@ function gridHTML(rows, cols) {
         }
         gridStr += '</div>\n'
     }
-    gridStr += '<p>Time elapsed: <span id="timer">00:00</span></p>'
+    gridStr += '<p>Time elapsed: <span id="interval">00:00</span></p>'
     return gridStr
 }
 
-function chooseDifficulty(difficulty) {
+// @ts-ignore
+function chooseDifficulty(difficulty: 0 | 1 | 2) {
     if (difficulty === 0) {
         maxRows = 4
         maxCols = 5
@@ -38,14 +41,18 @@ function chooseDifficulty(difficulty) {
         maxCols = 7
     }
     
-    document.getElementById('gamebox').innerHTML = gridHTML(maxRows, maxCols)
-    document.getElementById('options').setAttribute('hidden', '')
-    document.getElementById('gamebox').removeAttribute('hidden')
+    const gameboxElem = document.getElementById('gamebox')
+    const optionsElem = document.getElementById('options')
+    if (gameboxElem) {
+        gameboxElem.innerHTML = gridHTML(maxRows, maxCols)
+        gameboxElem.removeAttribute('hidden')
+    }
+    if (optionsElem) optionsElem.setAttribute('hidden', '')
 
     presetGrid = Array(maxRows).fill(Array(maxCols).fill(null))
     userGrid = Array(maxRows).fill(Array(maxCols).fill(null))
 
-    setInterval(timer, 1000)
+    intervalSet = setInterval(interval, 1000)
     fillRandom()
 }
 
@@ -63,13 +70,14 @@ function fillRandom() {
     }
 }
 
-function updateSquare(square) {
+// @ts-ignore
+function updateSquare(square: number) {
     const row = Math.floor(square / maxRows)
     const col = square % maxCols
-    console.log("Works")
 
     if (arrayInArray([row, col], chosenElements)) {
         const textElement = document.getElementById('current')
+        if (!textElement) return
         const previousText = textElement.innerText
         textElement.innerText = 'You cannot choose the same square twice!';
         [...document.getElementsByClassName('game-square')]
@@ -88,7 +96,7 @@ function updateSquare(square) {
     else checkChosen(square)
 }
 
-function checkChosen(userSelected) {
+function checkChosen(userSelected: number) {
     if (arrayInArray([-1, -1], chosenElements)) {
         const indexOfMinusOne = arrayIndexInArray([-1, -1], chosenElements)
         if (indexOfMinusOne === -1) return
@@ -96,15 +104,21 @@ function checkChosen(userSelected) {
         const selectedCol = userSelected % maxCols
         chosenElements[indexOfMinusOne] = [selectedRow, selectedCol]
         const elem = document.getElementById(`sq${userSelected}`)
-        elem.innerText = presetGrid[selectedRow][selectedCol]
+        const current = document.getElementById('current')
+        if (!elem) return
+        elem.innerText = presetGrid[selectedRow][selectedCol]?.toString() || ''
         elem.setAttribute('class', 'game-square selected')
         if (!arrayInArray([-1, -1], chosenElements)) equalSquares()
-        else document.getElementById('current').indexText = "Choose 1 more square"
+        else {
+            if (!current) return
+            current.innerText = "Choose 1 more square"
+        }
     }
 }
 
 function equalSquares() {
     const textElement = document.getElementById('current')
+    if (!textElement) return
     const sqRow1 = chosenElements[0][0]
     const sqCol1 = chosenElements[0][1]
     const sqRow2 = chosenElements[1][0]
@@ -116,8 +130,10 @@ function equalSquares() {
             const row = elem[0]
             const col = elem[1]
             const sqElem = document.getElementById(`sq${ind}`)
-            sqElem.disabled = true
-            sqElem.setAttribute('class', 'game-square valid')
+            if (sqElem) {
+                sqElem.setAttribute('disabled', '')
+                sqElem.setAttribute('class', 'game-square valid')
+            }
             userGrid[row][col] = presetGrid[row][col]
         })
         setTimeout(() => checkWinner(), 1500)
@@ -125,15 +141,21 @@ function equalSquares() {
         textElement.innerText = "Didn't match..."
         chosenElements.forEach((elem) => {
             const ind = elem[0] * maxCols + elem[1]
-            document.getElementById(`sq${ind}`).setAttribute('class', 'game-square invalid')
-            document.getElementById(`sq${ind}`).disabled = true
+            const sqElem = document.getElementById(`sq${ind}`)
+            if (sqElem) {
+                sqElem.setAttribute('class', 'game-square invalid')
+                sqElem.setAttribute('disabled', '')
+            }
         })
         setTimeout(() => {
             chosenElements.forEach((elem) => {
                 const ind = elem[0] * maxCols + elem[1]
-                document.getElementById(`sq${ind}`).disabled = false
-                document.getElementById(`sq${ind}`).setAttribute('class', 'game-square')
-                document.getElementById(`sq${ind}`).innerText = '-'
+                const sqElem = document.getElementById(`sq${ind}`)
+                if (sqElem) {
+                    sqElem.removeAttribute('disabled')
+                    sqElem.setAttribute('class', 'game-square')
+                    sqElem.innerText = '-'
+                }
             })
             chosenElements = [[-1, -1], [-1, -1]]
             textElement.innerText = "Choose 2 squares"
@@ -146,44 +168,45 @@ function resetGridStyling() {
     .forEach((square) => {
         const id = square.id
         const idNum = parseInt(id.slice(2))   
+        const idRow = Math.floor(idNum / maxRows)
+        const idCol = idNum % maxCols
 
         if (!!userGrid[idNum]) {
-            square
-            .setAttribute('class', 'game-square valid')
-            .setAttribute('disabled', true)
-        } else if (chosenElements.includes(idNum)) {
-            square
-            .setAttribute('class', 'game-square selected')
-            .setAttribute('disabled', true)
+            square.setAttribute('class', 'game-square valid')
+            square.setAttribute('disabled', '')
+        } else if (chosenElements.includes([idRow, idCol])) {
+            square.setAttribute('class', 'game-square selected')
+            square.setAttribute('disabled', '')
         } else {
-            square
-            .setAttribute('class', 'game-square')
-            .setAttribute('disabled', false)
+            square.setAttribute('class', 'game-square')
+            square.removeAttribute('disabled')
         }
     })
 }
 
+// @ts-ignore
 function checkWinner() {
     const textElement = document.getElementById('current')
 
     if (!userGrid.flat().includes(null)) {
-        textElement.innerText = 'Congratulations! You matched all the squares'
-        clearInterval(timer)
+        if (textElement) textElement.innerText = 'Congratulations! You matched all the squares'
+        clearInterval(intervalSet)
     } else {
-        chosenElements = [-1, -1]
-        textElement.innerText = "Choose 2 squares"
+        chosenElements = [[-1, -1], [-1, -1]]
+        if (textElement) textElement.innerText = "Choose 2 squares"
     }
 }
 
-function arrayInArray(searchArray, array) {
+// @ts-ignore
+function arrayInArray<T>(searchArray: Array<T>, array: Array<Array<T>>) {
     return array.some((mainArr) => areArraysEqual(searchArray, mainArr))
 }
 
-function areArraysEqual(array1, array2) {
+function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
     return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
 }
 
-function arrayIndexInArray(searchArray, array) {
+function arrayIndexInArray<T>(searchArray: Array<T>, array: Array<Array<T>>) {
     if (arrayInArray(searchArray, array)) {
         let ind = 0
         for (let n = 0; n < array.length; n++) {

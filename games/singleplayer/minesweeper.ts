@@ -1,13 +1,20 @@
-let grid = Array(8).fill(Array(8).fill(null))
-let numOfMines = 0
-let time = 0
-let mins = 0
-let sec = 0
+// @ts-ignore
+type Coordinate = [number, number]
 
-const timer = () => {
+// @ts-ignore
+let grid: Array<Array<number | null>> = Array(8).fill(Array(8).fill(null))
+let numOfMines = 0
+// @ts-ignore
+let [time, mins, sec]: number[] = [0, 0, 0]
+// @ts-ignore
+let intervalSet: any = null
+
+// @ts-ignore
+const interval = () => {
     mins = Math.floor(time / 60)
     sec = time % 60
-    document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+    const intervalElem = document.getElementById('interval')
+    if (intervalElem) intervalElem.innerText = `${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
     time += 1
 }
 
@@ -15,12 +22,12 @@ while (numOfMines < 10 || numOfMines > 15) {
     numOfMines = Math.floor(Math.random() * 64)
 }
 
-const mines = []
+const mines: Array<Coordinate> = []
 
 for (let n = 0; n < numOfMines; n++) {
     let randomRow = Math.floor(Math.random() * 8)
     let randomCol = Math.floor(Math.random() * 8)
-    arr = [randomRow, randomCol]
+    let arr = [randomRow, randomCol] as Coordinate
     while (arrayInArray(arr, mines)) {
         randomRow = Math.floor(Math.random() * 8)
         randomCol = Math.floor(Math.random() * 8)
@@ -29,11 +36,12 @@ for (let n = 0; n < numOfMines; n++) {
     mines.push(arr)
 }
 
-let userSquares = []
-let flags = []
+let userSquares: Array<Coordinate> = []
+let flags: Array<Coordinate> = []
 let flagMode = false
 
-function updateSquare(square) {
+// @ts-ignore
+function updateSquare(square: number) {
     const row = Math.floor(square / 8)
     const col = square % 8
 
@@ -43,34 +51,38 @@ function updateSquare(square) {
         if (arrayInArray([row, col], flags)) {
             flags = flags.filter(f => !(f[0] === row && f[1] === col))
             const unflaggedElem = document.getElementById(`sq${row * 8 + col}`)
-            unflaggedElem.setAttribute('class', 'game-square')
-            unflaggedElem.innerText = '-'
+            if (unflaggedElem) {
+                unflaggedElem.setAttribute('class', 'game-square')
+                unflaggedElem.innerText = '-'
+            }
         } else {
             if (flags.length >= numOfMines) {
-                textElem.innerText = 'You have reached your maximum number of flags.';
+                if (textElem) textElem.innerText = 'You have reached your maximum number of flags.';
                 [...document.getElementsByClassName('game-square')]
                 .forEach((elem) => elem.setAttribute('disabled', ''))
                 setTimeout(() => {
-                    textElem.innerText = 'Choose a square'
+                    if (textElem) textElem.innerText = 'Choose a square'
                     resetGridStyle()
                 }, 2000)
             } else {
                 flags.push([row, col])
                 const flaggedElem = document.getElementById(`sq${row * 8 + col}`)
-                flaggedElem.setAttribute('class', 'game-square flagged')
-                flaggedElem.innerText = 'F'
+                if (flaggedElem) {
+                    flaggedElem.setAttribute('class', 'game-square flagged')
+                    flaggedElem.innerText = 'F'
+                }
             }
         }
-        flagText.innerText = `Flags Remaining: ${numOfMines - flags.length}`
+        if (flagText) flagText.innerText = `Flags Remaining: ${numOfMines - flags.length}`
     } else {
         if (arrayInArray([row, col], flags)) {
             const textElem = document.getElementById('current')
-            const prevText = textElem.innerText;
+            const prevText = textElem?.innerText || 'Select a square';
             [...document.getElementsByClassName('game-square')]
             .forEach((elem) => elem.setAttribute('disabled', ''))
-            textElem.innerText = 'You cannot select an element that has been flagged.'
+            if (textElem) textElem.innerText = 'You cannot select an element that has been flagged.'
             setTimeout(() => {
-                textElem.innerText = prevText
+                if (textElem) textElem.innerText = prevText
                 resetGridStyle()
             }, 1500)
         } else if (!arrayInArray([row, col], userSquares)) {
@@ -78,31 +90,34 @@ function updateSquare(square) {
                 [...document.getElementsByClassName('game-square')]
                 .forEach((elem, ind) => {
                     elem.setAttribute('disabled', '')
-                    tempRow = Math.floor(ind / 8)
-                    tempCol = ind % 8
+                    let tempRow = Math.floor(ind / 8)
+                    let tempCol = ind % 8
                     if (arrayInArray([tempRow, tempCol], mines)) {
-                        elem.setAttribute('class', 'game-square mine')
-                        elem.innerText = 'X'
+                        elem.setAttribute('class', 'game-square mine');
+                        (elem as HTMLElement).innerText = 'X'
                     }
                     else elem.setAttribute('class', 'game-square selected')
                 })
-                document.getElementById('toggle-flag').setAttribute('disabled', '')
-                document.getElementById('current').innerText = 'Game over! You lost.'
-                clearInterval(timer)
+                document.getElementById('toggle-flag')?.setAttribute('disabled', '')
+                const currentTextElem = document.getElementById('current')
+                if (currentTextElem) currentTextElem.innerText = 'Game over! You lost.'
+                clearInterval(intervalSet)
                 return
             } else {
                 userSquares.push([row, col])
                 const sqElem = document.getElementById(`sq${square}`)
-                sqElem.setAttribute('class', 'game-square selected')
-                sqElem.setAttribute('disabled', '')
+                if (sqElem) sqElem.setAttribute('class', 'game-square selected')
+                if (sqElem) sqElem.setAttribute('disabled', '')
                 const nearbySquares = adjacentSquares([row, col])
                 const nearbyMines = filterAdjacentSquares(nearbySquares)
                 const numOfMines = nearbySquares.length - nearbyMines.length
                 if (numOfMines > 0) {
-                    sqElem.innerText = numOfMines
-                    sqElem.style.color = [
-                        "blue", "green", "orange", "yellow", "red", "black"
-                    ][numOfMines > 5 ? 5 : numOfMines - 1]
+                    if (sqElem) {
+                        sqElem.innerText = numOfMines.toString()
+                        sqElem.style.color = [
+                            "blue", "green", "orange", "yellow", "red", "black"
+                        ][numOfMines > 5 ? 5 : numOfMines - 1]
+                    }
                 }
             }
         }
@@ -110,7 +125,7 @@ function updateSquare(square) {
 }
 
 function adjacentSquares(square) {
-    let adjSquares = []
+    let adjSquares: Array<Coordinate> = []
     const rowNum = square[0]
     const colNum = square[1]
 
@@ -143,63 +158,76 @@ function filterAdjacentSquares(squaresArray) {
     return squaresArray.filter(square => !arrayInArray(square, mines))
 }
 
+// @ts-ignore
 function checkWinner() {
     if (mines.length + userSquares.length === 64) {
         [...document.getElementsByClassName('game-square')]
         .forEach((elem, ind) => {
             elem.setAttribute('disabled', 'true')
             if (arrayInArray([Math.floor(ind / 8), ind % 8], mines)) {
-                elem.setAttribute('class', 'game-square mine')
-                elem.innerText = 'X'
+                elem.setAttribute('class', 'game-square mine');
+                (elem as HTMLElement).innerText = 'X'
             }
             else elem.setAttribute('class', 'game-square selected')
         })
-        document.getElementById('current').innerText = 'Congratulations! You won the game.'
-        clearInterval(timer)
+        const currentTextElem = document.getElementById('current')
+        if (currentTextElem) currentTextElem.innerText = 'Congratulations! You won the game.'
+        clearInterval(intervalSet)
     }
 }
 
 function resetGridStyle() {
-    grid.forEach((row, rowInd) => {
+    (grid as Array<Array<Square>>).forEach((row, rowInd) => {
         row.forEach((col, colInd) => {
             const ind = rowInd * 8 + colInd
             const sqElem = document.getElementById(`sq${ind}`)
             if (arrayInArray([rowInd, colInd], flags)) {
-                sqElem.setAttribute('class', 'game-square flagged')
-                sqElem.removeAttribute('disabled')
-                sqElem.innerText = 'F'
+                if (sqElem) {
+                    sqElem.setAttribute('class', 'game-square flagged')
+                    sqElem.removeAttribute('disabled')
+                    sqElem.innerText = 'F'
+                }
             } else if (arrayInArray([rowInd, colInd], userSquares)) {
-                sqElem.setAttribute('class', 'game-square selected')
-                sqElem.setAttribute('disabled', '')
-                sqElem.innerText = '-'
+                if (sqElem) {
+                    sqElem.setAttribute('class', 'game-square selected')
+                    sqElem.setAttribute('disabled', '')
+                    sqElem.innerText = '-'
+                }
                 const surroundingSquares = adjacentSquares([Math.floor(ind / 8), ind % 8])
                 const surroundingSquaresWithMines = filterAdjacentSquares(surroundingSquares)
                 const numOfMines = surroundingSquares.length - surroundingSquaresWithMines.length
                 if (numOfMines > 0) {
-                    sqElem.innerText = numOfMines
-                    sqElem.style.color = [
-                        "blue", "green", "orange", "yellow", "red", "black"
-                    ][numOfMines > 6 ? 6 : numOfMines - 1]
+                    if (sqElem) {
+                        sqElem.innerText = numOfMines.toString()
+                        sqElem.style.color = [
+                            "blue", "green", "orange", "yellow", "red", "black"
+                        ][numOfMines > 6 ? 6 : numOfMines - 1]
+                    }
                 }
             } else {
-                sqElem.setAttribute('class', 'game-square')
-                sqElem.removeAttribute('disabled')
+                if (sqElem) {
+                    sqElem.setAttribute('class', 'game-square')
+                    sqElem.removeAttribute('disabled')
+                }
             }
         })
     })
 }
 
-function arrayInArray(searchArray, array) {
+// @ts-ignore
+function arrayInArray<T>(searchArray: Array<T>, array: Array<Array<T>>) {
     return array.some((mainArr) => mainArr.length === searchArray.length && mainArr.every((elem, ind) => searchArray[ind] === elem))
 }
 
 function toggleFlag() {
     flagMode = !flagMode
     const flagButton = document.getElementById('toggle-flag')
-    flagButton.setAttribute('class', flagMode ? 'flag-on' : 'flag-off')
-    flagButton.innerText = flagMode ? 'Flag Mode On' : 'Flag Mode Off'
+    if (flagButton) {
+        flagButton.setAttribute('class', flagMode ? 'flag-on' : 'flag-off')
+        flagButton.innerText = flagMode ? 'Flag Mode On' : 'Flag Mode Off'
+    }
     const flagsText = document.getElementById('flags-remaining')
     if (flagsText) flagsText.innerText = flagMode ? `Flags Remaining: ${numOfMines - flags.length}` : ''
 }
 
-setInterval(timer, 1000)
+intervalSet = setInterval(interval, 1000)
