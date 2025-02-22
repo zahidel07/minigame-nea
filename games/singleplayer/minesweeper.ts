@@ -1,8 +1,9 @@
 // @ts-ignore
 type Coordinate = [number, number]
+type Grid = Array<Array<number | null>>
 
 // @ts-ignore
-let grid: Array<Array<number | null>> = Array(8).fill(Array(8).fill(null))
+let grid: Grid = Array(8).fill(Array(8).fill(null))
 let numOfMines = 0
 // @ts-ignore
 let [time, mins, sec]: number[] = [0, 0, 0]
@@ -58,7 +59,7 @@ function updateSquare(square: number) {
         } else {
             if (flags.length >= numOfMines) {
                 if (textElem) textElem.innerText = 'You have reached your maximum number of flags.';
-                [...document.getElementsByClassName('game-square')]
+                Array.from(document.getElementsByClassName('game-square'))
                 .forEach((elem) => elem.setAttribute('disabled', ''))
                 setTimeout(() => {
                     if (textElem) textElem.innerText = 'Choose a square'
@@ -78,7 +79,7 @@ function updateSquare(square: number) {
         if (arrayInArray([row, col], flags)) {
             const textElem = document.getElementById('current')
             const prevText = textElem?.innerText || 'Select a square';
-            [...document.getElementsByClassName('game-square')]
+            Array.from(document.getElementsByClassName('game-square'))
             .forEach((elem) => elem.setAttribute('disabled', ''))
             if (textElem) textElem.innerText = 'You cannot select an element that has been flagged.'
             setTimeout(() => {
@@ -87,7 +88,7 @@ function updateSquare(square: number) {
             }, 1500)
         } else if (!arrayInArray([row, col], userSquares)) {
             if (arrayInArray([row, col], mines)) {
-                [...document.getElementsByClassName('game-square')]
+                Array.from(document.getElementsByClassName('game-square'))
                 .forEach((elem, ind) => {
                     elem.setAttribute('disabled', '')
                     let tempRow = Math.floor(ind / 8)
@@ -124,6 +125,7 @@ function updateSquare(square: number) {
     }
 }
 
+// @ts-ignore
 function adjacentSquares(square) {
     let adjSquares: Array<Coordinate> = []
     const rowNum = square[0]
@@ -154,6 +156,7 @@ function adjacentSquares(square) {
     return adjSquares
 }
 
+// @ts-ignore
 function filterAdjacentSquares(squaresArray) {
     return squaresArray.filter(square => !arrayInArray(square, mines))
 }
@@ -161,7 +164,7 @@ function filterAdjacentSquares(squaresArray) {
 // @ts-ignore
 function checkWinner() {
     if (mines.length + userSquares.length === 64) {
-        [...document.getElementsByClassName('game-square')]
+        Array.from(document.getElementsByClassName('game-square'))
         .forEach((elem, ind) => {
             elem.setAttribute('disabled', 'true')
             if (arrayInArray([Math.floor(ind / 8), ind % 8], mines)) {
@@ -176,9 +179,10 @@ function checkWinner() {
     }
 }
 
+// @ts-ignore
 function resetGridStyle() {
-    (grid as Array<Array<Square>>).forEach((row, rowInd) => {
-        row.forEach((col, colInd) => {
+    (grid as Grid).forEach((row, rowInd) => {
+        row.forEach((_, colInd) => {
             const ind = rowInd * 8 + colInd
             const sqElem = document.getElementById(`sq${ind}`)
             if (arrayInArray([rowInd, colInd], flags)) {

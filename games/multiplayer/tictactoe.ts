@@ -6,7 +6,7 @@ type Square = Player | null
 let current: Player = "X"
 let diff = 1
 let winningCombos: Array<Array<Coordinate>> = []
-// @ts-ignore
+// @ts-expect-error
 let grid: Array<Array<Square>> = []
 
 // @ts-ignore
@@ -81,16 +81,17 @@ function chooseDifficulty(difficulty: 3 | 4) {
 function updateSquare(square: number) {
     const row = Math.floor(square / diff)
     const col = square % diff
-    grid[row] = grid[row].map((elem, ind) => ind === col ? current : elem)
+    // @ts-ignore
+    grid[row] = grid[row].map((elem: Square, ind) => ind === col ? current : elem)
     updateGrid(grid)
 }
 
-function updateGrid(newGrid) {
+function updateGrid(newGrid: Grid) {
     for (let row = 0; row < diff; row++) {
         for (let col = 0; col < diff; col++) {
             const button = document.getElementById(`sq${row * diff + col}`)
             if (button) {
-                button.innerText = newGrid[row][col] || '-'
+                button.innerText = newGrid[row][col]?.toString() || '-'
                 if (button.innerText !== "-") button.setAttribute("disabled", "true")
                 else button.removeAttribute('disabled')
             }
@@ -100,7 +101,8 @@ function updateGrid(newGrid) {
     const isThereWinner = winner()
 
     if (isThereWinner) {
-        [...document.getElementsByClassName("game-square")].forEach((elem) => elem.setAttribute('disabled', ''))
+        Array.from(document.getElementsByClassName("game-square"))
+        .forEach((elem) => elem.setAttribute('disabled', ''))
     } else {
         current = (current === "X" ? "O" : "X")
         const currentPlayer = document.getElementById("current")

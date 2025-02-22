@@ -46,7 +46,7 @@ function updateSquare(square) {
 }
 
 function updateGrid() {
-    [...document.getElementsByClassName('game-square')]
+    Array.from(document.getElementsByClassName('game-square'))
     .forEach((elem, elemInd) => {
         if (currentSelected[0] === -1 && currentSelected[1] === -1) {
             elem.setAttribute('class', 'game-square')

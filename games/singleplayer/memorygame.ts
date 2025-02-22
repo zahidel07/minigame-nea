@@ -1,4 +1,6 @@
+// @ts-ignore
 let presetGrid: Array<Array<null | number>> = []
+// @ts-ignore
 let userGrid: Array<Array<null | number>> = []
 // @ts-ignore
 let [maxRows, maxCols, time, mins, sec]: number[] = [0, 0, 0, 0, 0]
@@ -15,6 +17,7 @@ const interval = () => {
 // @ts-ignore
 let intervalSet: any = null 
 
+// @ts-ignore
 function gridHTML(rows: number, cols: number) {
     let gridStr = '<p id="current">Choose 2 squares</p>\n'
     for (let r = 0; r < rows; r++) {
@@ -56,8 +59,10 @@ function chooseDifficulty(difficulty: 0 | 1 | 2) {
     fillRandom()
 }
 
+// @ts-ignore
 let chosenElements = [[-1, -1], [-1, -1]]
 
+// @ts-ignore
 function fillRandom() {
     for (let ind = 1; ind <= presetGrid.flat().length + 1; ind++) {
         let randRow = Math.floor(Math.random() * maxRows)
@@ -80,7 +85,7 @@ function updateSquare(square: number) {
         if (!textElement) return
         const previousText = textElement.innerText
         textElement.innerText = 'You cannot choose the same square twice!';
-        [...document.getElementsByClassName('game-square')]
+        Array.from(document.getElementsByClassName('game-square'))
         .map((sq, ind) => {
             const sqRow = Math.floor(square / maxRows)
             const sqCol = square % maxCols
@@ -96,6 +101,7 @@ function updateSquare(square: number) {
     else checkChosen(square)
 }
 
+// @ts-ignore
 function checkChosen(userSelected: number) {
     if (arrayInArray([-1, -1], chosenElements)) {
         const indexOfMinusOne = arrayIndexInArray([-1, -1], chosenElements)
@@ -116,6 +122,7 @@ function checkChosen(userSelected: number) {
     }
 }
 
+// @ts-ignore
 function equalSquares() {
     const textElement = document.getElementById('current')
     if (!textElement) return
@@ -163,8 +170,9 @@ function equalSquares() {
     }
 }
 
+// @ts-ignore
 function resetGridStyling() {
-    [...document.getElementsByClassName('game-square')]
+    Array.from(document.getElementsByClassName('game-square'))
     .forEach((square) => {
         const id = square.id
         const idNum = parseInt(id.slice(2))   
@@ -202,10 +210,12 @@ function arrayInArray<T>(searchArray: Array<T>, array: Array<Array<T>>) {
     return array.some((mainArr) => areArraysEqual(searchArray, mainArr))
 }
 
+// @ts-ignore
 function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
     return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
 }
 
+// @ts-ignore
 function arrayIndexInArray<T>(searchArray: Array<T>, array: Array<Array<T>>) {
     if (arrayInArray(searchArray, array)) {
         let ind = 0
