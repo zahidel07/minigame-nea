@@ -1,0 +1,31 @@
+div[class="game-square"] {
+    border: 1px solid black;
+    margin: 0px;
+    padding: 1px
+}
+
+div.row {
+    display: block;
+    padding: 5px
+}
+
+div.row > button {
+    margin: 0px;   
+}
+
+button.game-square {
+    height: 25px;
+    width: 25px;
+    font-size: smaller;
+    border: 1px solid black;
+    padding: 0%;
+    text-align: centre
+}
+
+div.row:nth-child(2n) > button:nth-child(2n), div.row:nth-child(2n - 1) > button:nth-child(2n - 1) {
+    background-color: white;
+}
+
+div.row:nth-child(2n - 1) > button:nth-child(2n), div.row:nth-child(2n) > button:nth-child(2n - 1) {
+    background-color: #fa3;
+}
