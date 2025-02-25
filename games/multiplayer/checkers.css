@@ -10,7 +10,8 @@ div.row {
 }
 
 div.row > button {
-    margin: 0px;   
+    margin: 0px;
+    vertical-align: top;
 }
 
 button.game-square {
@@ -22,10 +23,30 @@ button.game-square {
     text-align: centre
 }
 
-div.row:nth-child(2n) > button:nth-child(2n), div.row:nth-child(2n - 1) > button:nth-child(2n - 1) {
+div.row:nth-child(2n) > button:nth-child(2n):not(.selected, .pseudoselected), 
+div.row:nth-child(2n - 1) > button:nth-child(2n - 1):not(.selected, .pseudoselected) {
     background-color: white;
 }
 
-div.row:nth-child(2n - 1) > button:nth-child(2n), div.row:nth-child(2n) > button:nth-child(2n - 1) {
+div.row:nth-child(2n - 1) > button:nth-child(2n):not(.selected, .pseudoselected), 
+div.row:nth-child(2n) > button:nth-child(2n - 1):not(.selected, .pseudoselected) {
     background-color: #fa3;
+}
+
+button.game-square.black {
+    color: black;
+}
+
+button.game-square.red {
+    color: red
+}
+
+button.selected {
+    background-color: #00f;
+    color: white;
+}
+
+button.pseudoselected {
+    background-color: #0af;
+    color: white
 }

@@ -4,7 +4,7 @@
         <title>Checkers</title>
         <link href="../../main.css" rel="stylesheet" />
         <link href="checkers.css" rel="stylesheet" />
-        <script src="checkers.js" type="javascript"></script>
+        <script src="checkers.js"></script>
     </head>
     <body>
         <div class="header">
@@ -13,88 +13,87 @@
         </div>
         <hr>
         <div id="gamebox">
-            <p id="current">Current player: ...</p>
+            <p id="current">Current player: Black</p>
             <div class="row">
                 <button class="game-square red" id="sq0" onclick="updateSquare(0)">X</button>
-                <button class="game-square" id="sq1" onclick="updateSquare(1)">-</button>
+                <button class="game-square" id="sq1" onclick="updateSquare(1)"> </button>
                 <button class="game-square red" id="sq2" onclick="updateSquare(2)">X</button>
-                <button class="game-square" id="sq3" onclick="updateSquare(3)"></button>
+                <button class="game-square" id="sq3" onclick="updateSquare(3)"> </button>
                 <button class="game-square red" id="sq4" onclick="updateSquare(4)">X</button>
-                <button class="game-square" id="sq5" onclick="updateSquare(5)"></button>
+                <button class="game-square" id="sq5" onclick="updateSquare(5)"> </button>
                 <button class="game-square red" id="sq6" onclick="updateSquare(6)">X</button>
-                <button class="game-square" id="sq7" onclick="updateSquare(7)"></button>
+                <button class="game-square" id="sq7" onclick="updateSquare(7)"> </button>
             </div>
             <div class="row">
-                <button class="game-square red" id="sq8" onclick="updateSquare(8)">X</button>
-                <button class="game-square" id="sq9" onclick="updateSquare(9)"></button>
-                <button class="game-square red" id="sq10" onclick="updateSquare(10)">X</button>
-                <button class="game-square" id="sq11" onclick="updateSquare(11)"></button>
-                <button class="game-square red" id="sq12" onclick="updateSquare(12)">X</button>
-                <button class="game-square" id="sq13" onclick="updateSquare(13)"></button>
-                <button class="game-square red" id="sq14" onclick="updateSquare(14)">X</button>
-                <button class="game-square" id="sq15" onclick="updateSquare(15)"></button>
+                <button class="game-square" id="sq8" onclick="updateSquare(8)"> </button>
+                <button class="game-square red" id="sq9" onclick="updateSquare(9)">X</button>
+                <button class="game-square" id="sq10" onclick="updateSquare(10)"> </button>
+                <button class="game-square red" id="sq11" onclick="updateSquare(11)">X</button>
+                <button class="game-square" id="sq12" onclick="updateSquare(12)"> </button>
+                <button class="game-square red" id="sq13" onclick="updateSquare(13)">X</button>
+                <button class="game-square" id="sq14" onclick="updateSquare(14)"> </button>
+                <button class="game-square red" id="sq15" onclick="updateSquare(15)">X</button>
             </div>
             <div class="row">
                 <button class="game-square red" id="sq16" onclick="updateSquare(16)">X</button>
-                <button class="game-square" id="sq17" onclick="updateSquare(17)"></button>
+                <button class="game-square" id="sq17" onclick="updateSquare(17)"> </button>
                 <button class="game-square red" id="sq18" onclick="updateSquare(18)">X</button>
-                <button class="game-square" id="sq19" onclick="updateSquare(19)"></button>
+                <button class="game-square" id="sq19" onclick="updateSquare(19)"> </button>
                 <button class="game-square red" id="sq20" onclick="updateSquare(20)">X</button>
-                <button class="game-square" id="sq21" onclick="updateSquare(21)"></button>
+                <button class="game-square" id="sq21" onclick="updateSquare(21)"> </button>
                 <button class="game-square red" id="sq22" onclick="updateSquare(22)">X</button>
-                <button class="game-square" id="sq23" onclick="updateSquare(23)"></button>
+                <button class="game-square" id="sq23" onclick="updateSquare(23)"> </button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq24" onclick="updateSquare(24)"></button>
-                <button class="game-square" id="sq25" onclick="updateSquare(25)"></button>
-                <button class="game-square" id="sq26" onclick="updateSquare(26)"></button>
-                <button class="game-square" id="sq27" onclick="updateSquare(27)"></button>
-                <button class="game-square" id="sq28" onclick="updateSquare(28)"></button>
-                <button class="game-square" id="sq29" onclick="updateSquare(29)"></button>
-                <button class="game-square" id="sq30" onclick="updateSquare(30)"></button>
-                <button class="game-square" id="sq31" onclick="updateSquare(31)"></button>
+                <button class="game-square" id="sq24" onclick="updateSquare(24)"> </button>
+                <button class="game-square" id="sq25" onclick="updateSquare(25)"> </button>
+                <button class="game-square" id="sq26" onclick="updateSquare(26)"> </button>
+                <button class="game-square" id="sq27" onclick="updateSquare(27)"> </button>
+                <button class="game-square" id="sq28" onclick="updateSquare(28)"> </button>
+                <button class="game-square" id="sq29" onclick="updateSquare(29)"> </button>
+                <button class="game-square" id="sq30" onclick="updateSquare(30)"> </button>
+                <button class="game-square" id="sq31" onclick="updateSquare(31)"> </button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq32" onclick="updateSquare(32)"></button>
-                <button class="game-square" id="sq33" onclick="updateSquare(33)"></button>
-                <button class="game-square" id="sq34" onclick="updateSquare(34)"></button>
-                <button class="game-square" id="sq35" onclick="updateSquare(35)"></button>
-                <button class="game-square" id="sq36" onclick="updateSquare(36)"></button>
-                <button class="game-square" id="sq37" onclick="updateSquare(37)"></button>
-                <button class="game-square" id="sq38" onclick="updateSquare(38)"></button>
-                <button class="game-square" id="sq39" onclick="updateSquare(39)"></button>
+                <button class="game-square" id="sq32" onclick="updateSquare(32)"> </button>
+                <button class="game-square" id="sq33" onclick="updateSquare(33)"> </button>
+                <button class="game-square" id="sq34" onclick="updateSquare(34)"> </button>
+                <button class="game-square" id="sq35" onclick="updateSquare(35)"> </button>
+                <button class="game-square" id="sq36" onclick="updateSquare(36)"> </button>
+                <button class="game-square" id="sq37" onclick="updateSquare(37)"> </button>
+                <button class="game-square" id="sq38" onclick="updateSquare(38)"> </button>
+                <button class="game-square" id="sq39" onclick="updateSquare(39)"> </button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq40" onclick="updateSquare(40)"></button>
-                <button class="game-square" id="sq41" onclick="updateSquare(41)"></button>
-                <button class="game-square" id="sq42" onclick="updateSquare(42)"></button>
-                <button class="game-square" id="sq43" onclick="updateSquare(43)"></button>
-                <button class="game-square" id="sq44" onclick="updateSquare(44)"></button>
-                <button class="game-square" id="sq45" onclick="updateSquare(45)"></button>
-                <button class="game-square" id="sq46" onclick="updateSquare(46)"></button>
-                <button class="game-square" id="sq47" onclick="updateSquare(47)"></button>
+                <button class="game-square" id="sq40" onclick="updateSquare(40)"> </button>
+                <button class="game-square black" id="sq41" onclick="updateSquare(41)">X</button>
+                <button class="game-square" id="sq42" onclick="updateSquare(42)"> </button>
+                <button class="game-square black" id="sq43" onclick="updateSquare(43)">X</button>
+                <button class="game-square" id="sq44" onclick="updateSquare(44)"> </button>
+                <button class="game-square black" id="sq45" onclick="updateSquare(45)">X</button>
+                <button class="game-square" id="sq46" onclick="updateSquare(46)"> </button>
+                <button class="game-square black" id="sq47" onclick="updateSquare(47)">X</button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq48" onclick="updateSquare(48)"></button>
-                <button class="game-square" id="sq49" onclick="updateSquare(49)"></button>
-                <button class="game-square" id="sq50" onclick="updateSquare(50)"></button>
-                <button class="game-square" id="sq51" onclick="updateSquare(51)"></button>
-                <button class="game-square" id="sq52" onclick="updateSquare(52)"></button>
-                <button class="game-square" id="sq53" onclick="updateSquare(53)"></button>
-                <button class="game-square" id="sq54" onclick="updateSquare(54)"></button>
-                <button class="game-square" id="sq55" onclick="updateSquare(55)"></button>
+                <button class="game-square black" id="sq48" onclick="updateSquare(48)">X</button>
+                <button class="game-square" id="sq49" onclick="updateSquare(49)"> </button>
+                <button class="game-square black" id="sq50" onclick="updateSquare(50)">X</button>
+                <button class="game-square" id="sq51" onclick="updateSquare(51)"> </button>
+                <button class="game-square black" id="sq52" onclick="updateSquare(52)">X</button>
+                <button class="game-square" id="sq53" onclick="updateSquare(53)"> </button>
+                <button class="game-square black" id="sq54" onclick="updateSquare(54)">X</button>
+                <button class="game-square" id="sq55" onclick="updateSquare(55)"> </button>
             </div>
             <div class="row">
-                <button class="game-square" id="sq56" onclick="updateSquare(56)"></button>
-                <button class="game-square" id="sq57" onclick="updateSquare(57)"></button>
-                <button class="game-square" id="sq58" onclick="updateSquare(58)"></button>
-                <button class="game-square" id="sq59" onclick="updateSquare(59)"></button>
-                <button class="game-square" id="sq60" onclick="updateSquare(60)"></button>
-                <button class="game-square" id="sq61" onclick="updateSquare(61)"></button>
-                <button class="game-square" id="sq62" onclick="updateSquare(62)"></button>
-                <button class="game-square" id="sq63" onclick="updateSquare(63)"></button>
+                <button class="game-square" id="sq56" onclick="updateSquare(56)"> </button>
+                <button class="game-square black" id="sq57" onclick="updateSquare(57)">X</button>
+                <button class="game-square" id="sq58" onclick="updateSquare(58)"> </button>
+                <button class="game-square black" id="sq59" onclick="updateSquare(59)">X</button>
+                <button class="game-square" id="sq60" onclick="updateSquare(60)"> </button>
+                <button class="game-square black" id="sq61" onclick="updateSquare(61)">X</button>
+                <button class="game-square" id="sq62" onclick="updateSquare(62)"> </button>
+                <button class="game-square black" id="sq63" onclick="updateSquare(63)">X</button>
             </div>
-            <p>Time elapsed: <span id="interval">00:00</span></p>
         </div>
     </body>
 </html>

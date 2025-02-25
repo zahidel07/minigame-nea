@@ -1,3 +1,5 @@
+import * as fs from 'fs'
+
 // @ts-ignore
 type Coordinate = [number, number]
 type Player = "X" | "O"
@@ -6,7 +8,7 @@ type Square = Player | null
 let current: Player = "X"
 let diff = 1
 let winningCombos: Array<Array<Coordinate>> = []
-// @ts-expect-error
+// @ts-ignore
 let grid: Array<Array<Square>> = []
 
 // @ts-ignore
@@ -86,7 +88,7 @@ function updateSquare(square: number) {
     updateGrid(grid)
 }
 
-function updateGrid(newGrid: Grid) {
+function updateGrid(newGrid: Array<Array<Square>>) {
     for (let row = 0; row < diff; row++) {
         for (let col = 0; col < diff; col++) {
             const button = document.getElementById(`sq${row * diff + col}`)

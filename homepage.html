@@ -5,6 +5,10 @@
         <title>MyMiniGames</title>
         <link href="main.css" rel="stylesheet" />
         <link href="homepage.css" rel="stylesheet" />
+        <script type="module">
+            import { test } from "./homepage.js"
+            test()
+        </script>
         <script>
             fetch('user.json')
             .then(data => data.json())
