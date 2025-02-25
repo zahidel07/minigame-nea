@@ -31,6 +31,7 @@ general
 [] • set up database on mySQL and connect to it
 [] • fix input system, by removing href to homepage and performing action before it
 [] • create and connect to MySQL database
+[] • fix validation forms
 [] • file handling
 
 For SSH certificate problem:

@@ -4,7 +4,158 @@
         <title>Memory Game • Singleplayer</title>
         <link href="../../main.css" rel="stylesheet" />
         <link href="memorygame.css" rel="stylesheet" />
-        <script src="memorygame.js"></script>
+        <script>
+            // GOAL: switch to 2D indexing
+            let presetGrid = Array(4).fill(Array(5).fill(null))
+
+            let userGrid = Array(4).fill(Array(5).fill(null))
+
+            let chosenElements = [-1, -1]
+
+            for (let ind = 1; ind <= presetGrid.length + 1; ind++) {
+                let randRow = Math.floor(Math.random() * 4)
+                let randCol = Math.floor(Math.random() * 5)
+                while (!!presetGrid[randRow][randCol]) {
+                    randRow = Math.floor(Math.random() * 4)    
+                    randCol = Math.floor(Math.random() * 5)
+                }
+                presetGrid[randRow] = presetGrid[randRow].map((elem, ind) => ind === randCol ? Math.floor(ind / 2) : elem)
+            }
+
+            function updateSquare(square) {
+                const row = Math.floor(square / 4)
+                const col = square % 5
+
+                if (arrayInArray([row, col], chosenElements)) {
+                    const textElement = document.getElementById('current')
+                    const previousText = textElement.innerText
+                    textElement.innerText = 'You cannot choose the same square twice!';
+                    [...document.getElementsByClassName('game-square')]
+                    .map((sq, ind) => {
+                        const sqRow = Math.floor(square / 4)
+                        const sqCol = square % 5
+                            !!userGrid[sqRow][sqCol] 
+                            ? sq.setAttribute('class', 'game-square valid') 
+                            : (ind === sqRow * 4 + sqCol ? sq.setAttribute('class', 'game-square invalid') : sq.setAttribute('class', 'game-square locked'))
+                    })
+                    setTimeout(() => {
+                        textElement.innerText = previousText
+                        resetGridStyling()
+                    }, 1500)
+                }
+                else checkChosen(square)
+            }
+
+            function checkChosen(userSelected) {
+                if (arrayInArray([-1, -1], chosenElements)) {
+                    const indexOfMinusOne = arrayIndexInArray([-1, -1], chosenElements)
+                    if (indexOfMinusOne === -1) return
+                    const selectedRow = Math.floor(userSelected / 4)
+                    const selectedCol = userSelected % 5
+                    chosenElements[indexOfMinusOne] = [selectedRow, selectedCol]
+                    const elem = document.getElementById(`sq${userSelected}`)
+                    elem.innerText = presetGrid[selectedRow][selectedCol]
+                    elem.setAttribute('class', 'game-square selected')
+                    if (!arrayInArray([-1, -1], chosenElements)) equalSquares()
+                    else document.getElementById('current').indexText = "Choose 1 more square"
+                }
+            }
+
+            function equalSquares() {
+                const textElement = document.getElementById('current')
+                const firstSqRow = chosenElements[0][0]
+                const firstSqCol = chosenElements[0][1]
+                const secondSqRow = chosenElements[1][0]
+                const secondSqCol = chosenElements[1][1]
+
+                if (presetGrid[firstSqRow][firstSqCol] == presetGrid[secondSqRow][secondSqCol]) {
+                    textElement.innerText = "Matched!"
+                    chosenElements.forEach((elem, ind) => {
+                        const row = elem[0]
+                        const col = elem[1]
+                        const sqElem = document.getElementById(`sq${ind}`)
+                        sqElem.disabled = true
+                        sqElem.setAttribute('class', 'game-square valid')
+                        userGrid[row][col] = presetGrid[row][col]
+                    })
+                    setTimeout(() => checkWinner(), 1500)
+                } else {
+                    textElement.innerText = "Didn't match..."
+                    chosenElements.forEach((elem) => {
+                        const ind = elem[0] * 4 + elem[1]
+                        document.getElementById(`sq${ind}`).setAttribute('class', 'game-square invalid')
+                        document.getElementById(`sq${ind}`).disabled = true
+                    })
+                    setTimeout(() => {
+                        chosenElements.forEach((elem) => {
+                            const ind = elem[0] * 4 + elem[1]
+                            document.getElementById(`sq${ind}`).disabled = false
+                            document.getElementById(`sq${ind}`).setAttribute('class', 'game-square')
+                            document.getElementById(`sq${ind}`).innerText = '-'
+                        })
+                        chosenElements = [[-1, -1], [-1, -1]]
+                        textElement.innerText = "Choose 2 squares"
+                    }, 1500)
+                }
+            }
+
+            // CONTINUE LATER
+            function resetGridStyling() {
+                [...document.getElementsByClassName('game-square')]
+                .forEach((square) => {
+                    const id = square.id
+                    const idNum = parseInt(id.slice(2))    
+
+                    if (!!userGrid[idNum]) {
+                        square
+                        .setAttribute('class', 'game-square valid')
+                        .setAttribute('disabled', true)
+                    } else if (chosenElements.includes(idNum)) {
+                        square
+                        .setAttribute('class', 'game-square selected')
+                        .setAttribute('disabled', true)
+                    } else {
+                        square
+                        .setAttribute('class', 'game-square')
+                        .setAttribute('disabled', false)
+                    }
+                })
+            }
+
+            function checkWinner() {
+                const textElement = document.getElementById('current')
+
+                if (!userGrid.includes(null)) {
+                    textElement.innerText = 'Game over'
+                } else {
+                    chosenElements = [-1, -1]
+                    textElement.innerText = "Choose 2 squares"
+                }
+            }
+            // COMPLETE HERE
+
+            function arrayInArray(searchArray, array) {
+                return array.some((mainArr) => areArraysEqual(searchArray, mainArr))
+            }
+
+            function areArraysEqual(array1, array2) {
+                return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
+            }
+
+            function arrayIndexInArray(searchArray, array) {
+                if (arrayInArray(searchArray, array)) {
+                    let ind = 0
+                    for (let n = 0; n < array.length; n++) {
+                        if (areArraysEqual(searchArray, array[n])) {
+                            ind = n
+                            return ind
+                        }
+                        else continue
+                    }
+                    return -1
+                } else return -1
+            }
+        </script>
     </head>
     <body>
         <div class="header">
