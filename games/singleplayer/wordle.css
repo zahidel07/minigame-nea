@@ -15,6 +15,7 @@ div.row {
 
 div.row > button.letter-box {
     margin: 0px;   
+    vertical-align: top;
 }
 
 button.letter-box {

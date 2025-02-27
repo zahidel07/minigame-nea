@@ -1,5 +1,3 @@
-import * as fs from 'fs'
-
 // @ts-ignore
 type Coordinate = [number, number]
 type Player = "X" | "O"
@@ -88,6 +86,7 @@ function updateSquare(square: number) {
     updateGrid(grid)
 }
 
+// @ts-ignore
 function updateGrid(newGrid: Array<Array<Square>>) {
     for (let row = 0; row < diff; row++) {
         for (let col = 0; col < diff; col++) {
