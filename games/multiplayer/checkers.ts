@@ -1,5 +1,7 @@
 type Checker = "B" | "R" | "KB" | "KR"
+// @ts-ignore
 type Square = Checker | null
+// @ts-ignore
 type Coordinate = [number, number]
 type Row = [Square, Square, Square, Square, Square, Square, Square, Square]
 

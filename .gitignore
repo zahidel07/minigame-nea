@@ -2,3 +2,4 @@
 db
 *.env
 games/singleplayer/wordle-words.js
+php-8.4.4-src

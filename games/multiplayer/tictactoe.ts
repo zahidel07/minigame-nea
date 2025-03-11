@@ -1,6 +1,7 @@
 // @ts-ignore
 type Coordinate = [number, number]
 type Player = "X" | "O"
+// @ts-ignore
 type Square = Player | null
 
 let current: Player = "X"
