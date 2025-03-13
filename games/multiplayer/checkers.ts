@@ -77,14 +77,12 @@ function updateGrid() {
 }
 
 // @ts-ignore
-function mapDiagonals(coord: Coordinate, depth?: number = 8, dir?: "U" | "D" | "A" = "A"): Array<Coordinate> {
+function mapDiagonals(coord: Coordinate, dir?: "U" | "D" | "A" = "A"): Array<Coordinate> {
     let arrDiag: Coordinate[] = []
-    for (let i = 1; i <= depth; i++) {
-        if (dir === "U" || dir === "A") arrDiag.push([coord[0] - i, coord[1] - i], [coord[0] - i, coord[1] + i])
-        if (dir === "D" || dir === "A") arrDiag.push([coord[0] + i, coord[1] - i], [coord[0] + i, coord[1] + i])
-    }
+    if (dir === "U" || dir === "A") arrDiag.push([coord[0] - 1, coord[1] - 1], [coord[0] - 1, coord[1] + 1])
+    if (dir === "D" || dir === "A") arrDiag.push([coord[0] + 1, coord[1] - 1], [coord[0] + 1, coord[1] + 1])
     arrDiag = arrDiag
-    .filter(x => x[0] >= 0 && x[0] <= 7 && x[1] >= 0 && x[1] <= 7)
+    .filter(validCoordinate)
     .filter(x => {
         const coordElem = grid[x[0]][x[1]]
         const gridElem = grid[coord[0]][coord[1]]
@@ -116,16 +114,19 @@ function updateSquare(sq: number) {
         otherSelected = []
     } else {
         selected = [row, col]
+        // UPDATE LATER
+        // --
         if (grid[row][col] === "R" && player === "R") {
-            otherSelected = mapDiagonals([row, col], 1, "D") as Array<Coordinate>
+            otherSelected = mapDiagonals([row, col], "D") as Array<Coordinate>
         } else if (grid[row][col] === "B" && player === "B") {
-            otherSelected = mapDiagonals([row, col], 1, "U") as Array<Coordinate>
+            otherSelected = mapDiagonals([row, col], "U") as Array<Coordinate>
         } else if ((grid[row][col] === "KR" && player === "R") || (grid[row][col] === "KB" && player === "B")) {
             otherSelected = mapDiagonals([row, col]) as Array<Coordinate>
         } else {
             selected = [-1, -1]
             otherSelected = []
         }
+        // --
     }
     updateGrid()
 }
@@ -148,4 +149,8 @@ function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
     if (!flatGrid.includes("B")) return "R"
     else if (!flatGrid.includes("R")) return "B"
     else return null
+}
+
+function validCoordinate(coordinate: [number, number]): coordinate is Coordinate {
+    return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
 }
