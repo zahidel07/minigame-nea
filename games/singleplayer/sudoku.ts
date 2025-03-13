@@ -1,6 +1,8 @@
 let currentSelected = [-1, -1]
 // @ts-ignore
 let grid = Array(9).fill(Array(9).fill(null))
+// @ts-ignore
+type Coordinate = [number, number]
 let prefillIndexes = Array(9).fill([-1, -1])
 let prefillNumbers = Array(9).fill(null)
 // @ts-ignore
@@ -94,6 +96,11 @@ function checkValidity(sq: Coordinate) {
     return otherSqs
     .map(x => grid[x[0]][x[1]])
     .every(n => n != numAtSq)
+}
+
+// @ts-ignore
+function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
+    return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
 }
 
 fillRandom()
