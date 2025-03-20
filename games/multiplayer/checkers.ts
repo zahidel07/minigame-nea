@@ -77,21 +77,65 @@ function updateGrid() {
 }
 
 // @ts-ignore
-function mapDiagonals(coord: Coordinate, dir?: "U" | "D" | "A" = "A"): Array<Coordinate> {
+function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate> {
     let arrDiag: Coordinate[] = []
-    if (dir === "U" || dir === "A") arrDiag.push([coord[0] - 1, coord[1] - 1], [coord[0] - 1, coord[1] + 1])
-    if (dir === "D" || dir === "A") arrDiag.push([coord[0] + 1, coord[1] - 1], [coord[0] + 1, coord[1] + 1])
-    arrDiag = arrDiag
-    .filter(validCoordinate)
-    .filter(x => {
-        const coordElem = grid[x[0]][x[1]]
-        const gridElem = grid[coord[0]][coord[1]]
-        if (!gridElem || !coordElem) return true
-        if (["B", "KB"].includes(gridElem) && ["B", "KB"].includes(coordElem)) return false
-        if (["R", "KR"].includes(gridElem) && ["R", "KR"].includes(coordElem)) return false
-        if (gridElem !== coordElem) return true
-        return true
-    })
+    const currentSq = grid[coord[0]][coord[1]]
+    if (!currentSq) return []
+    if (dir === "U" || dir === "A") {
+        const upperLeft = [coord[0] - 1, coord[1] - 1] as Coordinate
+        if (validCoordinate(upperLeft)) {
+            const upperLeftSq = grid[upperLeft[0]][upperLeft[1]]
+            if (upperLeftSq) {
+                if (!checkSameColour(currentSq, upperLeftSq)) {
+                    const nextUpperLeft = [coord[0] - 2, coord[1] - 2] as Coordinate
+                    if (validCoordinate(nextUpperLeft)) {
+                        const nextUpperLeftSq = grid[nextUpperLeft[0]][nextUpperLeft[1]]
+                        if (!nextUpperLeftSq) arrDiag.push(nextUpperLeft)
+                    }        
+                }
+            } else arrDiag.push(upperLeft)
+        }
+        const upperRight = [coord[0] - 1, coord[1] + 1] as Coordinate
+        if (validCoordinate(upperRight)) {
+            const upperRightSq = grid[upperRight[0]][upperRight[1]]
+            if (upperRightSq) {
+                if (!checkSameColour(currentSq, upperRightSq)) {
+                    const nextUpperRight = [coord[0] - 2, coord[1] + 2] as Coordinate
+                    if (validCoordinate(nextUpperRight)) {
+                        const nextUpperRightSq = grid[nextUpperRight[0]][nextUpperRight[1]]
+                        if (!nextUpperRightSq) arrDiag.push(nextUpperRight)
+                    }        
+                }
+            } else arrDiag.push(upperRight)
+        }
+    } if (dir === "D" || dir === "A") {
+        const lowerLeft = [coord[0] + 1, coord[1] - 1] as Coordinate
+        if (validCoordinate(lowerLeft)) {
+            const lowerLeftSq = grid[lowerLeft[0]][lowerLeft[1]]
+            if (lowerLeftSq) {
+                if (!checkSameColour(currentSq, lowerLeftSq)) {
+                    const nextLowerLeft = [coord[0] + 2, coord[1] - 2] as Coordinate
+                    if (validCoordinate(nextLowerLeft)) {
+                        const nextLowerLeftSq = grid[nextLowerLeft[0]][nextLowerLeft[1]]
+                        if (!nextLowerLeftSq) arrDiag.push(nextLowerLeft)
+                    }        
+                }
+            } else arrDiag.push(lowerLeft)
+        }
+        const lowerRight = [coord[0] + 1, coord[1] + 1] as Coordinate
+        if (validCoordinate(lowerRight)) {
+            const lowerRightSq = grid[lowerRight[0]][lowerRight[1]]
+            if (lowerRightSq) {
+                if (!checkSameColour(currentSq, lowerRightSq)) {
+                    const nextLowerRight = [coord[0] + 2, coord[1] + 2] as Coordinate
+                    if (validCoordinate(nextLowerRight)) {
+                        const nextLowerRightSq = grid[nextLowerRight[0]][nextLowerRight[1]]
+                        if (!nextLowerRightSq) arrDiag.push(nextLowerRight)
+                    }        
+                }
+            } else arrDiag.push(lowerRight)
+        }
+    }
     return arrDiag
 }
 
@@ -151,6 +195,14 @@ function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
     else return null
 }
 
+// @ts-ignore
 function validCoordinate(coordinate: [number, number]): coordinate is Coordinate {
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
+}
+
+// @ts-ignore
+function checkSameColour(checker1: Checker, checker2: Checker) {
+    if (["B", "KB"].includes(checker1)) return ["B", "KB"].includes(checker2)
+    else if (["R", "KR"].includes(checker1)) return ["R", "KR"].includes(checker2)
+    else return false
 }
