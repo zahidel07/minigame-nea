@@ -4,10 +4,23 @@ type Square = Checker | null
 // @ts-ignore
 type Coordinate = [number, number]
 type Row = [Square, Square, Square, Square, Square, Square, Square, Square]
+type CaptureObj = {
+    nextMove: Coordinate;
+    capture: Coordinate
+}
+
+class Moves {
+    constructor(coord?: Coordinate) {
+        this.coordinate = coord || [0, 0] as Coordinate
+    }
+
+    coordinate: Coordinate;
+    nextPossibleMoves: {
+        [current: number]: Array<Coordinate>
+    } = {};
+}
 
 // @ts-ignore
-// grid is defined to be a 2x2 array, each row has 8 elements
-// every element can either be null, "R", "B", "KR" or "KB" (abbrieviations for the checkers)
 let grid: Array<Row> = [
     ["R", null, "R", null, "R", null, "R", null],
     [null, "R", null, "R", null, "R", null, "R"],
@@ -34,15 +47,13 @@ function updateGrid() {
             const elem = document.getElementById(`sq${rowInd * 8 + colInd}`)
             if (!elem) return
             if (areArraysEqual([rowInd, colInd], selected)) {
-                // if selected, set to blue with white background
                 elem.setAttribute('class', 'game-square selected')
             } else if (otherSelected.some(a => areArraysEqual(a, [rowInd, colInd]))) {
-                // "pseudoselected" is referring to the next possible moves a certain checker can make
                 elem.setAttribute('class', 'game-square pseudoselected')
             } else {
                 switch (col) {
                     case "R":
-                        elem.innerText = 'O'
+                        elem.innerText = 'X'
                         elem.setAttribute('class', 'game-square red')
                         break
                     case "KR":
@@ -50,7 +61,7 @@ function updateGrid() {
                         elem.setAttribute('class', 'game-square red')
                         break
                     case "B":
-                        elem.innerText = 'O'
+                        elem.innerText = 'X'
                         elem.setAttribute('class', 'game-square black')
                         break
                     case "KB":
@@ -83,8 +94,8 @@ function updateGrid() {
 }
 
 // @ts-ignore
-function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate> {
-    let arrDiag: Coordinate[] = []
+function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj> {
+    let arrDiag: CaptureObj[] = []
     const currentSq = grid[coord[0]][coord[1]]
     if (!currentSq) return []
     if (dir === "U" || dir === "A") {
@@ -97,12 +108,18 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate
                     if (validCoordinate(nextUpperLeft)) {
                         const nextUpperLeftSq = grid[nextUpperLeft[0]][nextUpperLeft[1]]
                         if (!nextUpperLeftSq) {
-                            arrDiag.push(nextUpperLeft)
                             toCapture = upperLeft
+                            arrDiag.push({
+                                nextMove: nextUpperLeft,
+                                capture: toCapture
+                            })
                         }
                     }        
                 }
-            } else arrDiag.push(upperLeft)
+            } else arrDiag.push({
+                nextMove: upperLeft,
+                capture: [-1, -1]
+            })
         }
         const upperRight = [coord[0] - 1, coord[1] + 1] as Coordinate
         if (validCoordinate(upperRight)) {
@@ -113,12 +130,18 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate
                     if (validCoordinate(nextUpperRight)) {
                         const nextUpperRightSq = grid[nextUpperRight[0]][nextUpperRight[1]]
                         if (!nextUpperRightSq) {
-                            arrDiag.push(nextUpperRight)
                             toCapture = upperRight
+                            arrDiag.push({
+                                nextMove: nextUpperRight,
+                                capture: toCapture
+                            })
                         }
                     }        
                 }
-            } else arrDiag.push(upperRight)
+            } else arrDiag.push({
+                nextMove: upperRight,
+                capture: [-1, -1]
+            })
         }
     } if (dir === "D" || dir === "A") {
         const lowerLeft = [coord[0] + 1, coord[1] - 1] as Coordinate
@@ -130,12 +153,18 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate
                     if (validCoordinate(nextLowerLeft)) {
                         const nextLowerLeftSq = grid[nextLowerLeft[0]][nextLowerLeft[1]]
                         if (!nextLowerLeftSq) {
-                            arrDiag.push(nextLowerLeft)
                             toCapture = lowerLeft
+                            arrDiag.push({
+                                nextMove: nextLowerLeft,
+                                capture: toCapture
+                            })
                         }
                     }        
                 }
-            } else arrDiag.push(lowerLeft)
+            } else arrDiag.push({
+                nextMove: lowerLeft,
+                capture: [-1, -1]
+            })
         }
         const lowerRight = [coord[0] + 1, coord[1] + 1] as Coordinate
         if (validCoordinate(lowerRight)) {
@@ -146,12 +175,18 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate
                     if (validCoordinate(nextLowerRight)) {
                         const nextLowerRightSq = grid[nextLowerRight[0]][nextLowerRight[1]]
                         if (!nextLowerRightSq) {
-                            arrDiag.push(nextLowerRight)
                             toCapture = lowerRight
+                            arrDiag.push({
+                                nextMove: nextLowerRight,
+                                capture: toCapture
+                            })
                         }
                     }        
                 }
-            } else arrDiag.push(lowerRight)
+            } else arrDiag.push({
+                nextMove: lowerRight,
+                capture: [-1, -1]
+            })
         }
     }
     return arrDiag
@@ -182,6 +217,7 @@ function updateSquare(sq: number) {
         otherSelected = []
     } else {
         selected = [row, col]
+        // UPDATE LATER
         if (grid[row][col] === "R" && player === "R") {
             otherSelected = mapDiagonals([row, col], "D") as Array<Coordinate>
         } else if (grid[row][col] === "B" && player === "B") {
