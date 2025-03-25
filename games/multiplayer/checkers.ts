@@ -219,11 +219,11 @@ function updateSquare(sq: number) {
         selected = [row, col]
         // UPDATE LATER
         if (grid[row][col] === "R" && player === "R") {
-            otherSelected = mapDiagonals([row, col], "D") as Array<Coordinate>
+            otherSelected = mapDiagonals([row, col], "D") as Array<CaptureObj>
         } else if (grid[row][col] === "B" && player === "B") {
-            otherSelected = mapDiagonals([row, col], "U") as Array<Coordinate>
+            otherSelected = mapDiagonals([row, col], "U") as Array<CaptureObj>
         } else if ((grid[row][col] === "KR" && player === "R") || (grid[row][col] === "KB" && player === "B")) {
-            otherSelected = mapDiagonals([row, col]) as Array<Coordinate>
+            otherSelected = mapDiagonals([row, col]) as Array<CaptureObj>
         } else {
             selected = [-1, -1]
             otherSelected = []
