@@ -1,7 +1,14 @@
+// @target: es2019
 type Checker = "B" | "R" | "KB" | "KR"
+// @ts-ignore
 type Square = Checker | null
+// @ts-ignore
 type Coordinate = [number, number]
 type Row = [Square, Square, Square, Square, Square, Square, Square, Square]
+type CaptureObj = {
+    nextMove: Coordinate;
+    capture: Coordinate
+}
 
 // @ts-ignore
 let grid: Array<Row> = [
@@ -17,7 +24,9 @@ let grid: Array<Row> = [
 // @ts-ignore
 let selected: Coordinate = [-1, -1]
 // @ts-ignore
-let otherSelected: Array<Coordinate> = []
+let toCapture: Coordinate = [-1, -1]
+// @ts-ignore
+let otherSelected: Array<CaptureObj> = []
 // @ts-ignore
 let player: "R" | "B" = "B"
 
@@ -29,7 +38,7 @@ function updateGrid() {
             if (!elem) return
             if (areArraysEqual([rowInd, colInd], selected)) {
                 elem.setAttribute('class', 'game-square selected')
-            } else if (otherSelected.some(a => areArraysEqual(a, [rowInd, colInd]))) {
+            } else if (otherSelected.some(a => areArraysEqual(a.nextMove, [rowInd, colInd]))) {
                 elem.setAttribute('class', 'game-square pseudoselected')
             } else {
                 switch (col) {
@@ -75,23 +84,101 @@ function updateGrid() {
 }
 
 // @ts-ignore
-function mapDiagonals(coord: Coordinate, depth?: number = 8, dir?: "U" | "D" | "A" = "A"): Array<Coordinate> {
-    let arrDiag: Coordinate[] = []
-    for (let i = 1; i <= depth; i++) {
-        if (dir === "U" || dir === "A") arrDiag.push([coord[0] - i, coord[1] - i], [coord[0] - i, coord[1] + i])
-        if (dir === "D" || dir === "A") arrDiag.push([coord[0] + i, coord[1] - i], [coord[0] + i, coord[1] + i])
+function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj> {
+    let arrDiag: CaptureObj[] = []
+    const currentSq = grid[coord[0]][coord[1]]
+    if (!currentSq) return []
+    if (dir === "U" || dir === "A") {
+        const upperLeft = [coord[0] - 1, coord[1] - 1] as Coordinate
+        if (validCoordinate(upperLeft)) {
+            const upperLeftSq = grid[upperLeft[0]][upperLeft[1]]
+            if (upperLeftSq) {
+                if (!checkSameColour(currentSq, upperLeftSq)) {
+                    const nextUpperLeft = [coord[0] - 2, coord[1] - 2] as Coordinate
+                    if (validCoordinate(nextUpperLeft)) {
+                        const nextUpperLeftSq = grid[nextUpperLeft[0]][nextUpperLeft[1]]
+                        if (!nextUpperLeftSq) {
+                            toCapture = upperLeft
+                            arrDiag.push({
+                                nextMove: nextUpperLeft,
+                                capture: toCapture
+                            })
+                        }
+                    }        
+                }
+            } else arrDiag.push({
+                nextMove: upperLeft,
+                capture: [-1, -1]
+            })
+        }
+        const upperRight = [coord[0] - 1, coord[1] + 1] as Coordinate
+        if (validCoordinate(upperRight)) {
+            const upperRightSq = grid[upperRight[0]][upperRight[1]]
+            if (upperRightSq) {
+                if (!checkSameColour(currentSq, upperRightSq)) {
+                    const nextUpperRight = [coord[0] - 2, coord[1] + 2] as Coordinate
+                    if (validCoordinate(nextUpperRight)) {
+                        const nextUpperRightSq = grid[nextUpperRight[0]][nextUpperRight[1]]
+                        if (!nextUpperRightSq) {
+                            toCapture = upperRight
+                            arrDiag.push({
+                                nextMove: nextUpperRight,
+                                capture: toCapture
+                            })
+                        }
+                    }        
+                }
+            } else arrDiag.push({
+                nextMove: upperRight,
+                capture: [-1, -1]
+            })
+        }
+    } if (dir === "D" || dir === "A") {
+        const lowerLeft = [coord[0] + 1, coord[1] - 1] as Coordinate
+        if (validCoordinate(lowerLeft)) {
+            const lowerLeftSq = grid[lowerLeft[0]][lowerLeft[1]]
+            if (lowerLeftSq) {
+                if (!checkSameColour(currentSq, lowerLeftSq)) {
+                    const nextLowerLeft = [coord[0] + 2, coord[1] - 2] as Coordinate
+                    if (validCoordinate(nextLowerLeft)) {
+                        const nextLowerLeftSq = grid[nextLowerLeft[0]][nextLowerLeft[1]]
+                        if (!nextLowerLeftSq) {
+                            toCapture = lowerLeft
+                            arrDiag.push({
+                                nextMove: nextLowerLeft,
+                                capture: toCapture
+                            })
+                        }
+                    }        
+                }
+            } else arrDiag.push({
+                nextMove: lowerLeft,
+                capture: [-1, -1]
+            })
+        }
+        const lowerRight = [coord[0] + 1, coord[1] + 1] as Coordinate
+        if (validCoordinate(lowerRight)) {
+            const lowerRightSq = grid[lowerRight[0]][lowerRight[1]]
+            if (lowerRightSq) {
+                if (!checkSameColour(currentSq, lowerRightSq)) {
+                    const nextLowerRight = [coord[0] + 2, coord[1] + 2] as Coordinate
+                    if (validCoordinate(nextLowerRight)) {
+                        const nextLowerRightSq = grid[nextLowerRight[0]][nextLowerRight[1]]
+                        if (!nextLowerRightSq) {
+                            toCapture = lowerRight
+                            arrDiag.push({
+                                nextMove: nextLowerRight,
+                                capture: toCapture
+                            })
+                        }
+                    }        
+                }
+            } else arrDiag.push({
+                nextMove: lowerRight,
+                capture: [-1, -1]
+            })
+        }
     }
-    arrDiag = arrDiag
-    .filter(x => x[0] >= 0 && x[0] <= 7 && x[1] >= 0 && x[1] <= 7)
-    .filter(x => {
-        const coordElem = grid[x[0]][x[1]]
-        const gridElem = grid[coord[0]][coord[1]]
-        if (!gridElem || !coordElem) return true
-        if (["B", "KB"].includes(gridElem) && ["B", "KB"].includes(coordElem)) return false
-        if (["R", "KR"].includes(gridElem) && ["R", "KR"].includes(coordElem)) return false
-        if (gridElem !== coordElem) return true
-        return true
-    })
     return arrDiag
 }
 
@@ -99,27 +186,33 @@ function mapDiagonals(coord: Coordinate, depth?: number = 8, dir?: "U" | "D" | "
 function updateSquare(sq: number) {
     const row = Math.floor(sq / 8)
     const col = sq % 8
-    const sqToMoveTo = otherSelected.find(n => areArraysEqual(n, [row, col]))
-    if (!!sqToMoveTo) {
+    const isSqToMoveTo = otherSelected.find(n => areArraysEqual(n.nextMove, [row, col]))
+    if (!!isSqToMoveTo) {
+        const nextSqMoveTo = isSqToMoveTo.nextMove
         const prev = grid[selected[0]][selected[1]]
         grid[selected[0]] = grid[selected[0]].map((x, i) => i === selected[1] ? null : x) as Row
-        grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? prev : x) as Row
+        grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? prev : x) as Row
         selected = [-1, -1]
         otherSelected = []
-        if (sqToMoveTo[0] === 0 && prev === "B") grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KB" : x) as Row
-        if (sqToMoveTo[0] === 7 && prev === "R") grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KR" : x) as Row
-        else switchPlayer()
+        if (nextSqMoveTo[0] === 0 && prev === "B") grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? "KB" : x) as Row
+        if (nextSqMoveTo[0] === 7 && prev === "R") grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? "KR" : x) as Row
+        if (!areArraysEqual(isSqToMoveTo.capture, [-1, -1]) && areArraysEqual(toCapture, isSqToMoveTo.capture)) {
+            grid[toCapture[0]] = grid[toCapture[0]].map((x, ind) => ind === toCapture[1] ? null : x) as Row
+            toCapture = [-1, -1]
+        }
+        switchPlayer()
     } else if (areArraysEqual(selected, [row, col])) {
         selected = [-1, -1]
+        toCapture = [-1, -1]
         otherSelected = []
     } else {
         selected = [row, col]
         if (grid[row][col] === "R" && player === "R") {
-            otherSelected = mapDiagonals([row, col], 1, "D") as Array<Coordinate>
+            otherSelected = mapDiagonals([row, col], "D")
         } else if (grid[row][col] === "B" && player === "B") {
-            otherSelected = mapDiagonals([row, col], 1, "U") as Array<Coordinate>
+            otherSelected = mapDiagonals([row, col], "U")
         } else if ((grid[row][col] === "KR" && player === "R") || (grid[row][col] === "KB" && player === "B")) {
-            otherSelected = mapDiagonals([row, col]) as Array<Coordinate>
+            otherSelected = mapDiagonals([row, col])
         } else {
             selected = [-1, -1]
             otherSelected = []
@@ -146,4 +239,16 @@ function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
     if (!flatGrid.includes("B")) return "R"
     else if (!flatGrid.includes("R")) return "B"
     else return null
+}
+
+// @ts-ignore
+function validCoordinate(coordinate: [number, number]): coordinate is Coordinate {
+    return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
+}
+
+// @ts-ignore
+function checkSameColour(checker1: Checker, checker2: Checker) {
+    if (["B", "KB"].includes(checker1)) return ["B", "KB"].includes(checker2)
+    else if (["R", "KR"].includes(checker1)) return ["R", "KR"].includes(checker2)
+    else return false
 }
