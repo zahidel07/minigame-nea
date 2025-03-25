@@ -1,4 +1,5 @@
 "use strict";
+// @ts-ignore
 let grid = [
     ["R", null, "R", null, "R", null, "R", null],
     [null, "R", null, "R", null, "R", null, "R"],
@@ -9,28 +10,77 @@ let grid = [
     ["B", null, "B", null, "B", null, "B", null],
     [null, "B", null, "B", null, "B", null, "B"]
 ];
+// @ts-ignore
 let selected = [-1, -1];
+// @ts-ignore
+let toCapture = [-1, -1];
+// @ts-ignore
 let otherSelected = [];
+// @ts-ignore
 let player = "B";
+// @ts-ignore
+function updateGrid() {
+    grid.forEach((row, rowInd) => {
+        row.forEach((col, colInd) => {
+            const elem = document.getElementById(`sq${rowInd * 8 + colInd}`);
+            if (!elem)
+                return;
+            if (areArraysEqual([rowInd, colInd], selected)) {
+                elem.setAttribute('class', 'game-square selected');
+            }
+            else if (otherSelected.some(a => areArraysEqual(a, [rowInd, colInd]))) {
+                elem.setAttribute('class', 'game-square pseudoselected');
+            }
+            else {
+                switch (col) {
+                    case "R":
+                        elem.innerText = 'X';
+                        elem.setAttribute('class', 'game-square red');
+                        break;
+                    case "KR":
+                        elem.innerText = 'K';
+                        elem.setAttribute('class', 'game-square red');
+                        break;
+                    case "B":
+                        elem.innerText = 'X';
+                        elem.setAttribute('class', 'game-square black');
+                        break;
+                    case "KB":
+                        elem.innerText = 'K';
+                        elem.setAttribute('class', 'game-square black');
+                        break;
+                    default:
+                        elem.innerText = ' ';
+                        elem.setAttribute('class', 'game-square');
+                        break;
+                }
+            }
+        });
+    });
+    const winner = checkWinner();
+    if (!!winner) {
+        grid.forEach((row, rowInd) => {
+            row.forEach((_, colInd) => {
+                const sq = document.getElementById(`sq${rowInd * 8 + colInd}`);
+                if (!sq)
+                    return;
+                sq.setAttribute('disabled', '');
+                sq.removeAttribute('onclick');
+            });
+        });
+        const currText = document.getElementById('current');
+        if (!currText)
+            return;
+        currText.innerText = `The winner is: ${winner === "R" ? "Red" : "Black"}!`;
+    }
+}
+// @ts-ignore
 function mapDiagonals(coord, dir = "A") {
     let arrDiag = [];
     const currentSq = grid[coord[0]][coord[1]];
     if (!currentSq)
         return [];
     if (dir === "U" || dir === "A") {
-        // approach
-        // make new coordinate: the adjacent to current
-        // check it's valid
-        // check it's empty
-        // if not empty:
-        //    check NEXT adjacent along same direction
-        //    check if empty
-        //    if empty, check opportunity to capture
-        //    this is only the case if the current square is NOT equal to the 1st adjacent
-        // if there is ANY opportunity available, all non-opportunities must be removed
-        // (this forces user to take available opportunities)
-        // otherwise, all other moves available
-        // if no moves available for any checker, then declare opposite as winner
         const upperLeft = [coord[0] - 1, coord[1] - 1];
         if (validCoordinate(upperLeft)) {
             const upperLeftSq = grid[upperLeft[0]][upperLeft[1]];
@@ -39,8 +89,10 @@ function mapDiagonals(coord, dir = "A") {
                     const nextUpperLeft = [coord[0] - 2, coord[1] - 2];
                     if (validCoordinate(nextUpperLeft)) {
                         const nextUpperLeftSq = grid[nextUpperLeft[0]][nextUpperLeft[1]];
-                        if (!nextUpperLeftSq)
+                        if (!nextUpperLeftSq) {
                             arrDiag.push(nextUpperLeft);
+                            toCapture = upperLeft;
+                        }
                     }
                 }
             }
@@ -55,8 +107,10 @@ function mapDiagonals(coord, dir = "A") {
                     const nextUpperRight = [coord[0] - 2, coord[1] + 2];
                     if (validCoordinate(nextUpperRight)) {
                         const nextUpperRightSq = grid[nextUpperRight[0]][nextUpperRight[1]];
-                        if (!nextUpperRightSq)
+                        if (!nextUpperRightSq) {
                             arrDiag.push(nextUpperRight);
+                            toCapture = upperRight;
+                        }
                     }
                 }
             }
@@ -73,8 +127,10 @@ function mapDiagonals(coord, dir = "A") {
                     const nextLowerLeft = [coord[0] + 2, coord[1] - 2];
                     if (validCoordinate(nextLowerLeft)) {
                         const nextLowerLeftSq = grid[nextLowerLeft[0]][nextLowerLeft[1]];
-                        if (!nextLowerLeftSq)
+                        if (!nextLowerLeftSq) {
                             arrDiag.push(nextLowerLeft);
+                            toCapture = lowerLeft;
+                        }
                     }
                 }
             }
@@ -89,8 +145,10 @@ function mapDiagonals(coord, dir = "A") {
                     const nextLowerRight = [coord[0] + 2, coord[1] + 2];
                     if (validCoordinate(nextLowerRight)) {
                         const nextLowerRightSq = grid[nextLowerRight[0]][nextLowerRight[1]];
-                        if (!nextLowerRightSq)
+                        if (!nextLowerRightSq) {
                             arrDiag.push(nextLowerRight);
+                            toCapture = lowerRight;
+                        }
                     }
                 }
             }
@@ -100,6 +158,7 @@ function mapDiagonals(coord, dir = "A") {
     }
     return arrDiag;
 }
+// @ts-ignore
 function updateSquare(sq) {
     const row = Math.floor(sq / 8);
     const col = sq % 8;
@@ -108,17 +167,22 @@ function updateSquare(sq) {
         const prev = grid[selected[0]][selected[1]];
         grid[selected[0]] = grid[selected[0]].map((x, i) => i === selected[1] ? null : x);
         grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? prev : x);
+        const midpoint = [Math.floor((selected[0] + sqToMoveTo[0]) / 2), Math.floor((selected[1] + sqToMoveTo[1]) / 2)];
         selected = [-1, -1];
         otherSelected = [];
         if (sqToMoveTo[0] === 0 && prev === "B")
             grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KB" : x);
         if (sqToMoveTo[0] === 7 && prev === "R")
             grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KR" : x);
-        else
-            switchPlayer();
+        if (areArraysEqual(toCapture, midpoint)) {
+            grid[toCapture[0]] = grid[toCapture[0]].map((x, ind) => ind === toCapture[1] ? null : x);
+            toCapture = [-1, -1];
+        }
+        switchPlayer();
     }
     else if (areArraysEqual(selected, [row, col])) {
         selected = [-1, -1];
+        toCapture = [-1, -1];
         otherSelected = [];
     }
     else {
@@ -137,13 +201,20 @@ function updateSquare(sq) {
             otherSelected = [];
         }
     }
+    updateGrid();
 }
+// @ts-ignore
 function areArraysEqual(array1, array2) {
     return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1);
 }
+// @ts-ignore
 function switchPlayer() {
     player = player === "R" ? "B" : "R";
+    const currentPlayerText = document.getElementById('current');
+    if (currentPlayerText)
+        currentPlayerText.innerText = `Current player: ${player === "R" ? "Red" : "Black"}`;
 }
+// @ts-ignore
 function checkWinner() {
     const flatGrid = grid.flat(1);
     if (!flatGrid.includes("B"))
@@ -153,9 +224,11 @@ function checkWinner() {
     else
         return null;
 }
+// @ts-ignore
 function validCoordinate(coordinate) {
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7);
 }
+// @ts-ignore
 function checkSameColour(checker1, checker2) {
     if (["B", "KB"].includes(checker1))
         return ["B", "KB"].includes(checker2);

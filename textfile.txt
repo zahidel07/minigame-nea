@@ -23,7 +23,9 @@ SP 2048
 SP Sudoku
 [] • fix random board generation
 MP Checkers
-[] • begin?
+[] • fix issue with capturable opportunities
+[] • recursiveness when it comes to capturing opportunities
+[] • end game as soon as one player has no possible moves
 SP Memorygame
 [] • continue to fix customisable difficulty & test
 

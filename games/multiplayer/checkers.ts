@@ -19,6 +19,8 @@ let grid: Array<Row> = [
 // @ts-ignore
 let selected: Coordinate = [-1, -1]
 // @ts-ignore
+let toCapture: Coordinate = [-1, -1]
+// @ts-ignore
 let otherSelected: Array<Coordinate> = []
 // @ts-ignore
 let player: "R" | "B" = "B"
@@ -90,7 +92,10 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate
                     const nextUpperLeft = [coord[0] - 2, coord[1] - 2] as Coordinate
                     if (validCoordinate(nextUpperLeft)) {
                         const nextUpperLeftSq = grid[nextUpperLeft[0]][nextUpperLeft[1]]
-                        if (!nextUpperLeftSq) arrDiag.push(nextUpperLeft)
+                        if (!nextUpperLeftSq) {
+                            arrDiag.push(nextUpperLeft)
+                            toCapture = upperLeft
+                        }
                     }        
                 }
             } else arrDiag.push(upperLeft)
@@ -103,7 +108,10 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate
                     const nextUpperRight = [coord[0] - 2, coord[1] + 2] as Coordinate
                     if (validCoordinate(nextUpperRight)) {
                         const nextUpperRightSq = grid[nextUpperRight[0]][nextUpperRight[1]]
-                        if (!nextUpperRightSq) arrDiag.push(nextUpperRight)
+                        if (!nextUpperRightSq) {
+                            arrDiag.push(nextUpperRight)
+                            toCapture = upperRight
+                        }
                     }        
                 }
             } else arrDiag.push(upperRight)
@@ -117,7 +125,10 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate
                     const nextLowerLeft = [coord[0] + 2, coord[1] - 2] as Coordinate
                     if (validCoordinate(nextLowerLeft)) {
                         const nextLowerLeftSq = grid[nextLowerLeft[0]][nextLowerLeft[1]]
-                        if (!nextLowerLeftSq) arrDiag.push(nextLowerLeft)
+                        if (!nextLowerLeftSq) {
+                            arrDiag.push(nextLowerLeft)
+                            toCapture = lowerLeft
+                        }
                     }        
                 }
             } else arrDiag.push(lowerLeft)
@@ -130,7 +141,10 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<Coordinate
                     const nextLowerRight = [coord[0] + 2, coord[1] + 2] as Coordinate
                     if (validCoordinate(nextLowerRight)) {
                         const nextLowerRightSq = grid[nextLowerRight[0]][nextLowerRight[1]]
-                        if (!nextLowerRightSq) arrDiag.push(nextLowerRight)
+                        if (!nextLowerRightSq) {
+                            arrDiag.push(nextLowerRight)
+                            toCapture = lowerRight
+                        }
                     }        
                 }
             } else arrDiag.push(lowerRight)
@@ -148,18 +162,22 @@ function updateSquare(sq: number) {
         const prev = grid[selected[0]][selected[1]]
         grid[selected[0]] = grid[selected[0]].map((x, i) => i === selected[1] ? null : x) as Row
         grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? prev : x) as Row
+        const midpoint = [Math.floor((selected[0] + sqToMoveTo[0])/2), Math.floor((selected[1] + sqToMoveTo[1])/2)]
         selected = [-1, -1]
         otherSelected = []
         if (sqToMoveTo[0] === 0 && prev === "B") grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KB" : x) as Row
         if (sqToMoveTo[0] === 7 && prev === "R") grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KR" : x) as Row
-        else switchPlayer()
+        if (areArraysEqual(toCapture, midpoint)) {
+            grid[toCapture[0]] = grid[toCapture[0]].map((x, ind) => ind === toCapture[1] ? null : x) as Row
+            toCapture = [-1, -1]
+        }
+        switchPlayer()
     } else if (areArraysEqual(selected, [row, col])) {
         selected = [-1, -1]
+        toCapture = [-1, -1]
         otherSelected = []
     } else {
         selected = [row, col]
-        // UPDATE LATER
-        // --
         if (grid[row][col] === "R" && player === "R") {
             otherSelected = mapDiagonals([row, col], "D") as Array<Coordinate>
         } else if (grid[row][col] === "B" && player === "B") {
@@ -170,7 +188,6 @@ function updateSquare(sq: number) {
             selected = [-1, -1]
             otherSelected = []
         }
-        // --
     }
     updateGrid()
 }
