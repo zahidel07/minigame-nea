@@ -34,7 +34,7 @@ function updateGrid() {
             else {
                 switch (col) {
                     case "R":
-                        elem.innerText = 'X';
+                        elem.innerText = 'O';
                         elem.setAttribute('class', 'game-square red');
                         break;
                     case "KR":
@@ -42,7 +42,7 @@ function updateGrid() {
                         elem.setAttribute('class', 'game-square red');
                         break;
                     case "B":
-                        elem.innerText = 'X';
+                        elem.innerText = 'O';
                         elem.setAttribute('class', 'game-square black');
                         break;
                     case "KB":

@@ -95,7 +95,7 @@ function updateSquare(square: number) {
                     let tempCol = ind % 8
                     if (arrayInArray([tempRow, tempCol], mines)) {
                         elem.setAttribute('class', 'game-square mine');
-                        (elem as HTMLElement).innerText = 'X'
+                        (elem as HTMLElement).innerText = 'O'
                     }
                     else elem.setAttribute('class', 'game-square selected')
                 })
@@ -169,7 +169,7 @@ function checkWinner() {
             elem.setAttribute('disabled', 'true')
             if (arrayInArray([Math.floor(ind / 8), ind % 8], mines)) {
                 elem.setAttribute('class', 'game-square mine');
-                (elem as HTMLElement).innerText = 'X'
+                (elem as HTMLElement).innerText = 'O'
             }
             else elem.setAttribute('class', 'game-square selected')
         })

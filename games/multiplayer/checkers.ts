@@ -6,6 +6,8 @@ type Coordinate = [number, number]
 type Row = [Square, Square, Square, Square, Square, Square, Square, Square]
 
 // @ts-ignore
+// grid is defined to be a 2x2 array, each row has 8 elements
+// every element can either be null, "R", "B", "KR" or "KB" (abbrieviations for the checkers)
 let grid: Array<Row> = [
     ["R", null, "R", null, "R", null, "R", null],
     [null, "R", null, "R", null, "R", null, "R"],
@@ -32,13 +34,15 @@ function updateGrid() {
             const elem = document.getElementById(`sq${rowInd * 8 + colInd}`)
             if (!elem) return
             if (areArraysEqual([rowInd, colInd], selected)) {
+                // if selected, set to blue with white background
                 elem.setAttribute('class', 'game-square selected')
             } else if (otherSelected.some(a => areArraysEqual(a, [rowInd, colInd]))) {
+                // "pseudoselected" is referring to the next possible moves a certain checker can make
                 elem.setAttribute('class', 'game-square pseudoselected')
             } else {
                 switch (col) {
                     case "R":
-                        elem.innerText = 'X'
+                        elem.innerText = 'O'
                         elem.setAttribute('class', 'game-square red')
                         break
                     case "KR":
@@ -46,7 +50,7 @@ function updateGrid() {
                         elem.setAttribute('class', 'game-square red')
                         break
                     case "B":
-                        elem.innerText = 'X'
+                        elem.innerText = 'O'
                         elem.setAttribute('class', 'game-square black')
                         break
                     case "KB":
