@@ -1,8 +1,7 @@
 // @target: es2019
 type Checker = "B" | "R" | "KB" | "KR"
-// @ts-ignore
+type Direction = "U" | "D" | "A"
 type Square = Checker | null
-// @ts-ignore
 type Coordinate = [number, number]
 type Row = [Square, Square, Square, Square, Square, Square, Square, Square]
 type CaptureObj = {
@@ -32,6 +31,7 @@ let toCapture: Coordinate = [-1, -1]
 let otherSelected: Array<CaptureObj> = []
 // @ts-ignore
 let player: "R" | "B" = "B"
+let allPlayerMoves: Array<NextCoordTree> = []
 
 // @ts-ignore
 function updateGrid() {
@@ -250,6 +250,25 @@ function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
 // @ts-ignore
 function validCoordinate(coordinate: [number, number]): coordinate is Coordinate {
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
+}
+
+function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
+    allPlayerMoves = []
+    grid.forEach((row, rowInd) => {
+        row.forEach((col, colInd) => {
+            if (!col) return
+            if (!col.endsWith(player)) return
+            const checkerPossibleMoves = mapDiagonals([rowInd, colInd], (
+                col === "KB" || col === "KR"
+                ? "A"
+                : (col === "B" ? "U" : "D")
+            ))
+            if (checkerPossibleMoves.length) allPlayerMoves.push({
+                [rowInd * 8 + colInd]: checkerPossibleMoves.map(x => x.nextMove) as Array<Coordinate>
+            })
+        })
+    })
+    return allPlayerMoves
 }
 
 // @ts-ignore
