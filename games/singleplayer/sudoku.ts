@@ -1,18 +1,24 @@
 let currentSelected = [-1, -1]
+// @ts-ignore
 let grid = Array(9).fill(Array(9).fill(null))
+// @ts-ignore
+type Coordinate = [number, number]
 let prefillIndexes = Array(9).fill([-1, -1])
 let prefillNumbers = Array(9).fill(null)
-let time = 0
-let mins = 0
-let sec = 0
+// @ts-ignore
+let [time, mins, sec] = [0, 0, 0]
 
 const timer = () => {
     mins = Math.floor(time / 60)
     sec = time % 60
-    document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+    const timerElem = document.getElementById('timer')
+    if (timerElem) {
+        timerElem.innerText = `${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+    }
     time += 1
 }
 
+// @ts-ignore
 function fillRandom() {
     let randRow = Math.floor(Math.random() * 9)
     let randCol = Math.floor(Math.random() * 9)
@@ -29,12 +35,14 @@ function fillRandom() {
         }
         prefillIndexes[n] = [randRow, randCol]
         prefillNumbers[n] = randNum
+        // @ts-ignore
         grid[randRow] = grid[randRow].map((elem, elemInd) => elemInd === randCol ? randNum : elem)
     }
     updateGrid()
 }
 
-function updateSquare(square) {
+// @ts-ignore
+function updateSquare(square: number) {
     const sqRow = Math.floor(square / 9)
     const sqCol = square % 9
     if (sqRow === currentSelected[0] && sqCol === currentSelected[1]) {
@@ -45,6 +53,7 @@ function updateSquare(square) {
     updateGrid()
 }
 
+// @ts-ignore
 function updateGrid() {
     Array.from(document.getElementsByClassName('game-square'))
     .forEach((elem, elemInd) => {
@@ -52,8 +61,8 @@ function updateGrid() {
             elem.setAttribute('class', 'game-square')
         } else {
             const rowInd = Math.floor(elemInd / 9)
-            const colInd = elemInd % 9
-            elem.innerText = grid[rowInd][colInd]
+            const colInd = elemInd % 9;
+            (elem as HTMLElement).innerText = grid[rowInd][colInd] || ''
             if (rowInd === currentSelected[0] && colInd === currentSelected[1]) elem.setAttribute('class', 'game-square selected')
             else if (isInSameRowColOrBox(currentSelected, [rowInd, colInd])) elem.setAttribute('class', 'game-square pseudoselected')
             else elem.setAttribute('class', 'game-square')
@@ -67,8 +76,31 @@ function isInSameRowColOrBox(square1, square2) {
     || (Math.floor(square1[0] / 3) === Math.floor(square2[0] / 3) && Math.floor(square1[1] / 3) === Math.floor(square2[1] / 3))
 }
 
-function elementsMatch(square1, square2) {
+function elementsMatch(square1: [number, number], square2: [number, number]) {
     return (!!grid[square1[0]][square1[1]] || !!grid[square2[0]][square2[1]]) && grid[square1[0]][square1[1]] === grid[square2[0]][square2[1]]
+}
+
+function findSameRowColOrBox(sq: Coordinate): Coordinate[] {
+    return grid
+    .map((r, ri) => r
+        .map((_, ci) => [ri, ci] as Coordinate)
+        .filter(x => isInSameRowColOrBox(x, sq) && !areArraysEqual(x, sq))
+    )
+    .flat()
+}
+
+function checkValidity(sq: Coordinate) {
+    const numAtSq = grid[sq[0]][sq[1]]
+    if (!numAtSq) return true
+    const otherSqs = findSameRowColOrBox(sq)
+    return otherSqs
+    .map(x => grid[x[0]][x[1]])
+    .every(n => n != numAtSq)
+}
+
+// @ts-ignore
+function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
+    return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
 }
 
 fillRandom()

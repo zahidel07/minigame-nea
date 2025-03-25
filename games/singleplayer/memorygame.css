@@ -15,6 +15,7 @@ div.row {
 
 div.row > button.game-square {
     margin: 0px;   
+    vertical-align: top;
 }
 
 button.game-square {
