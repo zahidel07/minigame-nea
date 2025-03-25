@@ -1,6 +1,5 @@
-"use strict";
 // @ts-ignore
-let grid = [
+var grid = [
     ["R", null, "R", null, "R", null, "R", null],
     [null, "R", null, "R", null, "R", null, "R"],
     ["R", null, "R", null, "R", null, "R", null],
@@ -11,20 +10,18 @@ let grid = [
     [null, "B", null, "B", null, "B", null, "B"]
 ];
 // @ts-ignore
-let selected = [-1, -1];
+var selected = [-1, -1];
 // @ts-ignore
 var toCapture = [-1, -1];
 // @ts-ignore
 var otherSelected = [];
 // @ts-ignore
-let otherSelected = [];
-// @ts-ignore
-let player = "B";
+var player = "B";
 // @ts-ignore
 function updateGrid() {
-    grid.forEach((row, rowInd) => {
-        row.forEach((col, colInd) => {
-            const elem = document.getElementById(`sq${rowInd * 8 + colInd}`);
+    grid.forEach(function (row, rowInd) {
+        row.forEach(function (col, colInd) {
+            var elem = document.getElementById("sq".concat(rowInd * 8 + colInd));
             if (!elem)
                 return;
             if (areArraysEqual([rowInd, colInd], selected)) {
@@ -59,21 +56,21 @@ function updateGrid() {
             }
         });
     });
-    const winner = checkWinner();
+    var winner = checkWinner();
     if (!!winner) {
-        grid.forEach((row, rowInd) => {
-            row.forEach((_, colInd) => {
-                const sq = document.getElementById(`sq${rowInd * 8 + colInd}`);
+        grid.forEach(function (row, rowInd) {
+            row.forEach(function (_, colInd) {
+                var sq = document.getElementById("sq".concat(rowInd * 8 + colInd));
                 if (!sq)
                     return;
                 sq.setAttribute('disabled', '');
                 sq.removeAttribute('onclick');
             });
         });
-        const currText = document.getElementById('current');
+        var currText = document.getElementById('current');
         if (!currText)
             return;
-        currText.innerText = `The winner is: ${winner === "R" ? "Red" : "Black"}!`;
+        currText.innerText = "The winner is: ".concat(winner === "R" ? "Red" : "Black", "!");
     }
 }
 // @ts-ignore
@@ -183,6 +180,9 @@ function mapDiagonals(coord, dir) {
                 });
         }
     }
+    if (arrDiag.some(function (move) { return !areArraysEqual([-1, -1], move.capture); }))
+        arrDiag = arrDiag
+            .filter(function (move) { return !areArraysEqual([-1, -1], move.capture); });
     return arrDiag;
 }
 // @ts-ignore
@@ -214,6 +214,7 @@ function updateSquare(sq) {
     }
     else {
         selected = [row, col];
+        // UPDATE LATER
         if (grid[row][col] === "R" && player === "R") {
             otherSelected = mapDiagonals([row, col], "D");
         }
@@ -232,18 +233,18 @@ function updateSquare(sq) {
 }
 // @ts-ignore
 function areArraysEqual(array1, array2) {
-    return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1);
+    return array1.length === array2.length && array1.every(function (elem1, ind1) { return array2[ind1] === elem1; });
 }
 // @ts-ignore
 function switchPlayer() {
     player = player === "R" ? "B" : "R";
-    const currentPlayerText = document.getElementById('current');
+    var currentPlayerText = document.getElementById('current');
     if (currentPlayerText)
-        currentPlayerText.innerText = `Current player: ${player === "R" ? "Red" : "Black"}`;
+        currentPlayerText.innerText = "Current player: ".concat(player === "R" ? "Red" : "Black");
 }
 // @ts-ignore
 function checkWinner() {
-    const flatGrid = grid.flat(1);
+    var flatGrid = grid.flat(1);
     if (!flatGrid.includes("B"))
         return "R";
     else if (!flatGrid.includes("R"))

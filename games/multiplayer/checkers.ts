@@ -9,6 +9,9 @@ type CaptureObj = {
     nextMove: Coordinate;
     capture: Coordinate
 }
+type NextCoordTree = {
+    [coordinate: string]: Array<Coordinate>
+}
 
 // @ts-ignore
 let grid: Array<Row> = [
@@ -43,7 +46,7 @@ function updateGrid() {
             } else {
                 switch (col) {
                     case "R":
-                        elem.innerText = 'X'
+                        elem.innerText = 'O'
                         elem.setAttribute('class', 'game-square red')
                         break
                     case "KR":
@@ -51,7 +54,7 @@ function updateGrid() {
                         elem.setAttribute('class', 'game-square red')
                         break
                     case "B":
-                        elem.innerText = 'X'
+                        elem.innerText = 'O'
                         elem.setAttribute('class', 'game-square black')
                         break
                     case "KB":
@@ -179,6 +182,8 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj
             })
         }
     }
+    if (arrDiag.some(move => !areArraysEqual([-1, -1], move.capture))) arrDiag = arrDiag
+    .filter(move => !areArraysEqual([-1, -1], move.capture))
     return arrDiag
 }
 
