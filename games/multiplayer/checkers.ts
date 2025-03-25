@@ -31,6 +31,7 @@ let toCapture: Coordinate = [-1, -1]
 let otherSelected: Array<CaptureObj> = []
 // @ts-ignore
 let player: "R" | "B" = "B"
+// @ts-ignore
 let allPlayerMoves: Array<NextCoordTree> = []
 
 // @ts-ignore
@@ -252,6 +253,7 @@ function validCoordinate(coordinate: [number, number]): coordinate is Coordinate
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
 }
 
+// @ts-ignore
 function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
     allPlayerMoves = []
     grid.forEach((row, rowInd) => {
