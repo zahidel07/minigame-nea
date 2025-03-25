@@ -17,6 +17,7 @@ var toCapture = [-1, -1];
 var otherSelected = [];
 // @ts-ignore
 var player = "B";
+var allPlayerMoves = [];
 // @ts-ignore
 function updateGrid() {
     grid.forEach(function (row, rowInd) {
@@ -255,6 +256,26 @@ function checkWinner() {
 // @ts-ignore
 function validCoordinate(coordinate) {
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7);
+}
+function getAllPlayerMoves(player) {
+    allPlayerMoves = [];
+    grid.forEach(function (row, rowInd) {
+        row.forEach(function (col, colInd) {
+            var _a;
+            if (!col)
+                return;
+            if (!col.endsWith(player))
+                return;
+            var checkerPossibleMoves = mapDiagonals([rowInd, colInd], (col === "KB" || col === "KR"
+                ? "A"
+                : (col === "B" ? "U" : "D")));
+            if (checkerPossibleMoves.length)
+                allPlayerMoves.push((_a = {},
+                    _a[rowInd * 8 + colInd] = checkerPossibleMoves.map(function (x) { return x.nextMove; }),
+                    _a));
+        });
+    });
+    return allPlayerMoves;
 }
 // @ts-ignore
 function checkSameColour(checker1, checker2) {
