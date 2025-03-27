@@ -1,6 +1,5 @@
-"use strict";
 // @ts-ignore
-let grid = [
+var grid = [
     ["R", null, "R", null, "R", null, "R", null],
     [null, "R", null, "R", null, "R", null, "R"],
     ["R", null, "R", null, "R", null, "R", null],
@@ -11,24 +10,25 @@ let grid = [
     [null, "B", null, "B", null, "B", null, "B"]
 ];
 // @ts-ignore
-let selected = [-1, -1];
+var selected = [-1, -1];
 // @ts-ignore
-let toCapture = [-1, -1];
+var toCapture = [-1, -1];
 // @ts-ignore
-let otherSelected = [];
+var otherSelected = [];
 // @ts-ignore
-let player = "B";
+var player = "B";
+var allPlayerMoves = [];
 // @ts-ignore
 function updateGrid() {
-    grid.forEach((row, rowInd) => {
-        row.forEach((col, colInd) => {
-            const elem = document.getElementById(`sq${rowInd * 8 + colInd}`);
+    grid.forEach(function (row, rowInd) {
+        row.forEach(function (col, colInd) {
+            var elem = document.getElementById("sq".concat(rowInd * 8 + colInd));
             if (!elem)
                 return;
             if (areArraysEqual([rowInd, colInd], selected)) {
                 elem.setAttribute('class', 'game-square selected');
             }
-            else if (otherSelected.some(a => areArraysEqual(a, [rowInd, colInd]))) {
+            else if (otherSelected.some(function (a) { return areArraysEqual(a.nextMove, [rowInd, colInd]); })) {
                 elem.setAttribute('class', 'game-square pseudoselected');
             }
             else {
@@ -57,125 +57,153 @@ function updateGrid() {
             }
         });
     });
-    const winner = checkWinner();
+    var winner = checkWinner();
     if (!!winner) {
-        grid.forEach((row, rowInd) => {
-            row.forEach((_, colInd) => {
-                const sq = document.getElementById(`sq${rowInd * 8 + colInd}`);
+        grid.forEach(function (row, rowInd) {
+            row.forEach(function (_, colInd) {
+                var sq = document.getElementById("sq".concat(rowInd * 8 + colInd));
                 if (!sq)
                     return;
                 sq.setAttribute('disabled', '');
                 sq.removeAttribute('onclick');
             });
         });
-        const currText = document.getElementById('current');
+        var currText = document.getElementById('current');
         if (!currText)
             return;
-        currText.innerText = `The winner is: ${winner === "R" ? "Red" : "Black"}!`;
+        currText.innerText = "The winner is: ".concat(winner === "R" ? "Red" : "Black", "!");
     }
 }
 // @ts-ignore
-function mapDiagonals(coord, dir = "A") {
-    let arrDiag = [];
-    const currentSq = grid[coord[0]][coord[1]];
+function mapDiagonals(coord, dir) {
+    if (dir === void 0) { dir = "A"; }
+    var arrDiag = [];
+    var currentSq = grid[coord[0]][coord[1]];
     if (!currentSq)
         return [];
     if (dir === "U" || dir === "A") {
-        const upperLeft = [coord[0] - 1, coord[1] - 1];
+        var upperLeft = [coord[0] - 1, coord[1] - 1];
         if (validCoordinate(upperLeft)) {
-            const upperLeftSq = grid[upperLeft[0]][upperLeft[1]];
+            var upperLeftSq = grid[upperLeft[0]][upperLeft[1]];
             if (upperLeftSq) {
                 if (!checkSameColour(currentSq, upperLeftSq)) {
-                    const nextUpperLeft = [coord[0] - 2, coord[1] - 2];
+                    var nextUpperLeft = [coord[0] - 2, coord[1] - 2];
                     if (validCoordinate(nextUpperLeft)) {
-                        const nextUpperLeftSq = grid[nextUpperLeft[0]][nextUpperLeft[1]];
+                        var nextUpperLeftSq = grid[nextUpperLeft[0]][nextUpperLeft[1]];
                         if (!nextUpperLeftSq) {
-                            arrDiag.push(nextUpperLeft);
                             toCapture = upperLeft;
+                            arrDiag.push({
+                                nextMove: nextUpperLeft,
+                                capture: toCapture
+                            });
                         }
                     }
                 }
             }
             else
-                arrDiag.push(upperLeft);
+                arrDiag.push({
+                    nextMove: upperLeft,
+                    capture: [-1, -1]
+                });
         }
-        const upperRight = [coord[0] - 1, coord[1] + 1];
+        var upperRight = [coord[0] - 1, coord[1] + 1];
         if (validCoordinate(upperRight)) {
-            const upperRightSq = grid[upperRight[0]][upperRight[1]];
+            var upperRightSq = grid[upperRight[0]][upperRight[1]];
             if (upperRightSq) {
                 if (!checkSameColour(currentSq, upperRightSq)) {
-                    const nextUpperRight = [coord[0] - 2, coord[1] + 2];
+                    var nextUpperRight = [coord[0] - 2, coord[1] + 2];
                     if (validCoordinate(nextUpperRight)) {
-                        const nextUpperRightSq = grid[nextUpperRight[0]][nextUpperRight[1]];
+                        var nextUpperRightSq = grid[nextUpperRight[0]][nextUpperRight[1]];
                         if (!nextUpperRightSq) {
-                            arrDiag.push(nextUpperRight);
                             toCapture = upperRight;
+                            arrDiag.push({
+                                nextMove: nextUpperRight,
+                                capture: toCapture
+                            });
                         }
                     }
                 }
             }
             else
-                arrDiag.push(upperRight);
+                arrDiag.push({
+                    nextMove: upperRight,
+                    capture: [-1, -1]
+                });
         }
     }
     if (dir === "D" || dir === "A") {
-        const lowerLeft = [coord[0] + 1, coord[1] - 1];
+        var lowerLeft = [coord[0] + 1, coord[1] - 1];
         if (validCoordinate(lowerLeft)) {
-            const lowerLeftSq = grid[lowerLeft[0]][lowerLeft[1]];
+            var lowerLeftSq = grid[lowerLeft[0]][lowerLeft[1]];
             if (lowerLeftSq) {
                 if (!checkSameColour(currentSq, lowerLeftSq)) {
-                    const nextLowerLeft = [coord[0] + 2, coord[1] - 2];
+                    var nextLowerLeft = [coord[0] + 2, coord[1] - 2];
                     if (validCoordinate(nextLowerLeft)) {
-                        const nextLowerLeftSq = grid[nextLowerLeft[0]][nextLowerLeft[1]];
+                        var nextLowerLeftSq = grid[nextLowerLeft[0]][nextLowerLeft[1]];
                         if (!nextLowerLeftSq) {
-                            arrDiag.push(nextLowerLeft);
                             toCapture = lowerLeft;
+                            arrDiag.push({
+                                nextMove: nextLowerLeft,
+                                capture: toCapture
+                            });
                         }
                     }
                 }
             }
             else
-                arrDiag.push(lowerLeft);
+                arrDiag.push({
+                    nextMove: lowerLeft,
+                    capture: [-1, -1]
+                });
         }
-        const lowerRight = [coord[0] + 1, coord[1] + 1];
+        var lowerRight = [coord[0] + 1, coord[1] + 1];
         if (validCoordinate(lowerRight)) {
-            const lowerRightSq = grid[lowerRight[0]][lowerRight[1]];
+            var lowerRightSq = grid[lowerRight[0]][lowerRight[1]];
             if (lowerRightSq) {
                 if (!checkSameColour(currentSq, lowerRightSq)) {
-                    const nextLowerRight = [coord[0] + 2, coord[1] + 2];
+                    var nextLowerRight = [coord[0] + 2, coord[1] + 2];
                     if (validCoordinate(nextLowerRight)) {
-                        const nextLowerRightSq = grid[nextLowerRight[0]][nextLowerRight[1]];
+                        var nextLowerRightSq = grid[nextLowerRight[0]][nextLowerRight[1]];
                         if (!nextLowerRightSq) {
-                            arrDiag.push(nextLowerRight);
                             toCapture = lowerRight;
+                            arrDiag.push({
+                                nextMove: nextLowerRight,
+                                capture: toCapture
+                            });
                         }
                     }
                 }
             }
             else
-                arrDiag.push(lowerRight);
+                arrDiag.push({
+                    nextMove: lowerRight,
+                    capture: [-1, -1]
+                });
         }
     }
+    if (arrDiag.some(function (move) { return !areArraysEqual([-1, -1], move.capture); }))
+        arrDiag = arrDiag
+            .filter(function (move) { return !areArraysEqual([-1, -1], move.capture); });
     return arrDiag;
 }
 // @ts-ignore
 function updateSquare(sq) {
-    const row = Math.floor(sq / 8);
-    const col = sq % 8;
-    const sqToMoveTo = otherSelected.find(n => areArraysEqual(n, [row, col]));
-    if (!!sqToMoveTo) {
-        const prev = grid[selected[0]][selected[1]];
-        grid[selected[0]] = grid[selected[0]].map((x, i) => i === selected[1] ? null : x);
-        grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? prev : x);
-        const midpoint = [Math.floor((selected[0] + sqToMoveTo[0]) / 2), Math.floor((selected[1] + sqToMoveTo[1]) / 2)];
+    var row = Math.floor(sq / 8);
+    var col = sq % 8;
+    var isSqToMoveTo = otherSelected.find(function (n) { return areArraysEqual(n.nextMove, [row, col]); });
+    if (!!isSqToMoveTo) {
+        var nextSqMoveTo_1 = isSqToMoveTo.nextMove;
+        var prev_1 = grid[selected[0]][selected[1]];
+        grid[selected[0]] = grid[selected[0]].map(function (x, i) { return i === selected[1] ? null : x; });
+        grid[nextSqMoveTo_1[0]] = grid[nextSqMoveTo_1[0]].map(function (x, i) { return i === nextSqMoveTo_1[1] ? prev_1 : x; });
         selected = [-1, -1];
         otherSelected = [];
-        if (sqToMoveTo[0] === 0 && prev === "B")
-            grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KB" : x);
-        if (sqToMoveTo[0] === 7 && prev === "R")
-            grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KR" : x);
-        if (areArraysEqual(toCapture, midpoint)) {
-            grid[toCapture[0]] = grid[toCapture[0]].map((x, ind) => ind === toCapture[1] ? null : x);
+        if (nextSqMoveTo_1[0] === 0 && prev_1 === "B")
+            grid[nextSqMoveTo_1[0]] = grid[nextSqMoveTo_1[0]].map(function (x, i) { return i === nextSqMoveTo_1[1] ? "KB" : x; });
+        if (nextSqMoveTo_1[0] === 7 && prev_1 === "R")
+            grid[nextSqMoveTo_1[0]] = grid[nextSqMoveTo_1[0]].map(function (x, i) { return i === nextSqMoveTo_1[1] ? "KR" : x; });
+        if (!areArraysEqual(isSqToMoveTo.capture, [-1, -1]) && areArraysEqual(toCapture, isSqToMoveTo.capture)) {
+            grid[toCapture[0]] = grid[toCapture[0]].map(function (x, ind) { return ind === toCapture[1] ? null : x; });
             toCapture = [-1, -1];
         }
         switchPlayer();
@@ -187,6 +215,7 @@ function updateSquare(sq) {
     }
     else {
         selected = [row, col];
+        // UPDATE LATER
         if (grid[row][col] === "R" && player === "R") {
             otherSelected = mapDiagonals([row, col], "D");
         }
@@ -205,18 +234,18 @@ function updateSquare(sq) {
 }
 // @ts-ignore
 function areArraysEqual(array1, array2) {
-    return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1);
+    return array1.length === array2.length && array1.every(function (elem1, ind1) { return array2[ind1] === elem1; });
 }
 // @ts-ignore
 function switchPlayer() {
     player = player === "R" ? "B" : "R";
-    const currentPlayerText = document.getElementById('current');
+    var currentPlayerText = document.getElementById('current');
     if (currentPlayerText)
-        currentPlayerText.innerText = `Current player: ${player === "R" ? "Red" : "Black"}`;
+        currentPlayerText.innerText = "Current player: ".concat(player === "R" ? "Red" : "Black");
 }
 // @ts-ignore
 function checkWinner() {
-    const flatGrid = grid.flat(1);
+    var flatGrid = grid.flat(1);
     if (!flatGrid.includes("B"))
         return "R";
     else if (!flatGrid.includes("R"))
@@ -227,6 +256,26 @@ function checkWinner() {
 // @ts-ignore
 function validCoordinate(coordinate) {
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7);
+}
+function getAllPlayerMoves(player) {
+    allPlayerMoves = [];
+    grid.forEach(function (row, rowInd) {
+        row.forEach(function (col, colInd) {
+            var _a;
+            if (!col)
+                return;
+            if (!col.endsWith(player))
+                return;
+            var checkerPossibleMoves = mapDiagonals([rowInd, colInd], (col === "KB" || col === "KR"
+                ? "A"
+                : (col === "B" ? "U" : "D")));
+            if (checkerPossibleMoves.length)
+                allPlayerMoves.push((_a = {},
+                    _a[rowInd * 8 + colInd] = checkerPossibleMoves.map(function (x) { return x.nextMove; }),
+                    _a));
+        });
+    });
+    return allPlayerMoves;
 }
 // @ts-ignore
 function checkSameColour(checker1, checker2) {

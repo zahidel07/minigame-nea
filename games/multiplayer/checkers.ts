@@ -1,5 +1,3 @@
-console.clear()
-
 // @target: es2019
 type Checker = "B" | "R" | "KB" | "KR"
 type Direction = "U" | "D" | "A"
@@ -26,8 +24,11 @@ let grid: Array<Row> = [
 ]
 let selected: Coordinate = [-1, -1]
 let toCapture: Coordinate = [-1, -1]
+// @ts-ignore
 let otherSelected: Array<CaptureObj> = []
+// @ts-ignore
 let player: "R" | "B" = "B"
+// @ts-ignore
 let allPlayerMoves: Array<NextCoordTree> = []
 
 function updateGrid() {
@@ -242,6 +243,7 @@ function validCoordinate(coordinate: [number, number]): coordinate is Coordinate
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
 }
 
+// @ts-ignore
 function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
     allPlayerMoves = []
     grid.forEach((row, rowInd) => {
@@ -254,13 +256,14 @@ function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
                 : (col === "B" ? "U" : "D")
             ))
             if (checkerPossibleMoves.length) allPlayerMoves.push({
-                [rowInd * 8 + colInd]: checkerPossibleMoves.map(x => x.nextMove)
+                [rowInd * 8 + colInd]: checkerPossibleMoves.map(x => x.nextMove) as Array<Coordinate>
             })
         })
     })
     return allPlayerMoves
 }
 
+// @ts-ignore
 function checkSameColour(checker1: Checker, checker2: Checker) {
     if (["B", "KB"].includes(checker1)) return ["B", "KB"].includes(checker2)
     else if (["R", "KR"].includes(checker1)) return ["R", "KR"].includes(checker2)
