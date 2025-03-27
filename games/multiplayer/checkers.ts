@@ -1,3 +1,5 @@
+console.clear()
+
 // @target: es2019
 type Checker = "B" | "R" | "KB" | "KR"
 type Direction = "U" | "D" | "A"
@@ -9,7 +11,7 @@ type CaptureObj = {
     capture: Coordinate
 }
 type NextCoordTree = {
-    [coordinate: string]: Array<Coordinate>
+    [coordinate: string]: Array<CaptureObj>
 }
 
 let grid: Array<Row> = [
@@ -24,13 +26,11 @@ let grid: Array<Row> = [
 ]
 let selected: Coordinate = [-1, -1]
 let toCapture: Coordinate = [-1, -1]
-// @ts-ignore
 let otherSelected: Array<CaptureObj> = []
-// @ts-ignore
 let player: "R" | "B" = "B"
-// @ts-ignore
 let allPlayerMoves: Array<NextCoordTree> = []
 
+// @ts-ignore
 function updateGrid() {
     grid.forEach((row, rowInd) => {
         row.forEach((col, colInd) => {
@@ -83,6 +83,7 @@ function updateGrid() {
     } 
 }
 
+// @ts-ignore
 function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj> {
     let arrDiag: CaptureObj[] = []
     const currentSq = grid[coord[0]][coord[1]]
@@ -183,6 +184,7 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj
     return arrDiag
 }
 
+// @ts-ignore
 function updateSquare(sq: number) {
     const row = Math.floor(sq / 8)
     const col = sq % 8
@@ -222,16 +224,19 @@ function updateSquare(sq: number) {
     updateGrid()
 }
 
+// @ts-ignore
 function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
     return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
 }
 
+// @ts-ignore
 function switchPlayer() {
     player = player === "R" ? "B" : "R"
     const currentPlayerText = document.getElementById('current')
     if (currentPlayerText) currentPlayerText.innerText = `Current player: ${player === "R" ? "Red" : "Black"}`
 }
 
+// @ts-ignore
 function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
     const flatGrid = grid.flat(1)
     if (!flatGrid.includes("B")) return "R"
@@ -239,6 +244,7 @@ function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
     else return null
 }
 
+// @ts-ignore
 function validCoordinate(coordinate: [number, number]): coordinate is Coordinate {
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
 }
@@ -256,7 +262,7 @@ function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
                 : (col === "B" ? "U" : "D")
             ))
             if (checkerPossibleMoves.length) allPlayerMoves.push({
-                [rowInd * 8 + colInd]: checkerPossibleMoves.map(x => x.nextMove) as Array<Coordinate>
+                [rowInd * 8 + colInd]: checkerPossibleMoves
             })
         })
     })
@@ -270,17 +276,19 @@ function checkSameColour(checker1: Checker, checker2: Checker) {
     else return false
 }
 
-function traverseTree(start: Coordinate, end: Coordinate, tree: NextCoordTree, traversalArray: Array<Coordinate>): Array<Coordinate> {
+// @ts-ignore
+function traverseTree(start: Coordinate, end: Coordinate, tree: NextCoordTree, traversalArray: Array<CaptureObj>): Array<CaptureObj> {
     const keys = [...Object.keys(tree)]
     if (!keys.includes((end[0] * 8 + end[1]).toString())) return []
     if (areArraysEqual(start, end)) return traversalArray
     else {
-        const foundKey = keys.find(key => tree[key]?.some(x => areArraysEqual(x, start)))
-        console.log(foundKey)
+        const foundKey = keys.find(key => tree[key]?.some(x => areArraysEqual(x.nextMove, start)))
         if (!foundKey) return []
         const intFoundKey = parseInt(foundKey)
         const coord: Coordinate = [Math.floor(intFoundKey / 8), intFoundKey % 8]
-        traversalArray.push(coord)
+        const nextCaptureObject = tree[foundKey].find(x => areArraysEqual(x.nextMove, start))
+        if (!nextCaptureObject) return []
+        traversalArray.push(nextCaptureObject)
         return traverseTree(coord, end, tree, traversalArray)
     }
 }
