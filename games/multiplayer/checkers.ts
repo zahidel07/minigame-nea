@@ -1,26 +1,19 @@
+console.clear()
+
+// @target: es2019
 type Checker = "B" | "R" | "KB" | "KR"
-// @ts-ignore
+type Direction = "U" | "D" | "A"
 type Square = Checker | null
-// @ts-ignore
 type Coordinate = [number, number]
 type Row = [Square, Square, Square, Square, Square, Square, Square, Square]
 type CaptureObj = {
     nextMove: Coordinate;
     capture: Coordinate
 }
-
-class Moves {
-    constructor(coord?: Coordinate) {
-        this.coordinate = coord || [0, 0] as Coordinate
-    }
-
-    coordinate: Coordinate;
-    nextPossibleMoves: {
-        [current: number]: Array<Coordinate>
-    } = {};
+type NextCoordTree = {
+    [coordinate: string]: Array<Coordinate>
 }
 
-// @ts-ignore
 let grid: Array<Row> = [
     ["R", null, "R", null, "R", null, "R", null],
     [null, "R", null, "R", null, "R", null, "R"],
@@ -31,16 +24,12 @@ let grid: Array<Row> = [
     ["B", null, "B", null, "B", null, "B", null],
     [null, "B", null, "B", null, "B", null, "B"]
 ]
-// @ts-ignore
 let selected: Coordinate = [-1, -1]
-// @ts-ignore
 let toCapture: Coordinate = [-1, -1]
-// @ts-ignore
-let otherSelected: Array<Coordinate> = []
-// @ts-ignore
+let otherSelected: Array<CaptureObj> = []
 let player: "R" | "B" = "B"
+let allPlayerMoves: Array<NextCoordTree> = []
 
-// @ts-ignore
 function updateGrid() {
     grid.forEach((row, rowInd) => {
         row.forEach((col, colInd) => {
@@ -48,12 +37,12 @@ function updateGrid() {
             if (!elem) return
             if (areArraysEqual([rowInd, colInd], selected)) {
                 elem.setAttribute('class', 'game-square selected')
-            } else if (otherSelected.some(a => areArraysEqual(a, [rowInd, colInd]))) {
+            } else if (otherSelected.some(a => areArraysEqual(a.nextMove, [rowInd, colInd]))) {
                 elem.setAttribute('class', 'game-square pseudoselected')
             } else {
                 switch (col) {
                     case "R":
-                        elem.innerText = 'X'
+                        elem.innerText = 'O'
                         elem.setAttribute('class', 'game-square red')
                         break
                     case "KR":
@@ -61,7 +50,7 @@ function updateGrid() {
                         elem.setAttribute('class', 'game-square red')
                         break
                     case "B":
-                        elem.innerText = 'X'
+                        elem.innerText = 'O'
                         elem.setAttribute('class', 'game-square black')
                         break
                     case "KB":
@@ -93,7 +82,6 @@ function updateGrid() {
     } 
 }
 
-// @ts-ignore
 function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj> {
     let arrDiag: CaptureObj[] = []
     const currentSq = grid[coord[0]][coord[1]]
@@ -189,24 +177,25 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj
             })
         }
     }
+    if (arrDiag.some(move => !areArraysEqual([-1, -1], move.capture))) arrDiag = arrDiag
+    .filter(move => !areArraysEqual([-1, -1], move.capture))
     return arrDiag
 }
 
-// @ts-ignore
 function updateSquare(sq: number) {
     const row = Math.floor(sq / 8)
     const col = sq % 8
-    const sqToMoveTo = otherSelected.find(n => areArraysEqual(n, [row, col]))
-    if (!!sqToMoveTo) {
+    const isSqToMoveTo = otherSelected.find(n => areArraysEqual(n.nextMove, [row, col]))
+    if (!!isSqToMoveTo) {
+        const nextSqMoveTo = isSqToMoveTo.nextMove
         const prev = grid[selected[0]][selected[1]]
         grid[selected[0]] = grid[selected[0]].map((x, i) => i === selected[1] ? null : x) as Row
-        grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? prev : x) as Row
-        const midpoint = [Math.floor((selected[0] + sqToMoveTo[0])/2), Math.floor((selected[1] + sqToMoveTo[1])/2)]
+        grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? prev : x) as Row
         selected = [-1, -1]
         otherSelected = []
-        if (sqToMoveTo[0] === 0 && prev === "B") grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KB" : x) as Row
-        if (sqToMoveTo[0] === 7 && prev === "R") grid[sqToMoveTo[0]] = grid[sqToMoveTo[0]].map((x, i) => i === sqToMoveTo[1] ? "KR" : x) as Row
-        if (areArraysEqual(toCapture, midpoint)) {
+        if (nextSqMoveTo[0] === 0 && prev === "B") grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? "KB" : x) as Row
+        if (nextSqMoveTo[0] === 7 && prev === "R") grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? "KR" : x) as Row
+        if (!areArraysEqual(isSqToMoveTo.capture, [-1, -1]) && areArraysEqual(toCapture, isSqToMoveTo.capture)) {
             grid[toCapture[0]] = grid[toCapture[0]].map((x, ind) => ind === toCapture[1] ? null : x) as Row
             toCapture = [-1, -1]
         }
@@ -232,19 +221,16 @@ function updateSquare(sq: number) {
     updateGrid()
 }
 
-// @ts-ignore
 function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
     return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
 }
 
-// @ts-ignore
 function switchPlayer() {
     player = player === "R" ? "B" : "R"
     const currentPlayerText = document.getElementById('current')
     if (currentPlayerText) currentPlayerText.innerText = `Current player: ${player === "R" ? "Red" : "Black"}`
 }
 
-// @ts-ignore
 function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
     const flatGrid = grid.flat(1)
     if (!flatGrid.includes("B")) return "R"
@@ -252,14 +238,46 @@ function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
     else return null
 }
 
-// @ts-ignore
 function validCoordinate(coordinate: [number, number]): coordinate is Coordinate {
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
 }
 
-// @ts-ignore
+function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
+    allPlayerMoves = []
+    grid.forEach((row, rowInd) => {
+        row.forEach((col, colInd) => {
+            if (!col) return
+            if (!col.endsWith(player)) return
+            const checkerPossibleMoves = mapDiagonals([rowInd, colInd], (
+                col === "KB" || col === "KR"
+                ? "A"
+                : (col === "B" ? "U" : "D")
+            ))
+            if (checkerPossibleMoves.length) allPlayerMoves.push({
+                [rowInd * 8 + colInd]: checkerPossibleMoves.map(x => x.nextMove)
+            })
+        })
+    })
+    return allPlayerMoves
+}
+
 function checkSameColour(checker1: Checker, checker2: Checker) {
     if (["B", "KB"].includes(checker1)) return ["B", "KB"].includes(checker2)
     else if (["R", "KR"].includes(checker1)) return ["R", "KR"].includes(checker2)
     else return false
+}
+
+function traverseTree(start: Coordinate, end: Coordinate, tree: NextCoordTree, traversalArray: Array<Coordinate>): Array<Coordinate> {
+    const keys = [...Object.keys(tree)]
+    if (!keys.includes((end[0] * 8 + end[1]).toString())) return []
+    if (areArraysEqual(start, end)) return traversalArray
+    else {
+        const foundKey = keys.find(key => tree[key]?.some(x => areArraysEqual(x, start)))
+        console.log(foundKey)
+        if (!foundKey) return []
+        const intFoundKey = parseInt(foundKey)
+        const coord: Coordinate = [Math.floor(intFoundKey / 8), intFoundKey % 8]
+        traversalArray.push(coord)
+        return traverseTree(coord, end, tree, traversalArray)
+    }
 }
