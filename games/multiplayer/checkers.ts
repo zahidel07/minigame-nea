@@ -1,3 +1,5 @@
+console.clear()
+
 // @target: es2019
 type Checker = "B" | "R" | "KB" | "KR"
 type Direction = "U" | "D" | "A"
@@ -9,19 +11,19 @@ type CaptureObj = {
     capture: Coordinate
 }
 type NextCoordTree = {
-    [coordinate: string]: Array<Coordinate>
+    [coordinate: string]: Array<CaptureObj>
 }
 
 // @ts-ignore
 let grid: Array<Row> = [
-    ["R", null, "R", null, "R", null, "R", null],
-    [null, "R", null, "R", null, "R", null, "R"],
-    ["R", null, "R", null, "R", null, "R", null],
+    ["R" , null, "R" , null, "R" , null, "R" , null],
+    [null, "R" , null, "R" , null, "R" , null, "R" ],
+    ["R" , null, "R" , null, "R" , null, "R" , null],
+    [null, "B" , null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, "B", null, "B", null, "B", null, "B"],
-    ["B", null, "B", null, "B", null, "B", null],
-    [null, "B", null, "B", null, "B", null, "B"]
+    [null, "B" , null, "B" , null, "B" , null, "B" ],
+    [null, null, null, null, null, null, "B" , null],
+    [null, "B" , null, "B" , null, "B" , null, "B" ]
 ]
 // @ts-ignore
 let selected: Coordinate = [-1, -1]
@@ -88,16 +90,15 @@ function updateGrid() {
 }
 
 // @ts-ignore
-function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj> {
+function mapDiagonals(coord: Coordinate, dir: Direction = "A", originalColour?: Square): Array<CaptureObj> {
     let arrDiag: CaptureObj[] = []
     const currentSq = grid[coord[0]][coord[1]]
-    if (!currentSq) return []
     if (dir === "U" || dir === "A") {
         const upperLeft = [coord[0] - 1, coord[1] - 1] as Coordinate
         if (validCoordinate(upperLeft)) {
             const upperLeftSq = grid[upperLeft[0]][upperLeft[1]]
             if (upperLeftSq) {
-                if (!checkSameColour(currentSq, upperLeftSq)) {
+                if (!checkSameColour(originalColour || currentSq, upperLeftSq)) {
                     const nextUpperLeft = [coord[0] - 2, coord[1] - 2] as Coordinate
                     if (validCoordinate(nextUpperLeft)) {
                         const nextUpperLeftSq = grid[nextUpperLeft[0]][nextUpperLeft[1]]
@@ -119,7 +120,7 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj
         if (validCoordinate(upperRight)) {
             const upperRightSq = grid[upperRight[0]][upperRight[1]]
             if (upperRightSq) {
-                if (!checkSameColour(currentSq, upperRightSq)) {
+                if (!checkSameColour(originalColour || currentSq, upperRightSq)) {
                     const nextUpperRight = [coord[0] - 2, coord[1] + 2] as Coordinate
                     if (validCoordinate(nextUpperRight)) {
                         const nextUpperRightSq = grid[nextUpperRight[0]][nextUpperRight[1]]
@@ -142,7 +143,7 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj
         if (validCoordinate(lowerLeft)) {
             const lowerLeftSq = grid[lowerLeft[0]][lowerLeft[1]]
             if (lowerLeftSq) {
-                if (!checkSameColour(currentSq, lowerLeftSq)) {
+                if (!checkSameColour(originalColour || currentSq, lowerLeftSq)) {
                     const nextLowerLeft = [coord[0] + 2, coord[1] - 2] as Coordinate
                     if (validCoordinate(nextLowerLeft)) {
                         const nextLowerLeftSq = grid[nextLowerLeft[0]][nextLowerLeft[1]]
@@ -164,7 +165,7 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj
         if (validCoordinate(lowerRight)) {
             const lowerRightSq = grid[lowerRight[0]][lowerRight[1]]
             if (lowerRightSq) {
-                if (!checkSameColour(currentSq, lowerRightSq)) {
+                if (!checkSameColour(originalColour || currentSq, lowerRightSq)) {
                     const nextLowerRight = [coord[0] + 2, coord[1] + 2] as Coordinate
                     if (validCoordinate(nextLowerRight)) {
                         const nextLowerRightSq = grid[nextLowerRight[0]][nextLowerRight[1]]
@@ -190,36 +191,54 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A"): Array<CaptureObj
 
 // @ts-ignore
 function updateSquare(sq: number) {
-    const row = Math.floor(sq / 8)
-    const col = sq % 8
+    const [row, col] = [Math.floor(sq / 8), sq % 8]
     const isSqToMoveTo = otherSelected.find(n => areArraysEqual(n.nextMove, [row, col]))
     if (!!isSqToMoveTo) {
-        const nextSqMoveTo = isSqToMoveTo.nextMove
-        const prev = grid[selected[0]][selected[1]]
-        grid[selected[0]] = grid[selected[0]].map((x, i) => i === selected[1] ? null : x) as Row
-        grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? prev : x) as Row
-        selected = [-1, -1]
-        otherSelected = []
-        if (nextSqMoveTo[0] === 0 && prev === "B") grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? "KB" : x) as Row
-        if (nextSqMoveTo[0] === 7 && prev === "R") grid[nextSqMoveTo[0]] = grid[nextSqMoveTo[0]].map((x, i) => i === nextSqMoveTo[1] ? "KR" : x) as Row
-        if (!areArraysEqual(isSqToMoveTo.capture, [-1, -1]) && areArraysEqual(toCapture, isSqToMoveTo.capture)) {
-            grid[toCapture[0]] = grid[toCapture[0]].map((x, ind) => ind === toCapture[1] ? null : x) as Row
-            toCapture = [-1, -1]
+        // TEST CODE
+        let prevSq = selected
+        let moveNext: CaptureObj = {
+            nextMove: [-1, -1],
+            capture: [-1, -1]
         }
+        const final = isSqToMoveTo.nextMove
+        const prevSqColour = grid[prevSq[0]][prevSq[1]]
+        const tree = createTree(
+            selected, 
+            prevSqColour === "KB" || prevSqColour === "KR" ? "A" : (prevSqColour === "B" ? "U" : "D"),
+            {}
+        )
+        const path = traverseTree(final, selected, tree, [])
+        moveNext = path[0]
+        for (let i = 1; i < path.length; i++) {
+            grid[prevSq[0]] = grid[prevSq[0]].map((x, n) => n === prevSq[1] ? null : x) as Row
+            grid[moveNext.nextMove[0]] = grid[moveNext.nextMove[0]].map((x, n) => n === moveNext.nextMove[1] ? prevSqColour : x) as Row
+            if (!areArraysEqual(moveNext.capture, [-1, -1])) {
+                grid[moveNext.capture[0]] = grid[moveNext.capture[0]].map((x, n) => n === moveNext.capture[1] ? null : x) as Row
+            }
+            prevSq = moveNext.nextMove
+            moveNext = path[i]
+        }
+        if (moveNext.nextMove[0] === 0) grid[moveNext.nextMove[0]]
+        = grid[moveNext.nextMove[0]].map((x, n) => {
+            return n === moveNext.nextMove[1] 
+            ? (prevSqColour === "B" ? "KB" : "KR")
+            : x 
+        }) as Row
         switchPlayer()
     } else if (areArraysEqual(selected, [row, col])) {
         selected = [-1, -1]
-        toCapture = [-1, -1]
         otherSelected = []
     } else {
         selected = [row, col]
-        // UPDATE LATER
         if (grid[row][col] === "R" && player === "R") {
-            otherSelected = mapDiagonals([row, col], "D") as Array<CaptureObj>
+            // @ts-ignore
+            otherSelected = [...Object.values(createTree([row, col], "D", {}))].flat()
         } else if (grid[row][col] === "B" && player === "B") {
-            otherSelected = mapDiagonals([row, col], "U") as Array<CaptureObj>
+            // @ts-ignore
+            otherSelected = [...Object.values(createTree([row, col], "U", {}))].flat()
         } else if ((grid[row][col] === "KR" && player === "R") || (grid[row][col] === "KB" && player === "B")) {
-            otherSelected = mapDiagonals([row, col]) as Array<CaptureObj>
+            // @ts-ignore
+            otherSelected = [...Object.values(createTree([row, col], "A", {}))].flat()
         } else {
             selected = [-1, -1]
             otherSelected = []
@@ -265,8 +284,9 @@ function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
                 ? "A"
                 : (col === "B" ? "U" : "D")
             ))
+            // @ts-ignore
             if (checkerPossibleMoves.length) allPlayerMoves.push({
-                [rowInd * 8 + colInd]: checkerPossibleMoves.map(x => x.nextMove) as Array<Coordinate>
+                [rowInd * 8 + colInd]: checkerPossibleMoves
             })
         })
     })
@@ -274,8 +294,60 @@ function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
 }
 
 // @ts-ignore
-function checkSameColour(checker1: Checker, checker2: Checker) {
-    if (["B", "KB"].includes(checker1)) return ["B", "KB"].includes(checker2)
-    else if (["R", "KR"].includes(checker1)) return ["R", "KR"].includes(checker2)
+function checkSameColour(checker1: Square, checker2: Square) {
+    if (checker1 && checker2) {
+        if (["B", "KB"].includes(checker1)) return ["B", "KB"].includes(checker2)
+        else if (["R", "KR"].includes(checker1)) return ["R", "KR"].includes(checker2)
+        else return false
+    }
     else return false
+}
+
+// @ts-ignore
+function traverseTree(start: Coordinate, end: Coordinate, tree: NextCoordTree, traversalArray: Array<CaptureObj>): Array<CaptureObj> {
+    const keys = [...Object.keys(tree)]
+    if (!keys.includes((end[0] * 8 + end[1]).toString())) return []
+    if (areArraysEqual(start, end)) return traversalArray.reverse()
+    else {
+        const foundKey = keys.find(key => tree[key]?.some(x => areArraysEqual(x.nextMove, start)))
+        if (!foundKey) return []
+        const intFoundKey = parseInt(foundKey)
+        const coord: Coordinate = [Math.floor(intFoundKey / 8), intFoundKey % 8]
+        const nextCaptureObject = tree[foundKey].find(x => areArraysEqual(x.nextMove, start))
+        if (!nextCaptureObject) return []
+        traversalArray.push(nextCaptureObject)
+        return traverseTree(coord, end, tree, traversalArray)
+    }
+}
+
+// @ts-ignore
+function createTree(start: Coordinate, dir: Direction, prevTree: NextCoordTree): NextCoordTree {
+    let tempTree = prevTree
+    const tempTreeKeys = [...Object.keys(tempTree)]
+    const requireForceCapture = !!Object.values(prevTree).flat().length && Object.values(prevTree).flat()
+    .every(({ capture }, _, arr) => arr.length !== 0 && !areArraysEqual(capture, [-1, -1]))
+    if (!tempTreeKeys.includes(String(start[0] * 8 + start[1]))) {
+        // @ts-ignore
+        tempTree[String(start[0] * 8 + start[1])] = mapDiagonals(start, dir)
+    }
+    for (let key of tempTreeKeys) {
+        const nextMoves = tempTree[key]
+        nextMoves.forEach(({ nextMove }) => {
+            const indexAsStr = nextMove[0] * 8 + nextMove[1]
+            const furtherNextMove = mapDiagonals(nextMove, dir, grid[start[0]][start[1]])
+            // @ts-ignore
+            if (furtherNextMove.length) tempTree[indexAsStr] = furtherNextMove
+        })
+    }
+    const allObjValues = [...Object.values(tempTree)]
+    if (
+        allObjValues.length && allObjValues.some(x => x.some(({ capture }) => areArraysEqual(capture, [-1, -1])))
+    ) return tempTree
+    if (requireForceCapture) {
+        for (let key of Object.keys(tempTree)) {
+            if (tempTree[key].some(x => areArraysEqual(x.capture, [-1, -1]))) delete tempTree[key]
+        }
+    }
+    if (areArraysEqual([...Object.keys(prevTree)], tempTreeKeys)) return tempTree
+    else return createTree(start, dir, tempTree)
 }
