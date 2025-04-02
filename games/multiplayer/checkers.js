@@ -7,21 +7,26 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-console.clear();
+// @ts-ignore
 var grid = [
     ["R", null, "R", null, "R", null, "R", null],
     [null, "R", null, "R", null, "R", null, "R"],
     ["R", null, "R", null, "R", null, "R", null],
-    [null, "B", null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, "B", null, "B", null, "B", null, "B"],
-    [null, null, null, null, null, null, "B", null],
+    ["B", null, "B", null, "B", null, "B", null],
     [null, "B", null, "B", null, "B", null, "B"]
 ];
+// @ts-ignore
 var selected = [-1, -1];
+// @ts-ignore
 var toCapture = [-1, -1];
+// @ts-ignore
 var otherSelected = [];
+// @ts-ignore
 var player = "B";
+// @ts-ignore
 var allPlayerMoves = [];
 // @ts-ignore
 function updateGrid() {
@@ -204,8 +209,9 @@ function updateSquare(sq) {
         var prevSqColour_1 = grid[prevSq_1[0]][prevSq_1[1]];
         var tree = createTree(selected, prevSqColour_1 === "KB" || prevSqColour_1 === "KR" ? "A" : (prevSqColour_1 === "B" ? "U" : "D"), {});
         var path = traverseTree(final, selected, tree, []);
-        moveNext_1 = path[0];
-        for (var i = 1; i < path.length; i++) {
+        for (var i = 0; i < path.length; i++) {
+            if (i === 0)
+                moveNext_1 = path[0];
             grid[prevSq_1[0]] = grid[prevSq_1[0]].map(function (x, n) { return n === prevSq_1[1] ? null : x; });
             grid[moveNext_1.nextMove[0]] = grid[moveNext_1.nextMove[0]].map(function (x, n) { return n === moveNext_1.nextMove[1] ? prevSqColour_1 : x; });
             if (!areArraysEqual(moveNext_1.capture, [-1, -1])) {
@@ -221,6 +227,8 @@ function updateSquare(sq) {
                         ? (prevSqColour_1 === "B" ? "KB" : "KR")
                         : x;
                 });
+        selected = [-1, -1];
+        otherSelected = [];
         switchPlayer();
     }
     else if (areArraysEqual(selected, [row, col])) {
@@ -230,12 +238,15 @@ function updateSquare(sq) {
     else {
         selected = [row, col];
         if (grid[row][col] === "R" && player === "R") {
+            // @ts-ignore
             otherSelected = __spreadArray([], Object.values(createTree([row, col], "D", {})), true).flat();
         }
         else if (grid[row][col] === "B" && player === "B") {
+            // @ts-ignore
             otherSelected = __spreadArray([], Object.values(createTree([row, col], "U", {})), true).flat();
         }
         else if ((grid[row][col] === "KR" && player === "R") || (grid[row][col] === "KB" && player === "B")) {
+            // @ts-ignore
             otherSelected = __spreadArray([], Object.values(createTree([row, col], "A", {})), true).flat();
         }
         else {
@@ -283,6 +294,7 @@ function getAllPlayerMoves(player) {
             var checkerPossibleMoves = mapDiagonals([rowInd, colInd], (col === "KB" || col === "KR"
                 ? "A"
                 : (col === "B" ? "U" : "D")));
+            // @ts-ignore
             if (checkerPossibleMoves.length)
                 allPlayerMoves.push((_a = {},
                     _a[rowInd * 8 + colInd] = checkerPossibleMoves,
@@ -328,12 +340,13 @@ function traverseTree(start, end, tree, traversalArray) {
 function createTree(start, dir, prevTree) {
     var tempTree = prevTree;
     var tempTreeKeys = __spreadArray([], Object.keys(tempTree), true);
-    var requireForceCapture = !!Object.values(prevTree).flat().length && Object.values(prevTree).flat()
-        .every(function (_a, _, arr) {
+    var requireForceCapture = !!__spreadArray([], Object.values(prevTree), true).flat().length && __spreadArray([], Object.values(prevTree), true).flat()
+        .some(function (_a, _, arr) {
         var capture = _a.capture;
         return arr.length !== 0 && !areArraysEqual(capture, [-1, -1]);
     });
     if (!tempTreeKeys.includes(String(start[0] * 8 + start[1]))) {
+        // @ts-ignore
         tempTree[String(start[0] * 8 + start[1])] = mapDiagonals(start, dir);
     }
     for (var _i = 0, tempTreeKeys_1 = tempTreeKeys; _i < tempTreeKeys_1.length; _i++) {
@@ -343,6 +356,8 @@ function createTree(start, dir, prevTree) {
             var nextMove = _a.nextMove;
             var indexAsStr = nextMove[0] * 8 + nextMove[1];
             var furtherNextMove = mapDiagonals(nextMove, dir, grid[start[0]][start[1]]);
+            if (requireForceCapture)
+                furtherNextMove.filter(function (move) { return !areArraysEqual([-1, -1], move.capture); });
             if (furtherNextMove.length)
                 tempTree[indexAsStr] = furtherNextMove;
         });
@@ -357,11 +372,18 @@ function createTree(start, dir, prevTree) {
         for (var _a = 0, _b = Object.keys(tempTree); _a < _b.length; _a++) {
             var key = _b[_a];
             if (tempTree[key].some(function (x) { return areArraysEqual(x.capture, [-1, -1]); }))
-                delete tempTree[key];
+                tempTree[key] = [];
         }
     }
+    var newTree = {};
+    Object.keys(prevTree).forEach(function (key) {
+        if (!prevTree[key].length)
+            return;
+        else
+            newTree[key] = prevTree[key];
+    });
     if (areArraysEqual(__spreadArray([], Object.keys(prevTree), true), tempTreeKeys))
-        return tempTree;
+        return newTree;
     else
-        return createTree(start, dir, tempTree);
+        return createTree(start, dir, newTree);
 }

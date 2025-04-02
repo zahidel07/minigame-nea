@@ -17,10 +17,10 @@ let grid: Array<Row> = [
     ["R" , null, "R" , null, "R" , null, "R" , null],
     [null, "R" , null, "R" , null, "R" , null, "R" ],
     ["R" , null, "R" , null, "R" , null, "R" , null],
-    [null, "B" , null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, "B" , null, "B" , null, "B" , null, "B" ],
-    [null, null, null, null, null, null, "B" , null],
+    ["B" , null, "B" , null, "B" , null, "B" , null],
     [null, "B" , null, "B" , null, "B" , null, "B" ]
 ]
 // @ts-ignore
@@ -205,9 +205,9 @@ function updateSquare(sq: number) {
             prevSqColour === "KB" || prevSqColour === "KR" ? "A" : (prevSqColour === "B" ? "U" : "D"),
             {}
         )
-        const path = traverseTree(final, selected, tree, [])
-        moveNext = path[0]
-        for (let i = 1; i < path.length; i++) {
+        const path = traverseTree(final, selected, tree, [])       
+        for (let i = 0; i < path.length; i++) {
+            if (i === 0) moveNext = path[0]
             grid[prevSq[0]] = grid[prevSq[0]].map((x, n) => n === prevSq[1] ? null : x) as Row
             grid[moveNext.nextMove[0]] = grid[moveNext.nextMove[0]].map((x, n) => n === moveNext.nextMove[1] ? prevSqColour : x) as Row
             if (!areArraysEqual(moveNext.capture, [-1, -1])) {
@@ -222,6 +222,8 @@ function updateSquare(sq: number) {
             ? (prevSqColour === "B" ? "KB" : "KR")
             : x 
         }) as Row
+        selected = [-1, -1]
+        otherSelected = []
         switchPlayer()
     } else if (areArraysEqual(selected, [row, col])) {
         selected = [-1, -1]
@@ -322,8 +324,8 @@ function traverseTree(start: Coordinate, end: Coordinate, tree: NextCoordTree, t
 function createTree(start: Coordinate, dir: Direction, prevTree: NextCoordTree): NextCoordTree {
     let tempTree = prevTree
     const tempTreeKeys = [...Object.keys(tempTree)]
-    const requireForceCapture = !!Object.values(prevTree).flat().length && Object.values(prevTree).flat()
-    .every(({ capture }, _, arr) => arr.length !== 0 && !areArraysEqual(capture, [-1, -1]))
+    const requireForceCapture = !![...Object.values(prevTree)].flat().length && [...Object.values(prevTree)].flat()
+    .some(({ capture }, _, arr) => arr.length !== 0 && !areArraysEqual(capture, [-1, -1]))
     if (!tempTreeKeys.includes(String(start[0] * 8 + start[1]))) {
         // @ts-ignore
         tempTree[String(start[0] * 8 + start[1])] = mapDiagonals(start, dir)
@@ -332,8 +334,8 @@ function createTree(start: Coordinate, dir: Direction, prevTree: NextCoordTree):
         const nextMoves = tempTree[key]
         nextMoves.forEach(({ nextMove }) => {
             const indexAsStr = nextMove[0] * 8 + nextMove[1]
-            const furtherNextMove = mapDiagonals(nextMove, dir, grid[start[0]][start[1]])
-            // @ts-ignore
+            let furtherNextMove = mapDiagonals(nextMove, dir, grid[start[0]][start[1]])
+            if (requireForceCapture) furtherNextMove.filter(move => !areArraysEqual([-1, -1], move.capture))
             if (furtherNextMove.length) tempTree[indexAsStr] = furtherNextMove
         })
     }
@@ -343,9 +345,14 @@ function createTree(start: Coordinate, dir: Direction, prevTree: NextCoordTree):
     ) return tempTree
     if (requireForceCapture) {
         for (let key of Object.keys(tempTree)) {
-            if (tempTree[key].some(x => areArraysEqual(x.capture, [-1, -1]))) delete tempTree[key]
+            if (tempTree[key].some(x => areArraysEqual(x.capture, [-1, -1]))) tempTree[key] = []
         }
     }
-    if (areArraysEqual([...Object.keys(prevTree)], tempTreeKeys)) return tempTree
-    else return createTree(start, dir, tempTree)
+    const newTree: NextCoordTree = {}
+    Object.keys(prevTree).forEach(key => {
+        if (!prevTree[key].length) return
+        else newTree[key] = prevTree[key]
+    })
+    if (areArraysEqual([...Object.keys(prevTree)], tempTreeKeys)) return newTree
+    else return createTree(start, dir, newTree)
 }
