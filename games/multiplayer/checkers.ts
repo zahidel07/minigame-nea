@@ -1,5 +1,3 @@
-console.clear()
-
 // @target: es2019
 type Checker = "B" | "R" | "KB" | "KR"
 type Direction = "U" | "D" | "A"
