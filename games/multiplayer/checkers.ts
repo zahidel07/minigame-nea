@@ -388,6 +388,20 @@ function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
     return allPlayerMoves
 }
 
+/** 
+ * Checks if two checkers are not null and are the same colour
+ * 
+ * Examples:
+ * B and KB returns true
+ * B and B returns true
+ * R and B returns false
+ * KR and KB returns false
+ * null and B returns false
+ * null and null returns false
+ * @param {Square} checker1
+ * @param {Square} checker2
+ * @returns {boolean} Whether the two booleans are the same colour
+*/
 // @ts-ignore
 function checkSameColour(checker1: Square, checker2: Square) {
     if (checker1 && checker2) {
@@ -399,6 +413,15 @@ function checkSameColour(checker1: Square, checker2: Square) {
 }
 
 // @ts-ignore
+/**
+ * A function that performs tree traversal on a binary tree. It works by starting at the leaf node and working its way up the parent nodes until it finds the node found.
+ * The start node and end nodes must exist for the traversal to work, otherwise an empty array is returned.
+ * @param {Coordinate} start The coordinate to start from 
+ * @param {Coordinate} end The coordinate to end at 
+ * @param {NextCoordTree} tree The tree to traverse through 
+ * @param {Array<CaptureObj>} traversalArray The traversal array, which shows the coordinates already traversed through. If starting a traversal, set to [] 
+ * @returns {Array<CaptureObj>} The traversal, in the order from leaf node to parent node
+ */
 function traverseTree(start: Coordinate, end: Coordinate, tree: NextCoordTree, traversalArray: Array<CaptureObj>): Array<CaptureObj> {
     const keys = [...Object.keys(tree)]
     if (!keys.includes((end[0] * 8 + end[1]).toString())) return []
@@ -416,6 +439,13 @@ function traverseTree(start: Coordinate, end: Coordinate, tree: NextCoordTree, t
 }
 
 // @ts-ignore
+/**
+ * Create a binary tree that will start at a node and produce every single possible move from that checker, including further consecutive moves. Based on the mapDiagonals method
+ * @param {Coordinate} start The coordinate to start from 
+ * @param {Direction} dir The direction to move in. This is "D" for down, "U" for up and "A" for all 
+ * @param {NextCoordTree} prevTree The previous tree, which is used in recursion to add new indexes
+ * @returns {NextCoordTree} The final tree, showing all the possible moves that can be made from that position
+ */
 function createTree(start: Coordinate, dir: Direction, prevTree: NextCoordTree): NextCoordTree {
     let tempTree = prevTree
     const tempTreeKeys = [...Object.keys(tempTree)]

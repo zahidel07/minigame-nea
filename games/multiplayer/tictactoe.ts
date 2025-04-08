@@ -52,6 +52,9 @@ function chooseDifficulty(difficulty: 3 | 4) {
         optionsElem.removeAttribute('hidden')
     }
 
+    // winningCombos is a 3D array, it includes the arrays of sets of coordinate that together produce a winning combination
+    // for example [0, 0], [0, 1], [0, 2] is one set of winning combination
+    // and [0, 1], [1, 1], [2, 2] is another set of winning combination
     winningCombos = 
     difficulty === 3
     ? [
@@ -77,9 +80,14 @@ function chooseDifficulty(difficulty: 3 | 4) {
         [[3, 0], [2, 1], [1, 2], [0, 3]]
     ]
 
+    // grid is defined to be a 2D array. It will be 3x3 or 4x4 depending on difficulty chosen
     grid = Array(difficulty).fill(Array(difficulty).fill(null))
 }
 
+/**
+ * updateSquare is used to update the square, and set it to the current player's move
+ * @param {number} square The square to select 
+*/
 // @ts-ignore
 function updateSquare(square: number) {
     const row = Math.floor(square / diff)
@@ -89,6 +97,10 @@ function updateSquare(square: number) {
     updateGrid(grid)
 }
 
+/**
+ * Update the table on the HTML page with the new grid
+ * @param {Array<Array<Square>>} newGrid The new grid to update 
+ */
 // @ts-ignore
 function updateGrid(newGrid: Array<Array<Square>>) {
     for (let row = 0; row < diff; row++) {
@@ -114,6 +126,11 @@ function updateGrid(newGrid: Array<Array<Square>>) {
     }
 }
 
+/**
+ * Check for a winner
+ * The .some() array method is used, to find one set of coordinates, before this is mapped to the appropriate grid element
+ * A winner is found if one of the sets has all 3 (or 4) elements the same (e.g. [0, 0], [0, 1], [0, 2] maps to X X X)
+ */
 // @ts-ignore
 function winner() {
     if (grid.every(val => val.every(n => !!n))) {
