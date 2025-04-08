@@ -3,9 +3,11 @@ type Coordinate = [number, number]
 type Player = "X" | "O"
 // @ts-ignore
 type Square = Player | null
-
+// @ts-ignore
 let current: Player = "X"
+// @ts-ignore
 let diff = 1
+// @ts-ignore
 let winningCombos: Array<Array<Coordinate>> = []
 // @ts-ignore
 let grid: Array<Array<Square>> = []
@@ -112,6 +114,7 @@ function updateGrid(newGrid: Array<Array<Square>>) {
     }
 }
 
+// @ts-ignore
 function winner() {
     if (grid.every(val => val.every(n => !!n))) {
         const currentElem = document.getElementById('current')
