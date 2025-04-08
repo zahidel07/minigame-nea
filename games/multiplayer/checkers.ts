@@ -1,9 +1,16 @@
 // @target: es2019
+// These are the type definitions that are used for type checking in the program
 type Checker = "B" | "R" | "KB" | "KR"
 type Direction = "U" | "D" | "A"
+// @ts-ignore
 type Square = Checker | null
+// @ts-ignore
 type Coordinate = [number, number]
 type Row = [Square, Square, Square, Square, Square, Square, Square, Square]
+// These two type definitions below are important: 
+// CaptureObj is an object that stores two attributes: nextMove and capture
+// nextMove is the next move to move to. The coordinate to move from is ambiguous
+// capture is the coordinate of any checkers that are captured if this move is made. If no moves are possible, this is [-1, -1]
 type CaptureObj = {
     nextMove: Coordinate;
     capture: Coordinate
@@ -13,6 +20,7 @@ type NextCoordTree = {
 }
 
 // @ts-ignore
+// The grid is defined to be a 2x2 array of type Square = Checker | null = "R" | "B" | "KB" | "KR" | null
 let grid: Array<Row> = [
     ["R" , null, "R" , null, "R" , null, "R" , null],
     [null, "R" , null, "R" , null, "R" , null, "R" ],
@@ -34,8 +42,13 @@ let player: "R" | "B" = "B"
 // @ts-ignore
 let allPlayerMoves: Array<NextCoordTree> = []
 
+/**
+ * Updates every single element of the grid in the HTML page with the corresponding element in the grid definition in this file.
+ * This will also check for any winners.
+ * @returns {void}
+*/
 // @ts-ignore
-function updateGrid() {
+function updateGrid(): void {
     grid.forEach((row, rowInd) => {
         row.forEach((col, colInd) => {
             const elem = document.getElementById(`sq${rowInd * 8 + colInd}`)
@@ -87,10 +100,39 @@ function updateGrid() {
     } 
 }
 
+/**
+ * mapDiagonals is a function used to select a checker from a grid and return its next possible moves,
+ * in one of the directions "up", "down", or "all" (meaning up and down)
+ * 
+ * If no enemy checkers are adjacent to the current checker, the next two diagonal squares are given as possible moves
+ * If there is an enemy checker, then this is a capturing opportunity. All non-capturing opportunities are removed
+ * as soon as any capturing opportunity is found.
+ * 
+ * @param {Coordinate} coord The coordinate of the element to start from.
+ * @param {Direction} dir The direction to move in - "U" for up, "D" for down and "A" for all. Default: "A" 
+ * @param {Square?} originalColour The original colour of the checker. This is used in recursions when the square at coord is null 
+ * @returns {Array<CaptureObj>} The list of moves that the checker at position coord can make, along with any capturing opportunities
+ */
 // @ts-ignore
 function mapDiagonals(coord: Coordinate, dir: Direction = "A", originalColour?: Square): Array<CaptureObj> {
     let arrDiag: CaptureObj[] = []
     const currentSq = grid[coord[0]][coord[1]]
+    /**
+     * This procedure is repeated:
+     * 1. If direction is up or all, check top left and top right
+     * 2. For top left:
+     *   a. Check if it's empty
+     *   b. If it's empty, this becomes the next possible move, and capture is set to [-1, -1] (no checkers are captured)
+     *   c. If it's not empty, check its colour
+     *   d. If the colour of this and the current checker match, this checker cannot "jump" over it, so don't add to arrDiag
+     *   e. If the colours DON'T match, check the next top left square after
+     *   f. If this one is empty, this is a capturing opportunity
+     *   g. Otherwise, don't do anything
+     * 3. Repeat steps 2(a)-2(g) for top right
+     * 4. Repeat steps 2-3 for bottom right and bottom left if direction is down or all
+     * 5. If ONE of the CaptureObj's has a capture attribute NOT equal to [-1, -1] then remove all with a capture attribute NOT equal to [-1, -1]
+     * 6. Return the array of objects showing the next moves and any possible captures
+     */
     if (dir === "U" || dir === "A") {
         const upperLeft = [coord[0] - 1, coord[1] - 1] as Coordinate
         if (validCoordinate(upperLeft)) {
@@ -182,17 +224,25 @@ function mapDiagonals(coord: Coordinate, dir: Direction = "A", originalColour?: 
             })
         }
     }
+    // If ONE non-capturing move exists, remove ALL non-capturing moves
+    // otherwise don't do anything
     if (arrDiag.some(move => !areArraysEqual([-1, -1], move.capture))) arrDiag = arrDiag
     .filter(move => !areArraysEqual([-1, -1], move.capture))
     return arrDiag
 }
 
+/**
+ * updateSquare depends on the current square, the square selected, and any next possible moves
+ * It will perform an action depending on the square being "updated" and the data above.
+ * @param {number} sq The index of the square to update, in the form row * 8 + col, using zero-indexing
+ * @returns {void}
+ */
 // @ts-ignore
-function updateSquare(sq: number) {
+function updateSquare(sq: number): void {
     const [row, col] = [Math.floor(sq / 8), sq % 8]
     const isSqToMoveTo = otherSelected.find(n => areArraysEqual(n.nextMove, [row, col]))
     if (!!isSqToMoveTo) {
-        // TEST CODE
+        // If the square to update is part of the otherSelected, then move to this square, using reverse binary tree traversal
         let prevSq = selected
         let moveNext: CaptureObj = {
             nextMove: [-1, -1],
@@ -200,13 +250,16 @@ function updateSquare(sq: number) {
         }
         const final = isSqToMoveTo.nextMove
         const prevSqColour = grid[prevSq[0]][prevSq[1]]
+        // Generate the appropriate binary tree for this move and the corresponding path
         const tree = createTree(
             selected, 
             prevSqColour === "KB" || prevSqColour === "KR" ? "A" : (prevSqColour === "B" ? "U" : "D"),
             {}
         )
-        const path = traverseTree(final, selected, tree, [])       
+        const path = traverseTree(final, selected, tree, [])
+        // Go through every element of the tree 
         for (let i = 0; i < path.length; i++) {
+            // In each iteration, the next move is made, and any possible capturable checkers are removed
             if (i === 0) moveNext = path[0]
             grid[prevSq[0]] = grid[prevSq[0]].map((x, n) => n === prevSq[1] ? null : x) as Row
             grid[moveNext.nextMove[0]] = grid[moveNext.nextMove[0]].map((x, n) => n === moveNext.nextMove[1] ? prevSqColour : x) as Row
@@ -216,20 +269,28 @@ function updateSquare(sq: number) {
             prevSq = moveNext.nextMove
             moveNext = path[i]
         }
+        // If a checker has reached its opposite end of the board, upgrade it to a king checker
         if (moveNext.nextMove[0] === 0) grid[moveNext.nextMove[0]]
         = grid[moveNext.nextMove[0]].map((x, n) => {
             return n === moveNext.nextMove[1] 
             ? (prevSqColour === "B" ? "KB" : "KR")
             : x 
         }) as Row
+        // "Deselect" the coordinate already selected and any other capturable squares
+        // This will indicate the move has been completed
         selected = [-1, -1]
         otherSelected = []
         switchPlayer()
+    // The else if and else are used to handle the toggling of a square that is repeatedly selected
     } else if (areArraysEqual(selected, [row, col])) {
+        // If selected the current selected square, then deselect it
         selected = [-1, -1]
         otherSelected = []
     } else {
+        // If selecting a square that has not been selected, then select it
         selected = [row, col]
+        // In each of the if statements below, the array of objects of next moves is generated 
+        // Then a map is used to extract only the "nextMove" possibility, as the capture is not needed
         if (grid[row][col] === "R" && player === "R") {
             // @ts-ignore
             otherSelected = [...Object.values(createTree([row, col], "D", {}))].flat()
@@ -240,18 +301,38 @@ function updateSquare(sq: number) {
             // @ts-ignore
             otherSelected = [...Object.values(createTree([row, col], "A", {}))].flat()
         } else {
+            // If the selected checker is empty, then automatically deselect all
             selected = [-1, -1]
             otherSelected = []
         }
     }
+    // Update the grid
     updateGrid()
 }
 
+/**
+ * Check if two arrays are equal. This will check if the lengths are the same and the elements match at every index
+ * It will not perform type checks, although this is not necessary in an equality check.
+ * 
+ * Examples:
+ * areArraysEqual([1, 2], [1, 2]) returns **true**
+ * areArraysEqual([], []) returns **true**
+ * areArraysEqual([1, 2], [3, 4]) returns **false**
+ * areArraysEqual([1, 2], [1]) returns **false**
+ * 
+ * The generic type T is inferred from the union of the types of elements in array1 and array2.
+ * @param {Array<T>} array1 The first array, which is compared with the second
+ * @param {Array<T>} array2 The second array
+ * @returns {boolean} Whether the two arrays are equal
+ */
 // @ts-ignore
-function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
+function areArraysEqual<T>(array1: Array<T>, array2: Array<T>): boolean {
     return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
 }
 
+/**
+ * Switch players. If the current player is "red" it will toggle to "black" and vice versa.
+ */
 // @ts-ignore
 function switchPlayer() {
     player = player === "R" ? "B" : "R"
@@ -259,19 +340,33 @@ function switchPlayer() {
     if (currentPlayerText) currentPlayerText.innerText = `Current player: ${player === "R" ? "Red" : "Black"}`
 }
 
+/**
+ * Check the winner of the game.
+ * @returns {"B" | "R" | null} The winner of the game
+ */
 // @ts-ignore
 function checkWinner(): Exclude<Checker, "KB" | "KR"> | null {
     const flatGrid = grid.flat(1)
-    if (!flatGrid.includes("B")) return "R"
-    else if (!flatGrid.includes("R")) return "B"
+    if (!flatGrid.includes("B") || getAllPlayerMoves("B").length === 0) return "R"
+    else if (!flatGrid.includes("R") || getAllPlayerMoves("R").length === 0) return "B"
     else return null
 }
 
+/**
+ * Check if a coordinate is valid. This means its elements are within the range 0 to 7 inclusive.
+ * @param {[number, number]} coordinate The coordinate, a tuple type [number, number], to be compared 
+ * @returns {coordinate is Coordinate} Whether this coordinate is valid
+ */
 // @ts-ignore
 function validCoordinate(coordinate: [number, number]): coordinate is Coordinate {
     return (coordinate[0] >= 0 && coordinate[0] <= 7) && (coordinate[1] >= 0 && coordinate[1] <= 7)
 }
 
+/**
+ * Get all the possible moves that a certain player's checkers can make.
+ * @param {"R" | "B"} player The player whose moves to check 
+ * @returns {Array<NextCoordTree>} All the possible moves that this player can check.
+ */
 // @ts-ignore
 function getAllPlayerMoves(player: "R" | "B"): Array<NextCoordTree> {
     allPlayerMoves = []
