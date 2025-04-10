@@ -49,49 +49,78 @@ function fillRandom() {
     updateGrid()
 }
 
-// @ts-ignore
 /**
  * Update a square. This will toggle between it being selected and deselected
- * @param square 
- */
+ * @param {number} square The coordinate of the square, as an integer, to be updated 
+*/
+// @ts-ignore
 function updateSquare(square: number) {
     const sqRow = Math.floor(square / 9)
     const sqCol = square % 9
-    if (sqRow === currentSelected[0] && sqCol === currentSelected[1]) {
+    if (areArraysEqual(currentSelected, [sqRow, sqCol])) {
+        // If it has been selected, deselect it
         currentSelected = [-1, -1]
     } else {
+        // If it has been deselected, select it
         currentSelected = [sqRow, sqCol]
     }
+    // Then update the grid
     updateGrid()
 }
 
+/**
+ * Update the grid.
+ * An element counts as "pseudoselected" if it lies within the same row, column or 3x3 box as the currently selected box.
+ * If there is no selected, all pseudoselected elements are deselected.
+ */
 // @ts-ignore
 function updateGrid() {
     Array.from(document.getElementsByClassName('game-square'))
     .forEach((elem, elemInd) => {
-        if (currentSelected[0] === -1 && currentSelected[1] === -1) {
+        if (areArraysEqual(currentSelected, [-1, -1])) {
             elem.setAttribute('class', 'game-square')
         } else {
             const rowInd = Math.floor(elemInd / 9)
             const colInd = elemInd % 9;
             (elem as HTMLElement).innerText = grid[rowInd][colInd] || ''
-            if (rowInd === currentSelected[0] && colInd === currentSelected[1]) elem.setAttribute('class', 'game-square selected')
+            if (areArraysEqual([rowInd, colInd], currentSelected)) elem.setAttribute('class', 'game-square selected')
+            // the isInSameRowColOrBox function is used to check if two squares lie within the same 3x3 box, grid or column as each other.
             else if (isInSameRowColOrBox(currentSelected, [rowInd, colInd])) elem.setAttribute('class', 'game-square pseudoselected')
             else elem.setAttribute('class', 'game-square')
         }
     })
 }
 
-function isInSameRowColOrBox(square1, square2) {
-    return (square1[0] === square2[0])
-    || (square1[1] === square2[1])
-    || (Math.floor(square1[0] / 3) === Math.floor(square2[0] / 3) && Math.floor(square1[1] / 3) === Math.floor(square2[1] / 3))
+/**
+ * This function is used to check that they are in the same row, column or box,
+ * Same row: Check that the first element of each coordinate match.
+ * Same column: Check that the second element of each coordinate match.
+ * Same 3x3 box: For each coordinate, divide the row and column number by 3. BOTH the first elements AND the second elements match.
+ * @param {Coordinate} square1 
+ * @param {Coordinate} square2 
+ * @returns {boolean}
+ */
+function isInSameRowColOrBox(square1: Coordinate, square2: Coordinate) {
+    return (square1[0] === square2[0]) // Same row
+    || (square1[1] === square2[1]) // Same col
+    || (Math.floor(square1[0] / 3) === Math.floor(square2[0] / 3) && Math.floor(square1[1] / 3) === Math.floor(square2[1] / 3)) // Same 3x3 box
 }
 
-function elementsMatch(square1: [number, number], square2: [number, number]) {
+/**
+ * Check that two elements match. Their row numbers AND column numbers must match, and either one of them must have a number inside
+ * @param {Coordinate} square1 The first coordinate to check. 
+ * @param {Coordinate} square2 The second coordinate to check.
+ * @returns {boolean} Whether the elements of both coordinates match.
+ */
+function elementsMatch(square1: Coordinate, square2: Coordinate) {
     return (!!grid[square1[0]][square1[1]] || !!grid[square2[0]][square2[1]]) && grid[square1[0]][square1[1]] === grid[square2[0]][square2[1]]
 }
 
+/**
+ * Generate a list of every single element that lies within the same row, column or 3x3 box as a specific element.
+ * @param {Coordinate} sq The square to check
+ * @returns {Coordinate[]} All elements within the same row, column or box as a specific element.
+ */
 function findSameRowColOrBox(sq: Coordinate): Coordinate[] {
     return grid
     .map((r, ri) => r
