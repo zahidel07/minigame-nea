@@ -4,6 +4,11 @@ type Dir = "L" | "R" | "U" | "D"
 // @ts-ignore
 let grid: Array<Array<number | null>> = Array(4).fill(Array(4).fill(null))
 
+/**
+ * keyListener is a function stored inside a constant which is used to listen
+ * for any keyboard changes before taking in the user input and performing an action based on the above.
+ * @param {KeyboardEvent} keyEvent The keyboard event 
+ */
 const keyListener = (keyEvent: KeyboardEvent) => {
     const keyPressed = keyEvent.code
     switch (keyPressed) {
@@ -31,6 +36,7 @@ const keyListener = (keyEvent: KeyboardEvent) => {
 /**
  * Update the grid
  */
+// @ts-ignore
 function updateGrid() {
     setTimeout(() => {
         grid.forEach((row, rowInd) => {

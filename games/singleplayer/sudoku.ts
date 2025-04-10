@@ -1,3 +1,4 @@
+// Initialiser variables
 let currentSelected = [-1, -1]
 // @ts-ignore
 let grid = Array(9).fill(Array(9).fill(null))
@@ -8,6 +9,9 @@ let prefillNumbers = Array(9).fill(null)
 // @ts-ignore
 let [time, mins, sec] = [0, 0, 0]
 
+/**
+ * This is a function stored inside a variable that counts the number of time passed since the user started playing
+ */
 const timer = () => {
     mins = Math.floor(time / 60)
     sec = time % 60
@@ -18,6 +22,10 @@ const timer = () => {
     time += 1
 }
 
+/**
+ * Fill the numbers randomly
+ */
+// TO UPDATE LATER
 // @ts-ignore
 function fillRandom() {
     let randRow = Math.floor(Math.random() * 9)
@@ -42,6 +50,10 @@ function fillRandom() {
 }
 
 // @ts-ignore
+/**
+ * Update a square. This will toggle between it being selected and deselected
+ * @param square 
+ */
 function updateSquare(square: number) {
     const sqRow = Math.floor(square / 9)
     const sqCol = square % 9
@@ -98,6 +110,21 @@ function checkValidity(sq: Coordinate) {
     .every(n => n != numAtSq)
 }
 
+/**
+ * Check if two arrays are equal. This will check if the lengths are the same and the elements match at every index
+ * It will not perform type checks, although this is not necessary in an equality check.
+ * 
+ * Examples:
+ * areArraysEqual([1, 2], [1, 2]) returns **true**
+ * areArraysEqual([], []) returns **true**
+ * areArraysEqual([1, 2], [3, 4]) returns **false**
+ * areArraysEqual([1, 2], [1]) returns **false**
+ * 
+ * The generic type T is inferred from the union of the types of elements in array1 and array2.
+ * @param {Array<T>} array1 The first array, which is compared with the second
+ * @param {Array<T>} array2 The second array
+ * @returns {boolean} Whether the two arrays are equal
+ */
 // @ts-ignore
 function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
     return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
