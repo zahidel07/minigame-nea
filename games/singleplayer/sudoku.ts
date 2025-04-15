@@ -1,13 +1,23 @@
-// Initialiser variables
-let currentSelected = [-1, -1]
-// @ts-ignore
-let grid = Array(9).fill(Array(9).fill(null))
+// Initialiser types
 // @ts-ignore
 type Coordinate = [number, number]
+
+// Initialiser variables
+let currentSelected: Coordinate = [-1, -1]
+// @ts-ignore
+let grid: (number | null)[][] = Array(9).fill(Array(9).fill(null))
+// @ts-ignore
 let prefillIndexes = Array(9).fill([-1, -1])
 let prefillNumbers = Array(9).fill(null)
 // @ts-ignore
 let [time, mins, sec] = [0, 0, 0]
+
+let everyGridCoord: Coordinate[] = []
+for (let x = 0; x < 9; x++) {
+    for (let y = 0; y < 9; y++) {
+        everyGridCoord.push([x, y])
+    }
+}
 
 /**
  * This is a function stored inside a variable that counts the number of time passed since the user started playing
@@ -25,28 +35,82 @@ const timer = () => {
 /**
  * Fill the numbers randomly
  */
-// TO UPDATE LATER
 // @ts-ignore
-function fillRandom() {
-    let randRow = Math.floor(Math.random() * 9)
-    let randCol = Math.floor(Math.random() * 9)
-    let randNum = -1
-    for (let n = 0; n < 9; n++) {
-        while (
-            grid[randRow][randCol] 
-            || prefillIndexes.some(index => isInSameRowColOrBox([randRow, randCol], index) && elementsMatch([randRow, randCol], index))
-            || randNum === -1
-        ) {
-            randRow = Math.floor(Math.random() * 9) 
-            randCol = Math.floor(Math.random() * 9)
-            randNum = Math.ceil(Math.random() * 9)
+function randomFillGrid(): (number | null)[][] {
+    let availableCoords: Coordinate[] = []
+    for (let currentNum = 1; currentNum <= 9; currentNum++) {
+        availableCoords = everyGridCoord.filter(x => !grid[x[0]][x[1]])
+        let [randRow, randCol]: Coordinate = [Math.floor(Math.random() * 9), Math.floor(Math.random() * 9)]
+        for (let n = 0; n < 9; n++) {
+            while (!availableCoords.some(x => areArraysEqual(x, [randRow, randCol]))) {
+                if (availableCoords.length === 0) break;
+                [randRow, randCol] = [Math.floor(Math.random() * 9), Math.floor(Math.random() * 9)] 
+            }
+            availableCoords = availableCoords.filter(x => {
+                if (areArraysEqual(x, [randRow, randCol])) return false
+                if (isInSameRowColOrBox(x, [randRow, randCol])) return false
+                return true
+            })
+            grid[randRow] = grid[randRow].map((elem, elemInd) => elemInd === randCol ? currentNum : elem)
         }
-        prefillIndexes[n] = [randRow, randCol]
-        prefillNumbers[n] = randNum
-        // @ts-ignore
-        grid[randRow] = grid[randRow].map((elem, elemInd) => elemInd === randCol ? randNum : elem)
     }
-    updateGrid()
+    for (let i = 0; i < 5; i++) {
+        let unsortedNumbers = new Set<number>()
+        let sortedNumbers = new Set<number>()
+        console.log('\n' + grid
+        .map((x, xi) => (xi > 0 && xi % 3 === 0 ? '------|-------|-------\n' : '') + x.map((y, yi) => !y ? (yi > 0 && yi % 3 === 0 ? '|  ' : ' ') : (yi > 0 && yi % 3 === 0 ? '| ' + y : y)).join(' '))
+        .join('\n'))
+        for (let num = 1; num <= 9; num++) {
+            if (sortedNumbers.has(num)) continue
+            let numberCoords = everyGridCoord.filter(x => grid[x[0]][x[1]] === num)
+            let availableSpaces: Coordinate[] = []
+            if (numberCoords.length === 9) {
+                unsortedNumbers.delete(num)
+                sortedNumbers.add(num)
+            } else {
+                sortedNumbers.delete(num)
+                unsortedNumbers.add(num)
+                availableSpaces = everyGridCoord
+                .filter(x => !numberCoords.some(n => {
+                    return areArraysEqual(n, x) || findSameRowColOrBox(n).some(r => areArraysEqual(r, x))
+                }))
+                if (availableSpaces.length === 1) {
+                    const coordToReplace = availableSpaces[0]
+                    grid[coordToReplace[0]] = grid[coordToReplace[0]].map((col, colInd) => {
+                        return colInd === coordToReplace[1] ? num : col
+                    })
+                    numberCoords.push(coordToReplace)
+                    if (numberCoords.length === 9) {
+                        unsortedNumbers.delete(num)
+                        sortedNumbers.add(num)
+                    }
+                } else {
+                    availableSpaces = availableSpaces
+                    .filter((x, _, arr) => {
+                        const firstSameRowCol3x3 = arr.find(n => isInSameRowColOrBox(n, x))
+                        return areArraysEqual(x, firstSameRowCol3x3 || [-1, -1])
+                    })
+                    if (availableSpaces.length === 1) {
+                        const coordToReplace = availableSpaces[0]
+                        grid[coordToReplace[0]] = grid[coordToReplace[0]].map((col, colInd) => {
+                            return colInd === coordToReplace[1] ? num : col
+                        })
+                        numberCoords.push(coordToReplace)
+                        if (numberCoords.length === 9) {
+                            unsortedNumbers.delete(num)
+                            sortedNumbers.add(num)
+                        }
+                    }
+                }
+                console.log(num, availableSpaces)
+            }
+        }
+        console.log("Unsorted: ")
+        console.log(unsortedNumbers)
+        console.log("Sorted: ")
+        console.log(sortedNumbers)
+    }
+    return grid
 }
 
 /**
@@ -82,7 +146,7 @@ function updateGrid() {
         } else {
             const rowInd = Math.floor(elemInd / 9)
             const colInd = elemInd % 9;
-            (elem as HTMLElement).innerText = grid[rowInd][colInd] || ''
+            (elem as HTMLElement).innerText = grid[rowInd][colInd]?.toString() || ''
             if (areArraysEqual([rowInd, colInd], currentSelected)) elem.setAttribute('class', 'game-square selected')
             // the isInSameRowColOrBox function is used to check if two squares lie within the same 3x3 box, grid or column as each other.
             else if (isInSameRowColOrBox(currentSelected, [rowInd, colInd])) elem.setAttribute('class', 'game-square pseudoselected')
@@ -100,7 +164,7 @@ function updateGrid() {
  * @param {Coordinate} square2 
  * @returns {boolean}
  */
-function isInSameRowColOrBox(square1: Coordinate, square2: Coordinate) {
+function isInSameRowColOrBox(square1: Coordinate, square2: Coordinate): boolean {
     return (square1[0] === square2[0]) // Same row
     || (square1[1] === square2[1]) // Same col
     || (Math.floor(square1[0] / 3) === Math.floor(square2[0] / 3) && Math.floor(square1[1] / 3) === Math.floor(square2[1] / 3)) // Same 3x3 box
@@ -159,5 +223,20 @@ function areArraysEqual<T>(array1: Array<T>, array2: Array<T>) {
     return array1.length === array2.length && array1.every((elem1, ind1) => array2[ind1] === elem1)
 }
 
-fillRandom()
+/**
+ * Remove from one array, any items that are within the exclude array.
+ * 
+ * Examples:
+ * [1, 2, 3] exclude [1, 2, 3] returns []
+ * [1, 2, 3] exclude [1] returns [2, 3]
+ * [1, 2, 3] exclude [2, 4] returns [1, 3]
+ * @param {Array<T>} array The array to exclude items from
+ * @param {Array<T>} exclude The list of items, whose elements will be excluded from the array parameter 
+ * @returns {Array<T>} The new array, excluding elements within the exclude parameter
+ */
+function excludeFromArray<T>(array: Array<T>, exclude: Array<T>): Array<T> {
+    return array.filter(x => !exclude.includes(x))
+}
+
+randomFillGrid()
 setInterval(timer, 1000)

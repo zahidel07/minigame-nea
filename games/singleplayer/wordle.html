@@ -6,16 +6,18 @@
         <link href="wordle.css" rel="stylesheet" />
         <script src="wordle.js"></script>
         <script>
+            // Initialiser variables
             let attemptsLeft = 7
             let correctWord = words[Math.floor(Math.random() * words.length)].toUpperCase()
             let currentWord = ""
             let lettersGrid = Array(7).fill(Array(5).fill(null))
             let markersGrid = Array(7).fill(Array(5).fill(-2))
 
+            // A key event listener, which is stored inside a variable for use later
             const keyEventListener = (key) => { 
                 const code = key.code
                 if (code === "Enter") {
-                    enterLetter()
+                    enterWord()
                 } else if (code === "Backspace") {
                     removeLetter()
                 } else {
@@ -27,6 +29,9 @@
                 }
             }
 
+            // Add a letter
+            // This will prevent the user from adding any extra letters
+            // if the word they have inputted is already 5 characters long
             function addLetter(letter) {
                 if (currentWord.length >= 5) return
                 else {
@@ -37,6 +42,9 @@
                 }
             }
 
+            // Remove a letter
+            // This will prevent the user from removing any extra letters
+            // if the word they have inputted is empty
             function removeLetter() {
                 if (currentWord.length === 0) return
                 else {
@@ -47,7 +55,9 @@
                 }
             }
 
-            function enterLetter() {
+            // Enter the word
+            // It will ensure the word is 5 letters long before checking
+            function enterWord() {
                 if (currentWord.length === 5) checkWord()
                 else {
                     const textElem = document.getElementById('current')
@@ -60,8 +70,10 @@
                 }
             }
 
+            // Check the word
             function checkWord() {
                 const comparison = compareWords(currentWord, correctWord)
+                // The word is not correct at all
                 if (comparison.every(elem => elem === -2)) return
                 else {
                     markersGrid[7 - attemptsLeft] = comparison
@@ -107,6 +119,8 @@
                 })
             }
 
+            // Fill in an array less than 5 elements with "null"'s until
+            // its length is 5
             function correctArr(arr) {
                 while (arr.length < 5) {
                     arr.push(null)
@@ -114,11 +128,35 @@
                 return arr
             }
 
+            // The compareWords function compares two words and works in the following way:
+            // An array of integers the length of testWord is returned, representing what
+            // each letter in testWord means in relation to its index in correctWord
+
+            // -2: Undeterminable
+            // -1: Letter in testWord not in correctWord at all
+            // 0: Letter in testWord is in correctWord BUT NOT in correct position
+            // 1: Letter in testWord is in correctWord AND is in correct position
+
+            // For example:
+            // testWord:     C  H  E  E  S  E
+            // correctWord:  C  H  A  S  E  S
+            // output:       1  1  0 -1  0 -1
+            // C and H are both in CHASES and in correct position so return 1
+            // there are three E's in CHEESE and only one E in CHASES, so only the first E will be considered
+            // and all other E's will represent a -1 to show that E does not appear more than once in CHASES.
+            // the letter S appears once in CHEESE and twice in CHASES. So the S will be compared with only 
+            // one of the S's in CHASES
             function compareWords(testWord, correctWord) {
+                // If they are not the same length, extra letters cannot be compared so return -2's
                 if (testWord.length !== correctWord.length) return Array(testWord.length).fill(-2)
+                // Start out with initialiser array of -2
                 let finalArray = Array(testWord.length).fill(-2)
+                // Split the letters with their words
                 let testWordArr = testWord.split('')
                 let correctWordArr = correctWord.split('')
+                // Example: test CHEESE correct CHASES
+                // start by splitting them into their letters
+                // then find where letters match up (e.g. C and H) and remove them from both arrays
                 for (let n = 0; n < testWordArr.length; n++) {
                     if (testWordArr[n] === correctWordArr[n]) {
                         finalArray[n] = 1
@@ -127,13 +165,21 @@
                     }
                     else continue
                 }
+                // this leaves us with __EESE and __ASES
+                // this is to prevent Wordle from accidentially saying a letter that appears more
+                // than once in testWord is in the incorrect position when it only appears once in 
+                // the correctWord 
                 for (let n = 0; n < testWordArr.length; n++) {
                     if (finalArray[n] === -2) {
                         if (correctWordArr.includes(testWordArr[n])) {
+                            // if the correct word has this letter, remove it from testWordArr
+                            // and remove the first instance of it from correctWordArr
                             finalArray[n] = 0
                             testWordArr[n] = null
-                            correctWordArr[correctWordArr.indexOf(testWordArr[n])]
+                            correctWordArr[correctWordArr.indexOf(testWordArr[n])] = null
                         } else {
+                            // Otherwise we know this letter does not appear in correctWord
+                            // so assign it a -1
                             finalArray[n] = -1
                             testWordArr[n] = null
                         }
