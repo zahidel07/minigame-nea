@@ -49,6 +49,7 @@ let allPlayerMoves: Array<NextCoordTree> = []
 */
 // @ts-ignore
 function updateGrid(): void {
+    // Class A: List Operations
     grid.forEach((row, rowInd) => {
         row.forEach((col, colInd) => {
             const elem = document.getElementById(`sq${rowInd * 8 + colInd}`)
@@ -413,6 +414,8 @@ function checkSameColour(checker1: Square, checker2: Square) {
 }
 
 // @ts-ignore
+// Class A: Recursive Algorithms
+// Class A: Binary Tree Traversal
 /**
  * A function that performs tree traversal on a binary tree. It works by starting at the leaf node and working its way up the parent nodes until it finds the node found.
  * The start node and end nodes must exist for the traversal to work, otherwise an empty array is returned.
@@ -438,6 +441,8 @@ function traverseTree(start: Coordinate, end: Coordinate, tree: NextCoordTree, t
     }
 }
 
+// Class A: Dynamic generation of objects based on user-defined use of OOP model
+// Class A: Recursive Algorithms
 // @ts-ignore
 /**
  * Create a binary tree that will start at a node and produce every single possible move from that checker, including further consecutive moves. Based on the mapDiagonals method

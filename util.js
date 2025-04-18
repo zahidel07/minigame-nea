@@ -1,3 +1,4 @@
+// Class A: Hashing Algorithms
 function toCharCodes(text) {
     return text.split('').map(letter => letter.charCodeAt(0))
 }

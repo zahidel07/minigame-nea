@@ -140,6 +140,7 @@ function mergeNums(arr: Array<number | null>, dir: Exclude<Dir, "U" | "D"> = "L"
  * @returns {Grid} The transposition of the array arr
  */
 function transpose(arr: Array<Array<number | null>>): Array<Array<number | null>> {
+    // Class A: Advanced Matrix Operations
     let transposedArr: Array<Array<number | null>> = []
     for (let i = 0; i < arr[0].length; i++) {transposedArr.push(arr.map(row => row[i]))}
     return transposedArr
